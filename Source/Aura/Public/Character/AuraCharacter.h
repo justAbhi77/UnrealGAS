@@ -17,9 +17,9 @@ public:
 #if WITH_EDITOR
 	// Handles property changes in the editor.
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-	void InitAbilityActorInfo();
 #endif
-
+	void InitAbilityActorInfo();
+	
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void OnRep_PlayerState() override;

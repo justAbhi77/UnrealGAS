@@ -41,6 +41,7 @@ void AAuraCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 		if(Weapon && GetMesh())
 			Weapon->SetupAttachment(GetMesh(), FName(WeaponSocket));
 }
+#endif
 
 void AAuraCharacter::InitAbilityActorInfo()
 {
@@ -74,7 +75,6 @@ void AAuraCharacter::OnRep_PlayerState()
 
 	InitAbilityActorInfo();
 }
-#endif
 
 void AAuraCharacter::BeginPlay()
 {
