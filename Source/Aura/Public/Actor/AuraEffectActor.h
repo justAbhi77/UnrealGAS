@@ -16,6 +16,12 @@ class AURA_API AAuraEffectActor : public AActor
 public:
 	AAuraEffectActor();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Effect")
+	float HealthValue = 25;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Effect")
+	float ManaValue = 25;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -33,5 +39,4 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
-public:
 };
