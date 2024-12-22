@@ -3,12 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AttributeSet.h"
+#include "AbilitySystemComponent.h"
 #include "UObject/Object.h"
 #include "AuraWidgetController.generated.h"
-
-class UAttributeSet;
-class UAbilitySystemComponent;
 
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams

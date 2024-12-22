@@ -2,7 +2,6 @@
 
 
 #include "Character/AuraEnemy.h"
-
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 
@@ -21,6 +20,16 @@ AAuraEnemy::AAuraEnemy()
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
+void AAuraEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetMesh()->SetCustomDepthStencilValue(HighlightValue);
+	Weapon->SetCustomDepthStencilValue(HighlightValue);
+
+	InitAbilityActorInfo();
+}
+
 #if WITH_EDITOR
 /**
  * Called when a property is edited in the editor.
@@ -37,6 +46,7 @@ void AAuraEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEv
 		if(Weapon && GetMesh())
 			Weapon->SetupAttachment(GetMesh(), FName(WeaponSocket));
 }
+#endif
 
 void AAuraEnemy::HighlightActor()
 {
@@ -50,16 +60,12 @@ void AAuraEnemy::UnHighlightActor()
 	Weapon->SetRenderCustomDepth(false);
 }
 
-#endif
-
-void AAuraEnemy::BeginPlay()
+void AAuraEnemy::InitAbilityActorInfo()
 {
-	Super::BeginPlay();
-
-	GetMesh()->SetCustomDepthStencilValue(HighlightValue);
-	Weapon->SetCustomDepthStencilValue(HighlightValue);
-
+	Super::InitAbilityActorInfo();
+	
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 }
 
 void AAuraEnemy::Tick(float DeltaTime)
