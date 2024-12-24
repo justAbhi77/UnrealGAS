@@ -10,9 +10,7 @@
 UAuraAttributeSet::UAuraAttributeSet()
 {
 	InitHealth(50);
-	InitMaxHealth(100);
 	InitMana(50);
-	InitMaxMana(100);
 }
 
 void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -44,8 +42,10 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
+
 	if(Attribute == GetHealthAttribute())
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	
 	if(Attribute == GetManaAttribute())
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
 }
