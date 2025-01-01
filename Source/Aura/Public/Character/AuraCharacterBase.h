@@ -38,6 +38,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FString WeaponSocket = "WeaponHandSocket";
 
+	virtual FVector GetCombatSocketLocation() override;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName WeaponTipSocketName;
+
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
