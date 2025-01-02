@@ -7,6 +7,7 @@
 
 UMMC_MaxMana::UMMC_MaxMana()
 {
+	// Define the Intelligence attribute capture
 	IntDef.AttributeToCapture = UAuraAttributeSet::GetIntelligenceAttribute();
 	IntDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
 	IntDef.bSnapshot = false;
@@ -25,13 +26,12 @@ float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectS
 
 	float Int = 0.f;
 	GetCapturedAttributeMagnitude(IntDef, Spec, EvaluationParameters, Int);
-	// check for negative value
 	Int = FMath::Max<float>(Int, 0.f);
 
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
 	const int32 PlayerLevel = CombatInterface->GetPlayerLevel();
 
-	if(!CombatInterface) return 0.f; // check for combat interface
+	if(!CombatInterface) return 0.f; // Check for combat interface
 
 	return 50.f + 2.5f * Int + 15.f * PlayerLevel;
 }

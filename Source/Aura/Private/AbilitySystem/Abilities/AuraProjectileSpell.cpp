@@ -10,21 +10,27 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	// Check if server
 	const bool bIsServer = HasAuthority(&ActivationInfo);
 	if(!bIsServer) return;
-	
+
+	// Ensure the owning actor implements the combat interface
 	if(ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
+		// Get the socket location for spawning the projectile
 		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(SocketLocation);
-		//TODO: Set the Projectile Rotation
 
+		// TODO: Calculate the projectile's rotation
+
+		// Spawn the projectile using deferred spawning for additional setup
 		AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass,
 			SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-		//TODO: Give the Projectile a Gameplay Effect Spec for causing Damage.
+		// TODO: Give the projectile a gameplay effect for causing Damage.
 
+		// Complete the spawning process
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }
