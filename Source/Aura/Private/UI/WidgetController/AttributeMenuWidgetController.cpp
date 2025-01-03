@@ -9,10 +9,12 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 {
 	Super::BroadcastInitialValues();
 
+	// Ensure the AttributeSet and AttributeInfo are valid
 	UAuraAttributeSet* As = CastChecked<UAuraAttributeSet>(AttributeSet);
 	check(AttributeInfo);
-	
-	for(auto& Pair : As->TagsToAttributes)
+
+	// loop through the tag-to-attribute mapping and broadcast values
+	for(const auto& Pair : As->TagsToAttributes)
 		BroadcastAttributeInfo(Pair.Key, Pair.Value());
 }
 
@@ -22,7 +24,9 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 
 	UAuraAttributeSet* AS = CastChecked<UAuraAttributeSet>(AttributeSet);
 	check(AttributeInfo);
-	for (auto& Pair : AS->TagsToAttributes)
+
+	// Bind a callback to value change delegate
+	for(const auto& Pair : AS->TagsToAttributes)
 	{
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Pair.Value()).AddLambda(
 		[this, Pair](const FOnAttributeChangeData& Data)
@@ -34,7 +38,12 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& AttributeTag, const FGameplayAttribute& Attribute) const
 {
+	// Retrieve attribute metadata based on the tag
 	FAuraAttributeInfo Info = AttributeInfo->FindAttributeInfoForTag(AttributeTag);
+
+	// Update the value of the attribute in the info struct
 	Info.AttributeValue = Attribute.GetNumericValue(AttributeSet);
+
+	// Broadcast the updated attribute information
 	AttributeInfoDelegate.Broadcast(Info);
 }

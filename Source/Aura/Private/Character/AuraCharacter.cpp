@@ -1,4 +1,4 @@
-﻿
+﻿//
 
 
 #include "Character/AuraCharacter.h"
@@ -9,34 +9,30 @@
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
 
-
 AAuraCharacter::AAuraCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0, 400, 0);
-	GetCharacterMovement()->bConstrainToPlane = true;
-	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+	// Configure character movement
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	MovementComponent->bOrientRotationToMovement = true;
+	MovementComponent->RotationRate = FRotator(0, 400, 0);
+	MovementComponent->bConstrainToPlane = true;
+	MovementComponent->bSnapToPlaneAtStart = true;
 
+	// Disable controller-based rotation
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 }
 
 #if WITH_EDITOR
-/**
- * Called when a property is edited in the editor.
- * Updates Attachment of weapon to a socket on the mesh.
- */
 void AAuraCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
 	FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
 
-	// Update Attachment on socket name change
 	if(PropertyName == GET_MEMBER_NAME_CHECKED(AAuraCharacter, WeaponSocket))
 		if(Weapon && GetMesh())
 			Weapon->SetupAttachment(GetMesh(), FName(WeaponSocket));
@@ -45,18 +41,25 @@ void AAuraCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 
 void AAuraCharacter::InitAbilityActorInfo()
 {
-	//Init Ability Actor info for server & client
+	// Retrieve and validate player state
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 	check(AuraPlayerState);
+
+	// Initialize Ability System Component with player state and character
 	UAbilitySystemComponent* SystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	SystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
-	Cast<UAuraAbilitySystemComponent>(SystemComponent)->AbilityActorInfoSet();
+
+	// Update references and notify Ability System Component
+	if(UAuraAbilitySystemComponent* AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(SystemComponent))
+		AuraAbilitySystemComponent->AbilityActorInfoSet();
+
 	AbilitySystemComponent = SystemComponent;
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 
-	if(AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
+	// Initialize HUD overlay
+	if(auto* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
-		if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
+		if(auto* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
 			AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
 	}
 
@@ -67,6 +70,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	// Initialize ability system and grant abilities
 	InitAbilityActorInfo();
 	AddCharacterAbilities();
 }
@@ -75,6 +79,7 @@ void AAuraCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
+	// Initialize ability system when PlayerState is replicated
 	InitAbilityActorInfo();
 }
 
@@ -82,13 +87,14 @@ int32 AAuraCharacter::GetPlayerLevel()
 {
 	const AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 	check(AuraPlayerState);
+
+	// Return player level from PlayerState
 	return AuraPlayerState->GetPlayerLevel();
 }
 
 void AAuraCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void AAuraCharacter::Tick(float DeltaTime)
@@ -100,4 +106,3 @@ void AAuraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
-

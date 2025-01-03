@@ -1,4 +1,4 @@
-
+// 
 
 #pragma once
 
@@ -6,20 +6,32 @@
 #include "UObject/Interface.h"
 #include "EnemyInterface.generated.h"
 
-// This class does not need to be modified.
+/**
+ * Interface for enemy-related functionality, providing standardized methods for
+ * visual effects or behaviors that can be applied to enemy actors.
+ */
 UINTERFACE(MinimalAPI)
 class UEnemyInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
+/**
+ * Interface class that defines the methods for enemy-related behavior.
+ * Classes implementing this interface are expected to define the provided functions.
+ */
 class AURA_API IEnemyInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void HighlightActor() = 0;
+	/**
+	 * Highlights the actor, for visual feedback while hovering.
+	 */
+	virtual void HighlightActor() PURE_VIRTUAL(IEnemyInterface::HighlightActor);
 
-	virtual void UnHighlightActor() = 0;
+	/**
+	 * Removes any highlight effect applied to the actor.
+	 */
+	virtual void UnHighlightActor() PURE_VIRTUAL(IEnemyInterface::UnHighlightActor, );
 };

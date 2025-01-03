@@ -15,6 +15,9 @@ class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
 
+/**
+ * Handles player input, cursor interaction, and autonomous movement.
+ */
 UCLASS()
 class AURA_API AAuraPlayerController : public APlayerController
 {
@@ -30,24 +33,30 @@ protected:
 	virtual void SetupInputComponent() override;
 
 private:
+	// Input context and actions
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputMappingContext> AuraContext;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
 
+	// Input handling
 	void Move(const FInputActionValue& InputActionValue);
 
+	// Cursor tracing for interaction
 	FHitResult CursorHit;
 	void CursorTrace();
 
+	// Handles actor highlighting
 	TScriptInterface<IEnemyInterface> LastActor, ThisActor;
 
+	// Ability input handlers
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
-	
-	UPROPERTY(EditDefaultsOnly, Category="Input")
+
+	// Input configuration
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UAuraInputConfig> InputConfig;
 
 	UPROPERTY()
@@ -55,18 +64,18 @@ private:
 
 	UAuraAbilitySystemComponent* GetASC();
 
-	// Click to Move
+	// Auto-run functionality
 	FVector CachedDestination = FVector::ZeroVector;
 	float FollowTime = 0.f;
 	float ShortPressThreshold = 0.5f;
 	bool bAutoRunning = false;
 	bool bTargeting = false;
-	
+
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius = 50.f;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
-	
+
 	void AutoRun();
 };

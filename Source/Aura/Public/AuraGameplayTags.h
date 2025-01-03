@@ -5,24 +5,34 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 
-// Singleton containing native Gameplay Tags 
-
+/**
+ * FAuraGameplayTags is a singleton struct that contains all native gameplay tags used in the Aura project.
+ */
 struct FAuraGameplayTags
 {
 public:
-	static const FAuraGameplayTags& Get() { return GameplayTags;}
+	/**
+	 * Retrieves the singleton instance of FAuraGameplayTags.
+	 * @return A reference to the static GameplayTags instance.
+	 */
+	static const FAuraGameplayTags& Get() { return GameplayTags; }
+
+	/**
+	 * Initializes and registers all native gameplay tags with the Gameplay Tags Manager.
+	 */
 	static void InitializeNativeGameplayTags();
-protected:
 
 private:
 	static FAuraGameplayTags GameplayTags;
 
 public:
+	// Primary Attributes
 	FGameplayTag Attributes_Primary_Strength;
 	FGameplayTag Attributes_Primary_Intelligence;
 	FGameplayTag Attributes_Primary_Resilience;
 	FGameplayTag Attributes_Primary_Vigor;
 
+	// Secondary Attributes
 	FGameplayTag Attributes_Secondary_Armor;
 	FGameplayTag Attributes_Secondary_ArmorPenetration;
 	FGameplayTag Attributes_Secondary_BlockChance;
@@ -34,6 +44,7 @@ public:
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxMana;
 
+	// Input Tags
 	FGameplayTag InputTag_LMB;
 	FGameplayTag InputTag_RMB;
 	FGameplayTag InputTag_1;

@@ -1,4 +1,4 @@
-
+// 
 
 
 #include "Character/AuraCharacterBase.h"
@@ -7,9 +7,9 @@
 
 AAuraCharacterBase::AAuraCharacterBase()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	// Initialize weapon component and attach to character mesh
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName(WeaponSocket));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -21,17 +21,12 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 }
 
 #if WITH_EDITOR
-/**
- * Called when a property is edited in the editor.
- * Updates Attachment of weapon to a socket on the mesh.
- */
 void AAuraCharacterBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
+	// Update weapon attachment if the socket name is modified
 	FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
-
-	// Update Attachment on socket name change
 	if(PropertyName == GET_MEMBER_NAME_CHECKED(AAuraCharacterBase, WeaponSocket))
 		if(Weapon && GetMesh())
 			Weapon->SetupAttachment(GetMesh(), FName(WeaponSocket));
@@ -55,8 +50,11 @@ void AAuraCharacterBase::InitAbilityActorInfo()
 
 void AAuraCharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, const float Level) const
 {
+	// Ensure valid components and effect class
 	check(IsValid(GetAbilitySystemComponent()));
 	check(GameplayEffectClass);
+
+	// Create and apply the gameplay effect
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	ContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
@@ -65,14 +63,16 @@ void AAuraCharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Gameplay
 
 void AAuraCharacterBase::InitializeDefaultAttributes() const
 {
+	// Apply default attributes at level 1
 	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
 	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
 	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
 }
 
 void AAuraCharacterBase::AddCharacterAbilities()
-{	
-	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+{
 	if (!HasAuthority()) return;
+
+	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 	AuraASC->AddCharacterAbilities(StartupAbilities);
 }

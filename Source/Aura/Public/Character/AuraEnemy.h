@@ -7,6 +7,9 @@
 #include "Interaction/EnemyInterface.h"
 #include "AuraEnemy.generated.h"
 
+/**
+ * Extends AAuraCharacterBase and implements the IEnemyInterface.
+ */
 UCLASS()
 class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
 {
@@ -16,7 +19,6 @@ public:
 	AAuraEnemy();
 
 #if WITH_EDITOR
-	// Handles property changes in the editor.
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
@@ -24,20 +26,24 @@ public:
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
 
-	// Combat Interface 	
+	// Combat Interface
 	virtual int32 GetPlayerLevel() override;
-	
+
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void InitAbilityActorInfo() override;
 
+	// The level of this enemy, used for scaling stats or difficulty
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;
+
 private:
-	UPROPERTY(EditAnywhere)
-	int HighlightValue = 250;
+	// Value used to set custom depth stencil for highlighting
+	UPROPERTY(EditAnywhere, Category = "Highlighting")
+	int32 HighlightValue = 250;
 };

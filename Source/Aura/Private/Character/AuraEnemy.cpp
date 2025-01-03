@@ -1,22 +1,23 @@
-﻿
+﻿//
 
 
 #include "Character/AuraEnemy.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 
-
 AAuraEnemy::AAuraEnemy()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Ensure the enemy mesh blocks visibility tracing for highlighting purposes
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
+	// Initialize Ability System Component
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
+	// Initialize Attribute Set
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
@@ -24,24 +25,23 @@ void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Set custom depth stencil values for highlighting
 	GetMesh()->SetCustomDepthStencilValue(HighlightValue);
-	Weapon->SetCustomDepthStencilValue(HighlightValue);
+	if(Weapon)
+		Weapon->SetCustomDepthStencilValue(HighlightValue);
 
+	// Initialize ability system info
 	InitAbilityActorInfo();
 }
 
 #if WITH_EDITOR
-/**
- * Called when a property is edited in the editor.
- * Updates Attachment of weapon to a socket on the mesh.
- */
 void AAuraEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
 	FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
 
-	// Update Attachment on socket name change
+	// Update weapon attachment if the weapon socket name changes in the editor
 	if(PropertyName == GET_MEMBER_NAME_CHECKED(AAuraEnemy, WeaponSocket))
 		if(Weapon && GetMesh())
 			Weapon->SetupAttachment(GetMesh(), FName(WeaponSocket));
@@ -50,14 +50,18 @@ void AAuraEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEv
 
 void AAuraEnemy::HighlightActor()
 {
+	// Enable custom depth rendering for mesh and weapon
 	GetMesh()->SetRenderCustomDepth(true);
-	Weapon->SetRenderCustomDepth(true);
+	if(Weapon)
+		Weapon->SetRenderCustomDepth(true);
 }
 
 void AAuraEnemy::UnHighlightActor()
 {
+	// Disable custom depth rendering for mesh and weapon
 	GetMesh()->SetRenderCustomDepth(false);
-	Weapon->SetRenderCustomDepth(false);
+	if(Weapon)
+		Weapon->SetRenderCustomDepth(false);
 }
 
 int32 AAuraEnemy::GetPlayerLevel()
@@ -68,9 +72,12 @@ int32 AAuraEnemy::GetPlayerLevel()
 void AAuraEnemy::InitAbilityActorInfo()
 {
 	Super::InitAbilityActorInfo();
-	
+
+	// Initialize ability system actor info for this enemy
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+
+	if(auto* AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+		AuraAbilitySystemComponent->AbilityActorInfoSet();
 }
 
 void AAuraEnemy::Tick(float DeltaTime)
@@ -82,4 +89,3 @@ void AAuraEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
-

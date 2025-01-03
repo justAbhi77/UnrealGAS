@@ -8,7 +8,7 @@
 
 UOverlayWidgetController* AAuraHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
 {
-	if(OverlayWidgetController == nullptr)
+	if(!OverlayWidgetController)
 	{
 		OverlayWidgetController = NewObject<UOverlayWidgetController>(this, OverlayWidgetControllerClass);
 		OverlayWidgetController->SetWidgetControllerParams(WCParams);
@@ -19,7 +19,7 @@ UOverlayWidgetController* AAuraHUD::GetOverlayWidgetController(const FWidgetCont
 
 UAttributeMenuWidgetController* AAuraHUD::GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams)
 {
-	if (AttributeMenuWidgetController == nullptr)
+	if(!AttributeMenuWidgetController)
 	{
 		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(this, AttributeMenuWidgetControllerClass);
 		AttributeMenuWidgetController->SetWidgetControllerParams(WCParams);
@@ -30,19 +30,23 @@ UAttributeMenuWidgetController* AAuraHUD::GetAttributeMenuWidgetController(const
 
 void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
-	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized please fill out BP_AuraHUD"));
-	checkf(OverlayWidgetControllerClass, TEXT("Overlay widget Controller class uninitialized, please fill out bp_AuraHUD"));
-	
+	// Ensure the required classes are set
+	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class is uninitialized. Please fill out BP_AuraHUD."));
+	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class is uninitialized. Please fill out BP_AuraHUD."));
+
+	// Create the Overlay Widget
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
 	OverlayWidget = Cast<UAuraUserWidget>(Widget);
 
+	// Initialize the Widget Controller
 	const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
-
 	UOverlayWidgetController* WidgetController = GetOverlayWidgetController(WidgetControllerParams);
 
+	// Assign the controller to the widget and broadcast initial values
 	OverlayWidget->SetWidgetController(WidgetController);
 	WidgetController->BroadcastInitialValues();
-	
+
+	// Add the widget to the viewport
 	Widget->AddToViewport();
 }
 

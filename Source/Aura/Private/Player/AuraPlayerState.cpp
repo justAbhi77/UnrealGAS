@@ -8,22 +8,23 @@
 
 AAuraPlayerState::AAuraPlayerState()
 {
-	NetUpdateFrequency = 100.f; // how often the server will try to update client
+	NetUpdateFrequency = 100.f;
 
+	// Initialize and configure the Ability System Component
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
+	// Initialize the Attribute Set
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
 void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	
+
 	DOREPLIFETIME(AAuraPlayerState, Level);
 }
-
 
 UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
 {
@@ -32,5 +33,4 @@ UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
 
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)
 {
-	
 }
