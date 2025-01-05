@@ -126,22 +126,18 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-        // If the input tag is not matched, release the ability input tag and return early.
+		// If the input tag is not matched, release the ability input tag and return early.
 		if(GetASC())
 			GetASC()->AbilityInputTagReleased(InputTag);
 
 		return;
 	}
 
-	if(bTargeting)
+	if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
+
+	if (!bTargeting && !bShiftKeyDown)
 	{
-		// If targeting is active, release the input tag.
-		if(GetASC())
-			GetASC()->AbilityInputTagReleased(InputTag);
-	}
-	else
-	{
-        // If not targeting, get the controlled pawn and process the pathfinding logic.
+		// If not targeting, get the controlled pawn and process the pathfinding logic.
 		const APawn* ControlledPawn = GetPawn();
 		if(ControlledPawn && FollowTime <= ShortPressThreshold)
 		{
@@ -179,7 +175,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		return;
 	}
 
-	if(bTargeting)
+	if(bTargeting || bShiftKeyDown)
 	{
 		// If targeting is active, continue holding the input tag.
 		if(GetASC())
@@ -236,6 +232,9 @@ void AAuraPlayerController::SetupInputComponent()
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
 
 	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &ThisClass::ShiftPressed);
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &ThisClass::ShiftReleased);
 
 	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed,
 		&ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);

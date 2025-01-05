@@ -10,7 +10,7 @@
  * Interface for combat-related functionality, providing a standardized way
  * to query combat-specific data and implement combat behavior in actors.
  */
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, BlueprintType)
 class UCombatInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -31,4 +31,7 @@ public:
 	 * @return A FVector representing the socket location. Defaults to ZeroVector.
 	 */
 	virtual FVector GetCombatSocketLocation();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void UpdateFacingTarget(const FVector& Target);
 };

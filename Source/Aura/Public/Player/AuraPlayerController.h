@@ -43,6 +43,13 @@ private:
 	// Input handling
 	void Move(const FInputActionValue& InputActionValue);
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ShiftAction;
+
+	bool bShiftKeyDown = false;
+	void ShiftPressed() { bShiftKeyDown = true; }
+	void ShiftReleased() { bShiftKeyDown = false; }
+
 	// Cursor tracing for interaction
 	FHitResult CursorHit;
 	void CursorTrace();

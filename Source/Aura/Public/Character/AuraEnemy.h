@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "AuraCharacterBase.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
+
+class UWidgetComponent;
 
 /**
  * Extends AAuraCharacterBase and implements the IEnemyInterface.
@@ -33,6 +36,13 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxHealthChanged;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -41,6 +51,9 @@ protected:
 	// The level of this enemy, used for scaling stats or difficulty
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> HealthBar;
 
 private:
 	// Value used to set custom depth stencil for highlighting
