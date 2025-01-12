@@ -61,4 +61,8 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.InputTag_2, TEXT("InputTag.2"), TEXT("Input Tag for 2 key"));
 	RegisterTag(GameplayTags.InputTag_3, TEXT("InputTag.3"), TEXT("Input Tag for 3 key"));
 	RegisterTag(GameplayTags.InputTag_4, TEXT("InputTag.4"), TEXT("Input Tag for 4 key"));
+
+	RegisterTag(GameplayTags.Damage, TEXT("Damage"), TEXT("Damage"));
+
+	RegisterTag(GameplayTags.Effects_HitReact, TEXT("Effects.HitReact"), TEXT("Tag granted when Hit Reacting"));  
 }
