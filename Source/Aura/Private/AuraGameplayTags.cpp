@@ -23,49 +23,60 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	// Primary Attributes
 	RegisterTag(GameplayTags.Attributes_Primary_Strength,
-		TEXT("Attributes.Primary.Strength"), TEXT("Increases physical damage"));
+		"Attributes.Primary.Strength", "Increases physical damage");
 	RegisterTag(GameplayTags.Attributes_Primary_Intelligence,
-		TEXT("Attributes.Primary.Intelligence"), TEXT("Increases magical damage"));
+		"Attributes.Primary.Intelligence", "Increases magical damage");
 	RegisterTag(GameplayTags.Attributes_Primary_Resilience,
-		TEXT("Attributes.Primary.Resilience"), TEXT("Increases Armor and Armor Penetration"));
+		"Attributes.Primary.Resilience", "Increases Armor and Armor Penetration");
 	RegisterTag(GameplayTags.Attributes_Primary_Vigor,
-		TEXT("Attributes.Primary.Vigor"), TEXT("Increases Health"));
+		"Attributes.Primary.Vigor", "Increases Health");
 
 	// Secondary Attributes
 	RegisterTag(GameplayTags.Attributes_Secondary_Armor,
-		TEXT("Attributes.Secondary.Armor"), TEXT("Reduces damage taken, improves Block Chance"));
+		"Attributes.Secondary.Armor", "Reduces damage taken, improves Block Chance");
 	RegisterTag(GameplayTags.Attributes_Secondary_ArmorPenetration,
-		TEXT("Attributes.Secondary.ArmorPenetration"), TEXT("Ignores percentage of enemy Armor, increases Critical Hit Chance"));
+		"Attributes.Secondary.ArmorPenetration", "Ignores percentage of enemy Armor, increases Critical Hit Chance");
 	RegisterTag(GameplayTags.Attributes_Secondary_BlockChance,
-		TEXT("Attributes.Secondary.BlockChance"), TEXT("Chance to cut incoming damage in half"));
+		"Attributes.Secondary.BlockChance", "Chance to cut incoming damage in half");
 	RegisterTag(GameplayTags.Attributes_Secondary_CriticalHitChance,
-		TEXT("Attributes.Secondary.CriticalHitChance"), TEXT("Chance to double damage plus critical hit bonus"));
+		"Attributes.Secondary.CriticalHitChance", "Chance to double damage plus critical hit bonus");
 	RegisterTag(GameplayTags.Attributes_Secondary_CriticalHitDamage,
-		TEXT("Attributes.Secondary.CriticalHitDamage"), TEXT("Bonus damage added when a critical hit is scored"));
+		"Attributes.Secondary.CriticalHitDamage", "Bonus damage added when a critical hit is scored");
 	RegisterTag(GameplayTags.Attributes_Secondary_CriticalHitResistance,
-		TEXT("Attributes.Secondary.CriticalHitResistance"),
-		TEXT("Reduces Critical Hit Chance of attacking enemies"));
+		"Attributes.Secondary.CriticalHitResistance",
+		"Reduces Critical Hit Chance of attacking enemies");
 	RegisterTag(GameplayTags.Attributes_Secondary_HealthRegeneration,
-		TEXT("Attributes.Secondary.HealthRegeneration"), TEXT("Amount of Health regenerated every 1 second"));
+		"Attributes.Secondary.HealthRegeneration", "Amount of Health regenerated every 1 second");
 	RegisterTag(GameplayTags.Attributes_Secondary_ManaRegeneration,
-		TEXT("Attributes.Secondary.ManaRegeneration"), TEXT("Amount of Mana regenerated every 1 second"));
+		"Attributes.Secondary.ManaRegeneration", "Amount of Mana regenerated every 1 second");
 	RegisterTag(GameplayTags.Attributes_Secondary_MaxHealth,
-		TEXT("Attributes.Secondary.MaxHealth"), TEXT("Maximum amount of Health obtainable"));
+		"Attributes.Secondary.MaxHealth", "Maximum amount of Health obtainable");
 	RegisterTag(GameplayTags.Attributes_Secondary_MaxMana,
-		TEXT("Attributes.Secondary.MaxMana"), TEXT("Maximum amount of Mana obtainable"));
+		"Attributes.Secondary.MaxMana", "Maximum amount of Mana obtainable");
 
 	// Input Tags
-	RegisterTag(GameplayTags.InputTag_LMB, TEXT("InputTag.LMB"), TEXT("Input Tag for Left Mouse Button"));
-	RegisterTag(GameplayTags.InputTag_RMB, TEXT("InputTag.RMB"), TEXT("Input Tag for Right Mouse Button"));
-	RegisterTag(GameplayTags.InputTag_1, TEXT("InputTag.1"), TEXT("Input Tag for 1 key"));
-	RegisterTag(GameplayTags.InputTag_2, TEXT("InputTag.2"), TEXT("Input Tag for 2 key"));
-	RegisterTag(GameplayTags.InputTag_3, TEXT("InputTag.3"), TEXT("Input Tag for 3 key"));
-	RegisterTag(GameplayTags.InputTag_4, TEXT("InputTag.4"), TEXT("Input Tag for 4 key"));
+	RegisterTag(GameplayTags.InputTag_LMB, "InputTag.LMB", "Input Tag for Left Mouse Button");
+	RegisterTag(GameplayTags.InputTag_RMB, "InputTag.RMB", "Input Tag for Right Mouse Button");
+	RegisterTag(GameplayTags.InputTag_1, "InputTag.1", "Input Tag for 1 key");
+	RegisterTag(GameplayTags.InputTag_2, "InputTag.2", "Input Tag for 2 key");
+	RegisterTag(GameplayTags.InputTag_3, "InputTag.3", "Input Tag for 3 key");
+	RegisterTag(GameplayTags.InputTag_4, "InputTag.4", "Input Tag for 4 key");
 
-	RegisterTag(GameplayTags.Damage, TEXT("Damage"), TEXT("Damage"));
-	RegisterTag(GameplayTags.Damage_Fire, TEXT("Damage.Fire"), TEXT("Fire Damage Type"));
+	RegisterTag(GameplayTags.Damage, "Damage", "Damage");
+	RegisterTag(GameplayTags.Damage_Fire, "Damage.Fire", "Fire Damage Type");
+	RegisterTag(GameplayTags.Damage_Lighting, "Damage.Lighting", "Lighting Damage Type");
+	RegisterTag(GameplayTags.Damage_Arcane, "Damage.Arcane", "Arcane Damage Type");
+	RegisterTag(GameplayTags.Damage_Physical, "Damage.Physical", "Physical Damage Type");
 
-	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Fire);
+	RegisterTag(GameplayTags.Attributes_Resistance_Arcane, "Attributes.Resistance.Arcane", "Resistance to Arcane Damage");
+	RegisterTag(GameplayTags.Attributes_Resistance_Fire, "Attributes.Resistance.Fire", "Resistance to Fire Damage");
+	RegisterTag(GameplayTags.Attributes_Resistance_Lighting, "Attributes.Resistance.Lighting", "Resistance to Lighting Damage");
+	RegisterTag(GameplayTags.Attributes_Resistance_Physical, "Attributes.Resistance.Physical", "Resistance to Physical Damage");
 
-	RegisterTag(GameplayTags.Effects_HitReact, TEXT("Effects.HitReact"), TEXT("Tag granted when Hit Reacting"));  
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Arcane, GameplayTags.Attributes_Resistance_Arcane);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lighting, GameplayTags.Attributes_Resistance_Lighting);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire, GameplayTags.Attributes_Resistance_Fire);
+
+	RegisterTag(GameplayTags.Effects_HitReact, "Effects.HitReact", "Tag granted when Hit Reacting");
 }
