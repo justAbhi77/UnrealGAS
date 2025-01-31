@@ -34,7 +34,7 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter,
 	bool bBlockedHit, bool bCriticalHit)
 {
-	if(IsValid(TargetCharacter) && DamageTextComponentClass)
+	if(IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
 	{
 		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
 		DamageText->RegisterComponent();
@@ -167,7 +167,8 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 				// Ensure the last point on the path is the one the character should move towards,
 				// in case the destination point is unreachable due to nav mesh modifiers(blocking vol, etc.).
-				CachedDestination = NavPath->PathPoints.Last();
+				if(!NavPath->PathPoints.IsEmpty())
+					CachedDestination = NavPath->PathPoints.Last();
 
 				bAutoRunning = NavPath->PathPoints.Num() != 0; // Mark the character for auto-running.
 			}
