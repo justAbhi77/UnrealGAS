@@ -10,6 +10,8 @@
 #include "AuraEnemy.generated.h"
 
 class UWidgetComponent;
+class UBehaviorTree;
+class AAuraAiController;
 
 /**
  * Extends AAuraCharacterBase and implements the IEnemyInterface.
@@ -21,6 +23,8 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
 
 public:
 	AAuraEnemy();
+
+	virtual void PossessedBy(AController* NewController) override;
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -72,6 +76,12 @@ protected:
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
 	virtual void InitializeDefaultAttributes() const override;
+
+	UPROPERTY(EditAnywhere, Category = "Ai")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<AAuraAiController> AuraAIController;
 private:
 	// Value used to set custom depth stencil for highlighting
 	UPROPERTY(EditAnywhere, Category = "Highlighting")
