@@ -19,7 +19,7 @@ class AURA_API AAuraProjectile : public AActor
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	AAuraProjectile();
 
 	// Projectile movement component to handle movement physics
