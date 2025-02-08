@@ -66,7 +66,7 @@ void AAuraEnemy::BeginPlay()
 	InitAbilityActorInfo();
 
 	if(HasAuthority())
-		UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+		UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
 
 	if(UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
 		AuraUserWidget->SetWidgetController(this);
@@ -121,6 +121,16 @@ void AAuraEnemy::UnHighlightActor()
 	GetMesh()->SetRenderCustomDepth(false);
 	if(Weapon)
 		Weapon->SetRenderCustomDepth(false);
+}
+
+void AAuraEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
+AActor* AAuraEnemy::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
 }
 
 int32 AAuraEnemy::GetPlayerLevel()

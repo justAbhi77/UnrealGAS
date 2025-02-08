@@ -32,7 +32,8 @@ public:
 	 * Retrieves a location on weapon. 
 	 * @return A FVector representing the socket location. Defaults to ZeroVector.
 	 */
-	virtual FVector GetCombatSocketLocation();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FVector GetCombatSocketLocation();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void UpdateFacingTarget(const FVector& Target);

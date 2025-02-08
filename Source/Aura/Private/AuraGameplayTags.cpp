@@ -73,6 +73,8 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.Attributes_Resistance_Lighting, "Attributes.Resistance.Lighting", "Resistance to Lighting Damage");
 	RegisterTag(GameplayTags.Attributes_Resistance_Physical, "Attributes.Resistance.Physical", "Resistance to Physical Damage");
 
+	RegisterTag(GameplayTags.Abilities_Attack, "Abilities.Attack", "Attack Ability Tag");
+
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Arcane, GameplayTags.Attributes_Resistance_Arcane);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lighting, GameplayTags.Attributes_Resistance_Lighting);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);

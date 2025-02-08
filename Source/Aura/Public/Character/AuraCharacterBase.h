@@ -87,7 +87,7 @@ protected:
 	void AddCharacterAbilities();
 
 	// Return the location of the weapon tip socket
-	virtual FVector GetCombatSocketLocation() override;
+	virtual FVector GetCombatSocketLocation_Implementation() override;
 
 	// Dissolve Effects
 	void Dissolve();

@@ -33,5 +33,11 @@ public:
 	/**
 	 * Removes any highlight effect applied to the actor.
 	 */
-	virtual void UnHighlightActor() PURE_VIRTUAL(IEnemyInterface::UnHighlightActor, );
+	virtual void UnHighlightActor() PURE_VIRTUAL(IEnemyInterface::UnHighlightActor);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void SetCombatTarget(AActor* InCombatTarget);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	AActor* GetCombatTarget() const;
 };

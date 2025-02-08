@@ -64,6 +64,8 @@ public:
 	FGameplayTag Attributes_Resistance_Arcane;
 	FGameplayTag Attributes_Resistance_Physical;
 
+	FGameplayTag Abilities_Attack;
+
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
 
 	FGameplayTag Effects_HitReact;
