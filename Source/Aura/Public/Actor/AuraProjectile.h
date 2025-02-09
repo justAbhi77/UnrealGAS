@@ -58,4 +58,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(allowPrivateAccess = "true"))
+	bool bFriendlyFire = true;
 };

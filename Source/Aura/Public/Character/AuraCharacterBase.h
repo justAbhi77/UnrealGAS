@@ -55,7 +55,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	// Skeletal mesh component for the character's weapon
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 	// Name of the socket where the weapon is attached
