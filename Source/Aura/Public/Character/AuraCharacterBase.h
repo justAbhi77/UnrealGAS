@@ -37,10 +37,19 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
 
+	virtual bool IsDead_Implementation() const override;
+
+	virtual AActor* GetAvatar_Implementation() override;
+
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+
 #if WITH_EDITOR
 	// Handles property changes in the editor.
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TArray<FTaggedMontage> AttackMontages;
 
 protected:
 	virtual void BeginPlay() override;
@@ -56,6 +65,12 @@ protected:
 	// Socket name for the tip of the weapon
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName LeftHandSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName RightHandSocketName;
 
 	// Ability System Component responsible for managing abilities
 	UPROPERTY()
@@ -87,7 +102,7 @@ protected:
 	void AddCharacterAbilities();
 
 	// Return the location of the weapon tip socket
-	virtual FVector GetCombatSocketLocation_Implementation() override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 
 	// Dissolve Effects
 	void Dissolve();
@@ -111,4 +126,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	bool bDead = false;
 };

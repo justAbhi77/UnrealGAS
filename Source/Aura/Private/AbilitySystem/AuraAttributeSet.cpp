@@ -171,8 +171,15 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
 	if(Props.SourceCharacter != Props.TargetCharacter)
+	{
 		if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->Controller))
+		{
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
+			return;
+		}
+		if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.TargetCharacter->Controller))
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
+	}
 
 	const FString print = FString::Printf(TEXT("blocked: %hs critical: %hs"), bBlockedHit? "true" : "false", bCriticalHit? "true" : "false");
 	UKismetSystemLibrary::PrintString(this, print);
