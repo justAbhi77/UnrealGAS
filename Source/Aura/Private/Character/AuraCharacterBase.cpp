@@ -3,6 +3,7 @@
 
 #include "Character/AuraCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Aura/Aura.h"
@@ -39,8 +40,25 @@ void AAuraCharacterBase::Die()
 	MulticastHandleDeath();
 }
 
+bool AAuraCharacterBase::IsDead_Implementation() const
+{
+	return bDead;
+}
+
+AActor* AAuraCharacterBase::GetAvatar_Implementation()
+{
+	return this;
+}
+
+TArray<FTaggedMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
 void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 {
+	bDead = true;
+
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
@@ -60,6 +78,7 @@ void AAuraCharacterBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
+	// TODO: do not use SetupAttachment here (refer SceneComponent.h line 1872)
 	// Update weapon attachment if the socket name is modified
 	FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
 	if(PropertyName == GET_MEMBER_NAME_CHECKED(AAuraCharacterBase, WeaponSocket))
@@ -73,10 +92,19 @@ void AAuraCharacterBase::BeginPlay()
 	Super::BeginPlay();
 }
 
-FVector AAuraCharacterBase::GetCombatSocketLocation()
+FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	check(Weapon);
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+
+	if(MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon) && IsValid(Weapon))
+		return Weapon->GetSocketLocation(WeaponTipSocketName);
+
+	if(MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LeftHand))
+		return GetMesh()->GetSocketLocation(LeftHandSocketName);
+
+	if(MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RightHand))
+		return GetMesh()->GetSocketLocation(RightHandSocketName);
+	return FVector();
 }
 
 void AAuraCharacterBase::Dissolve()
