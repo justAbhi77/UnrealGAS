@@ -75,9 +75,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	RegisterTag(GameplayTags.Abilities_Attack, "Abilities.Attack", "Attack Ability Tag");
 
-	RegisterTag(GameplayTags.Montage_Attack_Weapon, "Montage.Attack.Weapon", "Weapon");
-	RegisterTag(GameplayTags.Montage_Attack_RightHand, "Montage.Attack.RightHand", "Right Hand");
-	RegisterTag(GameplayTags.Montage_Attack_LeftHand, "Montage.Attack.LeftHand", "Left Hand");
+	RegisterTag(GameplayTags.CombatSocket_Weapon, "CombatSocket.Weapon", "Weapon");
+	RegisterTag(GameplayTags.CombatSocket_RightHand, "CombatSocket.RightHand", "Right Hand");
+	RegisterTag(GameplayTags.CombatSocket_LeftHand, "CombatSocket.LeftHand", "Left Hand");
+
+	RegisterTag(GameplayTags.Montage_Attack_1, "Montage.Attack.1","Attack 1");
+	RegisterTag(GameplayTags.Montage_Attack_2, "Montage.Attack.2","Attack 2");
+	RegisterTag(GameplayTags.Montage_Attack_3, "Montage.Attack.3","Attack 3");
+	RegisterTag(GameplayTags.Montage_Attack_4, "Montage.Attack.4","Attack 4");
 
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Arcane, GameplayTags.Attributes_Resistance_Arcane);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lighting, GameplayTags.Attributes_Resistance_Lighting);
