@@ -7,6 +7,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Aura/Aura.h"
+#include "Kismet/GameplayStatics.h"
 
 AAuraCharacterBase::AAuraCharacterBase()
 {
@@ -62,11 +63,9 @@ UNiagaraSystem* AAuraCharacterBase::GetBloodEffect_Implementation()
 
 FTaggedMontage AAuraCharacterBase::GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag)
 {
-	for (FTaggedMontage TaggedMontage : AttackMontages)
-	{
-		if (TaggedMontage.MontageTag == MontageTag)
+	for(FTaggedMontage TaggedMontage : AttackMontages)
+		if(TaggedMontage.MontageTag == MontageTag)
 			return TaggedMontage;
-	}
 	return FTaggedMontage();
 }
 
@@ -97,10 +96,11 @@ void AAuraCharacterBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 
 	// TODO: do not use SetupAttachment here (refer SceneComponent.h line 1872)
 	// Update weapon attachment if the socket name is modified
-	FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+	const FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
 	if(PropertyName == GET_MEMBER_NAME_CHECKED(AAuraCharacterBase, WeaponSocket))
 		if(Weapon && GetMesh())
-			Weapon->SetupAttachment(GetMesh(), FName(WeaponSocket));
+			Weapon->AttachToComponent(GetMesh(),
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false), FName(WeaponSocket));
 }
 #endif
 
@@ -146,15 +146,15 @@ void AAuraCharacterBase::InitAbilityActorInfo()
 
 void AAuraCharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, const float Level) const
 {
+	UAbilitySystemComponent* Target = GetAbilitySystemComponent();
 	// Ensure valid components and effect class
-	check(IsValid(GetAbilitySystemComponent()));
-	check(GameplayEffectClass);
+	if(!IsValid(Target) || !GameplayEffectClass) return;
 
 	// Create and apply the gameplay effect
-	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectContextHandle ContextHandle = Target->MakeEffectContext();
 	ContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
-	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
+	const FGameplayEffectSpecHandle SpecHandle = Target->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
+	Target->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), Target);
 }
 
 void AAuraCharacterBase::InitializeDefaultAttributes() const

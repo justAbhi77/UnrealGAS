@@ -10,37 +10,31 @@
 class UAbilitySystemComponent;
 class UGameplayEffect;
 
-/**
- * Policy for applying effects
- */
+// Defines when effects should be applied
 UENUM(BlueprintType)
 enum class EEffectApplicationPolicy
 {
-	ApplyOnOverlap,	// Apply effect on overlap
-	ApplyOnEndOverlap,	// Apply effect on end overlap
-	DoNotApply	// Do not apply effect
+	ApplyOnOverlap, // Effect applied when overlapping starts
+	ApplyOnEndOverlap, // Effect applied when overlap ends
+	DoNotApply // Effect not applied
 };
 
-/**
- * Policy for removing effects
- */
+// Defines when effects should be removed
 UENUM(BlueprintType)
 enum class EEffectRemovalPolicy
 {
-	RemoveOnEndOverlap,	// Remove effect on end overlap
-	DoNotRemove	// Do not remove effect
+	RemoveOnEndOverlap, // Effect removed when overlap ends
+	DoNotRemove // Effect not removed
 };
 
-/**
- * Struct defining an effect to apply
- */
+// Struct defining an effect with its application and removal policies
 USTRUCT(BlueprintType)
 struct FEffectToApply
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> GameplayEffectClass;	// Effect class to apply
+	TSubclassOf<UGameplayEffect> GameplayEffectClass; // Effect class to apply
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EEffectApplicationPolicy EffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
@@ -63,38 +57,41 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	// Effect application settings
+	// Determines if the actor should be destroyed after applying or removing an effect
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
 	bool bDestroyOnEffectApplication = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
 	bool bDestroyOnEffectRemoval = true;
 
+	// If true, effects will also apply to enemies
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
-	bool bApplyEffectsToEnemies  = false;
+	bool bApplyEffectsToEnemies = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
+	// Level scaling for applied effects
+	UPROPERTY(EditAnywhere, Category="Applied Effects")
 	float ActorLevel = 1.f;
 
-	UPROPERTY(EditAnywhere, Category = "Applied Effects")
+	// List of effects to apply
+	UPROPERTY(EditAnywhere, Category="Applied Effects")
 	TArray<FEffectToApply> EffectsToApply;
 
+	// Map storing active effect handles associated with ability system components
 	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 
-	// Apply an effect to a target actor
+	// Applies an effect to a target actor
 	UFUNCTION(BlueprintCallable)
-	void ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass,
-		EEffectRemovalPolicy RemovalPolicy = EEffectRemovalPolicy::DoNotRemove);
+	void ApplyEffectToTarget(AActor* TargetActor, const TSubclassOf<UGameplayEffect> GameplayEffectClass, EEffectRemovalPolicy RemovalPolicy = EEffectRemovalPolicy::DoNotRemove);
 
-	// Remove all applied effects from a target actor
+	// Removes all applied effects from a target actor
 	UFUNCTION()
 	void RemoveEffectsFromTarget(AActor* TargetActor);
 
-	// Handle overlap with another actor
+	// Handles actor overlap events
 	UFUNCTION(BlueprintCallable)
 	void OnOverlap(AActor* TargetActor);
 
-	// Handle end of overlap with another actor
+	// Handles actor end-overlap events
 	UFUNCTION(BlueprintCallable)
 	void OnEndOverlap(AActor* TargetActor);
 

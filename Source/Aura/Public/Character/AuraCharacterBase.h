@@ -71,9 +71,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName;
 
+	// Name of the socket where the Left hand is
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName LeftHandSocketName;
 
+	// Name of the socket where the right hand is
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName RightHandSocketName;
 

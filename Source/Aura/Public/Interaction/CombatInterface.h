@@ -9,21 +9,29 @@
 
 class UAnimMontage;
 class UNiagaraSystem;
+class USoundBase;
 
+/**
+ * Struct representing an attack montage with associated tags and effects.
+ */
 USTRUCT(BlueprintType)
 struct FTaggedMontage
 {
 	GENERATED_BODY()
 
+	// Animation montage for the attack
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UAnimMontage* Montage = nullptr;
 
+	// Tag associated with this montage (e.g., light attack, heavy attack)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag MontageTag;
 
+	// Tag representing the socket used for this attack
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag SocketTag;
 
+	// Sound effect played upon impact
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	USoundBase* ImpactSound = nullptr;
 };
@@ -39,42 +47,51 @@ class UCombatInterface : public UInterface
 };
 
 /**
- * Interface class that defines the combat-related functions.
+ * Interface defining combat-related functions for actors.
  */
 class AURA_API ICombatInterface
 {
 	GENERATED_BODY()
 
 public:
-	virtual int32 GetPlayerLevel();
+	// Returns the player's level. Defaults to 0.
+	virtual int32 GetPlayerLevel() const;
 
 	/**
-	 * Retrieves a location on weapon. 
+	 * Retrieves the socket location on the weapon based on the montage tag.
 	 * @return A FVector representing the socket location. Defaults to ZeroVector.
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FVector GetCombatSocketLocation(const FGameplayTag& MontageTag);
 
+	// Updates the actor's facing direction based on the target position.
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void UpdateFacingTarget(const FVector& Target);
 
+	// Returns the montage played when the actor gets hit.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAnimMontage* GetHitReactMontage();
 
+	// Check if the actor is dead.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool IsDead() const;
 
+	// Returns the actor's avatar.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	AActor* GetAvatar();
 
+	// Handles the death logic for the actor.
 	virtual void Die() = 0;
 
+	// Returns a list of attack montages available to the actor.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	TArray<FTaggedMontage> GetAttackMontages();
 
+	// Returns the blood effect used when the actor takes damage.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UNiagaraSystem* GetBloodEffect();
 
+	// Retrieves an attack montage based on its tag.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FTaggedMontage GetTaggedMontageByTag(const FGameplayTag& MontageTag);
 };

@@ -15,39 +15,40 @@ UAuraAttributeSet::UAuraAttributeSet()
 {
 	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 
-	// Primary Attributes
-	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Resilience, GetResilienceAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Primary_Vigor, GetVigorAttribute);
+	// Initialize Primary Attributes
+	TagsToAttributes = {
+		{GameplayTags.Attributes_Primary_Strength, GetStrengthAttribute},
+		{GameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute},
+		{GameplayTags.Attributes_Primary_Resilience, GetResilienceAttribute},
+		{GameplayTags.Attributes_Primary_Vigor, GetVigorAttribute},
 
-	// Secondary Attributes
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ArmorPenetration, GetArmorPenetrationAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_BlockChance, GetBlockChanceAttribute);	
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitChance, GetCriticalHitChanceAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance, GetCriticalHitResistanceAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage, GetCriticalHitDamageAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_HealthRegeneration, GetHealthRegenerationAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
+		// Initialize Secondary Attributes
+		{GameplayTags.Attributes_Secondary_Armor, GetArmorAttribute},
+		{GameplayTags.Attributes_Secondary_ArmorPenetration, GetArmorPenetrationAttribute},
+		{GameplayTags.Attributes_Secondary_BlockChance, GetBlockChanceAttribute},
+		{GameplayTags.Attributes_Secondary_CriticalHitChance, GetCriticalHitChanceAttribute},
+		{GameplayTags.Attributes_Secondary_CriticalHitResistance, GetCriticalHitResistanceAttribute},
+		{GameplayTags.Attributes_Secondary_CriticalHitDamage, GetCriticalHitDamageAttribute},
+		{GameplayTags.Attributes_Secondary_HealthRegeneration, GetHealthRegenerationAttribute},
+		{GameplayTags.Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute},
+		{GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute},
+		{GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute},
 
-	// Resistances Attributes
-	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Arcane, GetArcaneResistanceAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Fire, GetFireResistanceAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Lighting, GetLightingResistanceAttribute);
-	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Physical, GetPhysicalResistanceAttribute);
+		// Initialize Resistance Attributes
+		{GameplayTags.Attributes_Resistance_Arcane, GetArcaneResistanceAttribute},
+		{GameplayTags.Attributes_Resistance_Fire, GetFireResistanceAttribute},
+		{GameplayTags.Attributes_Resistance_Lighting, GetLightningResistanceAttribute},
+		{GameplayTags.Attributes_Resistance_Physical, GetPhysicalResistanceAttribute}
+	};
 }
 
-void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	// Macro to simplify replication declaration
 	#define REGISTER_REPLICATED_ATTRIBUTE(Attribute) \
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Attribute, COND_None, REPNOTIFY_Always)
-
 
 	// Primary Attributes
 	REGISTER_REPLICATED_ATTRIBUTE(Strength);
@@ -74,7 +75,7 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	// Resistance Attributes
 	REGISTER_REPLICATED_ATTRIBUTE(ArcaneResistance);
 	REGISTER_REPLICATED_ATTRIBUTE(FireResistance);
-	REGISTER_REPLICATED_ATTRIBUTE(LightingResistance);
+	REGISTER_REPLICATED_ATTRIBUTE(LightningResistance);
 	REGISTER_REPLICATED_ATTRIBUTE(PhysicalResistance);
 }
 
@@ -82,12 +83,10 @@ void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
-	// Clamp health and mana attributes to their respective maximum values
-	if(Attribute == GetHealthAttribute())
-		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	// Clamp health and mana attributes before applying changes
+	if(Attribute == GetHealthAttribute()) NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
 
-	if(Attribute == GetManaAttribute())
-		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
+	if(Attribute == GetManaAttribute()) NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
 }
 
 void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -97,18 +96,17 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	FEffectProperties Props;
 	SetEffectProperties(Data, Props);
 
-	// Clamp health and mana attributes after gameplay effects
+	// Clamp health and mana attributes after effects
 	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
-
-		UE_LOG(LogTemp, Warning, TEXT("Changed Health on %s, Health: %f"),
-			*Props.TargetAvatarActor->GetName(), GetHealth());
+		UE_LOG(LogTemp, Warning, TEXT("Changed Health on %s, Health: %f"), *Props.TargetAvatarActor->GetName(), GetHealth());
 	}
 
 	if(Data.EvaluatedData.Attribute == GetManaAttribute())
 		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
 
+	// Handle incoming damage
 	if(Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		const float LocalIncomingDamage = GetIncomingDamage();
@@ -118,7 +116,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			const float NewHealth = FMath::Clamp(GetHealth() - LocalIncomingDamage, 0.f, GetMaxHealth());
 			SetHealth(NewHealth);
 
-			if(const bool bFatal = NewHealth <= 0.f)
+			if(NewHealth <= 0.f)
 			{
 				if(ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
 					CombatInterface->Die();
@@ -150,14 +148,15 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 	{
 		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
 		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get();
+
 		if(!Props.SourceController && Props.SourceAvatarActor)
-		{
 			if(const APawn* Pawn = Cast<APawn>(Props.SourceAvatarActor))
 				Props.SourceController = Pawn->GetController();
-		}
+
 		if(Props.SourceController)
 			Props.SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
 	}
+
 	if(Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 	{
 		Props.TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
@@ -181,6 +180,6 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float D
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 	}
 
-	const FString print = FString::Printf(TEXT("blocked: %hs critical: %hs"), bBlockedHit? "true" : "false", bCriticalHit? "true" : "false");
-	UKismetSystemLibrary::PrintString(this, print);
+	const FString PrintMessage = FString::Printf(TEXT("blocked: %hs critical: %hs"), bBlockedHit? "true" : "false", bCriticalHit? "true" : "false");
+	UKismetSystemLibrary::PrintString(this, PrintMessage);
 }

@@ -52,7 +52,7 @@ void AAuraPlayerController::CursorTrace()
 	LastActor = ThisActor;
 	ThisActor = CursorHit.GetActor();
 
-	// Manage highlighting and unhighlighting of actors
+	// Handle actor highlighting
 	if(LastActor != ThisActor)
 	{
 		if(LastActor) LastActor->UnHighlightActor();
@@ -113,17 +113,14 @@ void AAuraPlayerController::AutoRun()
 
 	if(APawn* ControlledPawn = GetPawn())
 	{
-		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(
-			ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
-
-		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(
-			LocationOnSpline, ESplineCoordinateSpace::World);
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
 
 		ControlledPawn->AddMovementInput(Direction);
 
 		// ReSharper disable once CppTooWideScopeInitStatement
-		const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
-		if(DistanceToDestination <= AutoRunAcceptanceRadius)
+		const float DistanceToDestination = FVector::Dist(LocationOnSpline, CachedDestination);
+		if(FMath::IsNearlyZero(DistanceToDestination, AutoRunAcceptanceRadius))
 			bAutoRunning = false;
 	}
 }
@@ -132,49 +129,42 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	if(InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		bTargeting = ThisActor ? true : false;
+		bTargeting = ThisActor != nullptr;
 		bAutoRunning = false;
 	}
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
-	{
-		// If the input tag is not matched, release the ability input tag and return early.
-		if(GetASC())
-			GetASC()->AbilityInputTagReleased(InputTag);
+	if(GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
+	
+	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB)) return;
 
-		return;
-	}
-
-	if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
-
-	if (!bTargeting && !bShiftKeyDown)
+	if(!bTargeting && !bShiftKeyDown)
 	{
 		// If not targeting, get the controlled pawn and process the pathfinding logic.
-		const APawn* ControlledPawn = GetPawn();
-		if(ControlledPawn && FollowTime <= ShortPressThreshold)
-		{
-			// Find a path to the cached destination using the navigation system.
-			if(UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(
-				this, ControlledPawn->GetActorLocation(), CachedDestination))
+		if(const APawn* ControlledPawn = GetPawn())
+			if(ControlledPawn && FollowTime <= ShortPressThreshold)
 			{
-				// Clear the current spline path and rebuild it using the calculated navigation path.
-				Spline->ClearSplinePoints();
-				for(const auto& PointLoc : NavPath->PathPoints)
-					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+				// Find a path to the cached destination using the navigation system.
+				if(UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(
+					this, ControlledPawn->GetActorLocation(), CachedDestination))
+				{
+					// Clear the current spline path and rebuild it using the calculated navigation path.
+					Spline->ClearSplinePoints();
+					for(const auto& PointLoc : NavPath->PathPoints)
+						Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
 
-				// Ensure the last point on the path is the one the character should move towards,
-				// in case the destination point is unreachable due to nav mesh modifiers(blocking vol, etc.).
-				if(!NavPath->PathPoints.IsEmpty())
-					CachedDestination = NavPath->PathPoints.Last();
+					// Ensure the last point on the path is the one the character should move towards,
+					// in case the destination point is unreachable due to nav mesh modifiers(blocking vol, etc.).
+					if(!NavPath->PathPoints.IsEmpty())
+						CachedDestination = NavPath->PathPoints.Last();
 
-				bAutoRunning = NavPath->PathPoints.Num() != 0; // Mark the character for auto-running.
+					bAutoRunning = !NavPath->PathPoints.IsEmpty(); // Mark the character for auto-running.
+				}
 			}
-		}
 
-		// Reset data since input released 
+		// Reset data since input released
 		FollowTime = 0.f;
 		bTargeting = false;
 	}
@@ -184,18 +174,13 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		// If input tag does not match, hold the ability input tag and return early.
-		if(GetASC())
-			GetASC()->AbilityInputTagHeld(InputTag);
-
+		if(GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
 		return;
 	}
 
 	if(bTargeting || bShiftKeyDown)
 	{
-		// If targeting is active, continue holding the input tag.
-		if(GetASC())
-			GetASC()->AbilityInputTagHeld(InputTag);
+		if(GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
 	}
 	else
 	{
@@ -203,7 +188,6 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		FollowTime += GetWorld()->GetDeltaSeconds();
 
 		// If a blocking hit occurred during the trace, update the cached destination with the hit location.
-		// ReSharper disable once CppTooWideScopeInitStatement
 		if(CursorHit.bBlockingHit)
 			CachedDestination = CursorHit.Location; // Alternatively, ImpactPoint can be used if the trace method differs (e.g., sphere trace).
 
@@ -219,8 +203,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 {
 	if(!AuraAbilitySystemComponent)
-		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(
-			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
 	return AuraAbilitySystemComponent;
 }
 
@@ -228,7 +211,7 @@ void AAuraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	check(AuraContext);
+	if(!AuraContext) return;
 
 	if(UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 		Subsystem->AddMappingContext(AuraContext, 0);

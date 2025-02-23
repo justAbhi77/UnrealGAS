@@ -10,8 +10,8 @@ class AAuraProjectile;
 class UGameplayEffect;
 
 /**
- * Gameplay Ability class for casting a projectile-based spell.
- * Adds functionality for spawning projectiles.
+ * Extends UAuraDamageGameplayAbility to implement projectile-based spell abilities.
+ * Handles projectile spawning and applies damage effects dynamically.
  */
 UCLASS()
 class AURA_API UAuraProjectileSpell : public UAuraDamageGameplayAbility
@@ -19,16 +19,11 @@ class AURA_API UAuraProjectileSpell : public UAuraDamageGameplayAbility
 	GENERATED_BODY()
 
 protected:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
-	// Class of the projectile to spawn.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	// The class of projectile that this ability spawns.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Projectile")
 	TSubclassOf<AAuraProjectile> ProjectileClass;
 
-	/**
-	 * Spawns a projectile when an event is received blueprint side(anim montages, etc.)
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Projectile")
+	// Spawns a projectile at the weapon socket location and sets its properties.
+	UFUNCTION(BlueprintCallable, Category="Projectile")
 	void SpawnProjectile(const FVector& ProjectileTargetLocation);
 };

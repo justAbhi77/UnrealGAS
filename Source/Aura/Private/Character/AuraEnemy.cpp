@@ -17,7 +17,7 @@ AAuraEnemy::AAuraEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Ensure the enemy mesh blocks visibility tracing for highlighting purposes
+	// Ensure enemy mesh blocks visibility tracing for highlighting
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 	// Initialize Ability System Component
@@ -43,13 +43,18 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	if(!HasAuthority()) return;
+
+	// Assign AI controller and initialize behavior tree
 	AuraAIController = Cast<AAuraAiController>(NewController);
-	AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-	AuraAIController->RunBehaviorTree(BehaviorTree);
-	
-	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
-	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"),
-		CharacterClass != ECharacterClass::Warrior);
+	if(AuraAIController && BehaviorTree)
+	{
+		UBlackboardComponent* BlackboardComp = AuraAIController->GetBlackboardComponent();
+		BlackboardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+		AuraAIController->RunBehaviorTree(BehaviorTree);
+
+		BlackboardComp->SetValueAsBool(FName("HitReacting"), false);
+		BlackboardComp->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
+	}
 }
 
 void AAuraEnemy::BeginPlay()
@@ -59,31 +64,25 @@ void AAuraEnemy::BeginPlay()
 
 	// Set custom depth stencil values for highlighting
 	GetMesh()->SetCustomDepthStencilValue(HighlightValue);
-	if(Weapon)
-		Weapon->SetCustomDepthStencilValue(HighlightValue);
+	if(Weapon) Weapon->SetCustomDepthStencilValue(HighlightValue);
 
-	// Initialize ability system info
+	// Initialize ability system
 	InitAbilityActorInfo();
 
 	if(HasAuthority())
 		UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
 
-	if(UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
+	// Setup UI widget and attribute change delegates
+	if(auto* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
 		AuraUserWidget->SetWidgetController(this);
 
 	if(const UAuraAttributeSet* AuraAS = Cast<UAuraAttributeSet>(AttributeSet))
 	{
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnHealthChanged.Broadcast(Data.NewValue);
-			});
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute()).
+			AddLambda([this](const FOnAttributeChangeData& Data) { OnHealthChanged.Broadcast(Data.NewValue); });
 
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetMaxHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnMaxHealthChanged.Broadcast(Data.NewValue);
-			});
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetMaxHealthAttribute())
+			.AddLambda([this](const FOnAttributeChangeData& Data) { OnMaxHealthChanged.Broadcast(Data.NewValue); });
 
 		AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact,
 			EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AAuraEnemy::HitReactTagChanged);
@@ -98,12 +97,13 @@ void AAuraEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEv
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+	const FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
 
 	// Update weapon attachment if the weapon socket name changes in the editor
 	if(PropertyName == GET_MEMBER_NAME_CHECKED(AAuraEnemy, WeaponSocket))
 		if(Weapon && GetMesh())
-			Weapon->SetupAttachment(GetMesh(), FName(WeaponSocket));
+			Weapon->AttachToComponent(GetMesh(),
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false), FName(WeaponSocket));
 }
 #endif
 
@@ -111,16 +111,14 @@ void AAuraEnemy::HighlightActor()
 {
 	// Enable custom depth rendering for mesh and weapon
 	GetMesh()->SetRenderCustomDepth(true);
-	if(Weapon)
-		Weapon->SetRenderCustomDepth(true);
+	if(Weapon) Weapon->SetRenderCustomDepth(true);
 }
 
 void AAuraEnemy::UnHighlightActor()
 {
 	// Disable custom depth rendering for mesh and weapon
 	GetMesh()->SetRenderCustomDepth(false);
-	if(Weapon)
-		Weapon->SetRenderCustomDepth(false);
+	if(Weapon) Weapon->SetRenderCustomDepth(false);
 }
 
 void AAuraEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
@@ -133,7 +131,7 @@ AActor* AAuraEnemy::GetCombatTarget_Implementation() const
 	return CombatTarget;
 }
 
-int32 AAuraEnemy::GetPlayerLevel()
+int32 AAuraEnemy::GetPlayerLevel() const
 {
 	return Level;
 }
@@ -142,11 +140,10 @@ void AAuraEnemy::InitAbilityActorInfo()
 {
 	Super::InitAbilityActorInfo();
 
-	// Initialize ability system actor info for this enemy
+	// Initialize ability system for this enemy
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-
-	if(auto* AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
-		AuraAbilitySystemComponent->AbilityActorInfoSet();
+	if(auto* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+		AuraASC->AbilityActorInfoSet();
 
 	if(HasAuthority())
 		InitializeDefaultAttributes();
@@ -181,6 +178,7 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 
-	if(AuraAIController && AuraAIController->GetBlackboardComponent())
-		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
+	if(AuraAIController)
+		if(UBlackboardComponent* BlackboardComponent = AuraAIController->GetBlackboardComponent())
+			BlackboardComponent->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }

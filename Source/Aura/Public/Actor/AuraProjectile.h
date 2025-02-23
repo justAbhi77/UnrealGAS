@@ -10,9 +10,11 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 class UNiagaraSystem;
+class UAudioComponent;
+class USoundBase;
 
 /**
- * AuraProjectile - A basic projectile actor with sphere collision and projectile movement.
+ * A projectile actor with collision, movement, and impact effects.
  */
 UCLASS()
 class AURA_API AAuraProjectile : public AActor
@@ -22,11 +24,12 @@ class AURA_API AAuraProjectile : public AActor
 public:
 	AAuraProjectile();
 
-	// Projectile movement component to handle movement physics
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	// Projectile movement component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
-	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
+	// Gameplay effect applied on hit
+	UPROPERTY(BlueprintReadWrite, meta=(ExposeOnSpawn=true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 
 protected:
@@ -34,17 +37,21 @@ protected:
 
 	virtual void Destroyed() override;
 
+	// Handles collision overlap
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
+	// Handles impact effects and sound
+	void HandleImpact();
+
 	UPROPERTY(EditDefaultsOnly)
 	float LifeSpan = 15.f;
 
 	bool bHit = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta=(AllowPrivateAccess="true"))
 	TObjectPtr<USphereComponent> Sphere;
 
 	UPROPERTY(EditAnywhere)
@@ -59,6 +66,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(allowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	bool bFriendlyFire = true;
 };

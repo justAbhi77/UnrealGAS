@@ -14,15 +14,3 @@ AAuraAiController::AAuraAiController()
 
 	BehaviorTreeComp = CreateDefaultSubobject<UBehaviorTreeComponent>("BehaviorTreeComponent");
 }
-
-void AAuraAiController::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-void AAuraAiController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-

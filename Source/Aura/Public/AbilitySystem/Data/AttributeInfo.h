@@ -41,9 +41,7 @@ class AURA_API UAttributeInfo : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	/**
-	* Finds and returns attribute information corresponding to the specified gameplay tag.
-	*/
+	// Finds and returns attribute information corresponding to the specified gameplay tag.
 	FAuraAttributeInfo FindAttributeInfoForTag(const FGameplayTag& AttributeTag, bool bLogNotFound = false) const;
 
 	// Array storing all attribute information for this data asset.

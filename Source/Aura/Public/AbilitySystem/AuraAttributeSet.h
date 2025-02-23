@@ -15,7 +15,7 @@
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 /**
- * Macro to generate Attribute (let compiler do the heavy lifting :)). Can not be used as a macro.
+ * Macro to generate Attribute (let compiler do the heavy lifting :)). Can not be used as a macro in unreal.
  * Use this for copying the preview and delete $ sign.
  */
 #define ATTRIBUTE_PROPERTY(PropertyName) \
@@ -42,24 +42,18 @@ struct FEffectProperties
 	FGameplayEffectContextHandle EffectContextHandle;
 
 	UPROPERTY() UAbilitySystemComponent* SourceASC;
-
 	UPROPERTY() AActor* SourceAvatarActor;
-
 	UPROPERTY() AController* SourceController;
-
 	UPROPERTY() ACharacter* SourceCharacter;
-
 	UPROPERTY() UAbilitySystemComponent* TargetASC;
-
 	UPROPERTY() AActor* TargetAvatarActor;
-
 	UPROPERTY() AController* TargetController;
-
 	UPROPERTY() ACharacter* TargetCharacter;
 };
 
 // typedef is specific to the FGameplayAttribute() signature, but TStaticFunPtr is generic to any signature chosen
-//typedef TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr FAttributeFuncPtr;
+// typedef TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr FAttributeFuncPtr;
+// Template alias for static function pointer type
 template<class T>
 using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 
@@ -71,13 +65,15 @@ class AURA_API UAuraAttributeSet : public UAttributeSet
 public:
 	UAuraAttributeSet();
 
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	// Called before an attribute changes
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
+	// Called after a gameplay effect is executed
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
-	// Map to store gameplay tags and their respective attributes
+	// Map storing gameplay tags linked to attributes
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
 
 	// Primary Attributes
@@ -89,7 +85,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Primary Attributes")
 	FGameplayAttributeData Intelligence;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Intelligence);
+	ATTRIBUTE_ACCESSORS(ThisClass, Intelligence);
 
 	UFUNCTION() void OnRep_Intelligence(const FGameplayAttributeData& OldValue) const { GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Intelligence, OldValue); }
 
@@ -101,7 +97,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Primary Attributes")
 	FGameplayAttributeData Vigor;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Vigor);
+	ATTRIBUTE_ACCESSORS(ThisClass, Vigor);
 
 	UFUNCTION() void OnRep_Vigor(const FGameplayAttributeData& OldValue) const { GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Vigor, OldValue); }
 
@@ -172,30 +168,30 @@ public:
 	ATTRIBUTE_ACCESSORS(ThisClass, MaxHealth);
 
 	UFUNCTION() void OnRep_MaxHealth(const FGameplayAttributeData& OldValue) const { GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MaxHealth, OldValue); }
-	
+
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Vital Attributes")
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(ThisClass, MaxMana);
 
 	UFUNCTION() void OnRep_MaxMana(const FGameplayAttributeData& OldValue) const { GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MaxMana, OldValue); }
 
-	// Meta Attribute
-	UPROPERTY(BlueprintReadOnly,Category = "Meta Attributes")
+	// Meta Attributes
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(ThisClass, IncomingDamage);
 
-	// Resistance Attribute
+	// Resistance Attributes
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category = "Resistance Attributes")
 	FGameplayAttributeData FireResistance;
 	ATTRIBUTE_ACCESSORS(ThisClass, FireResistance);
 
 	UFUNCTION() void OnRep_FireResistance(const FGameplayAttributeData& OldValue) const { GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, FireResistance, OldValue); }
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightingResistance, Category = "Resistance Attributes")
-	FGameplayAttributeData LightingResistance;
-	ATTRIBUTE_ACCESSORS(ThisClass, LightingResistance);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData LightningResistance;
+	ATTRIBUTE_ACCESSORS(ThisClass, LightningResistance);
 
-	UFUNCTION() void OnRep_LightingResistance(const FGameplayAttributeData& OldValue) const { GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, LightingResistance, OldValue); }
+	UFUNCTION() void OnRep_LightningResistance(const FGameplayAttributeData& OldValue) const { GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, LightningResistance, OldValue); }
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArcaneResistance, Category = "Resistance Attributes")
 	FGameplayAttributeData ArcaneResistance;

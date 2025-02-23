@@ -27,8 +27,8 @@ public:
 	// Called when PlayerState is replicated to the client
 	virtual void OnRep_PlayerState() override;
 
-	// Combat Interface
-	virtual int32 GetPlayerLevel() override;
+	// Returns the player’s current level
+	virtual int32 GetPlayerLevel() const override;
 
 protected:
 	virtual void BeginPlay() override;

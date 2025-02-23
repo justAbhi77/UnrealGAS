@@ -3,12 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Runtime/AIModule/Classes/AIController.h"
+#include "AIController.h"
 #include "AuraAiController.generated.h"
 
 class UBlackboardComponent;
 class UBehaviorTreeComponent;
 
+/**
+ * AAuraAiController - AI Controller managing blackboard and behavior tree components.
+ */
 UCLASS()
 class AURA_API AAuraAiController : public AAIController
 {
@@ -18,11 +21,7 @@ public:
 	AAuraAiController();
 
 protected:
-	virtual void BeginPlay() override;
-
-	UPROPERTY()
+	// Behavior tree component handling AI logic
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComp;
-
-public:
-	virtual void Tick(float DeltaTime) override;
 };

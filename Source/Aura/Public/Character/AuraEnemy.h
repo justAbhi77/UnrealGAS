@@ -30,20 +30,18 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
-	// Enemy Interface
-	virtual void HighlightActor() override;
-	virtual void UnHighlightActor() override;
-
-	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
-	virtual AActor* GetCombatTarget_Implementation() const override;
-
-	// Combat Interface
-	virtual int32 GetPlayerLevel() override;
-
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Enemy Interface
+	virtual void HighlightActor() override;
+	virtual void UnHighlightActor() override;
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+	virtual AActor* GetCombatTarget_Implementation() const override;
+
+	// Combat Interface
+	virtual int32 GetPlayerLevel() const override;
 	virtual void Die() override;
 
 	UPROPERTY(BlueprintAssignable)
@@ -68,10 +66,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
 	virtual void InitAbilityActorInfo() override;
+	virtual void InitializeDefaultAttributes() const override;
 
-	// The level of this enemy, used for scaling stats or difficulty
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;
 
@@ -81,15 +78,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
-	virtual void InitializeDefaultAttributes() const override;
-
 	UPROPERTY(EditAnywhere, Category = "Ai")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 	UPROPERTY()
 	TObjectPtr<AAuraAiController> AuraAIController;
 private:
-	// Value used to set custom depth stencil for highlighting
+	// Custom Depth Stencil value for highlighting
 	UPROPERTY(EditAnywhere, Category = "Highlighting")
 	int32 HighlightValue = 250;
 };

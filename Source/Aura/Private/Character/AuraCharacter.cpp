@@ -31,37 +31,36 @@ void AAuraCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+	const FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
 
 	if(PropertyName == GET_MEMBER_NAME_CHECKED(AAuraCharacter, WeaponSocket))
 		if(Weapon && GetMesh())
-			Weapon->SetupAttachment(GetMesh(), FName(WeaponSocket));
+			Weapon->AttachToComponent(GetMesh(),
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false), FName(WeaponSocket));
 }
 #endif
 
 void AAuraCharacter::InitAbilityActorInfo()
 {
-	// Retrieve and validate player state
+	// Retrieve player state and ensure it's valid
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
+	if(!AuraPlayerState) return;
 
-	// Initialize Ability System Component with player state and character
+	// Initialize Ability System Component
 	UAbilitySystemComponent* SystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	SystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
 
-	// Update references and notify Ability System Component
-	if(UAuraAbilitySystemComponent* AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(SystemComponent))
-		AuraAbilitySystemComponent->AbilityActorInfoSet();
+	// Notify Ability System Component
+	if(UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(SystemComponent))
+		AuraASC->AbilityActorInfoSet();
 
 	AbilitySystemComponent = SystemComponent;
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 
 	// Initialize HUD overlay
-	if(auto* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
-	{
-		if(auto* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
-			AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
-	}
+	if(auto* AuraPC = Cast<AAuraPlayerController>(GetController()))
+		if(auto* AuraHUD = Cast<AAuraHUD>(AuraPC->GetHUD()))
+			AuraHUD->InitOverlay(AuraPC, AuraPlayerState, AbilitySystemComponent, AttributeSet);
 
 	InitializeDefaultAttributes();
 }
@@ -83,13 +82,13 @@ void AAuraCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
-int32 AAuraCharacter::GetPlayerLevel()
+int32 AAuraCharacter::GetPlayerLevel() const
 {
-	const AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
+	// Retrieve player level from PlayerState
+	if(const AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>())
+		return AuraPlayerState->GetPlayerLevel();
 
-	// Return player level from PlayerState
-	return AuraPlayerState->GetPlayerLevel();
+	return 0;
 }
 
 void AAuraCharacter::BeginPlay()
