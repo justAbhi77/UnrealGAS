@@ -2,6 +2,7 @@
 .vs/
 .idea/
 .vsconfig
+*.code-workspace
 
 # Compiled Object files
 *.slo

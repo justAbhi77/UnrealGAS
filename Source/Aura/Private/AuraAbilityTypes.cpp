@@ -2,7 +2,7 @@
 
 UScriptStruct* FAuraGameplayEffectContext::GetScriptStruct() const
 {
-	return GetScriptStruct();
+	return FAuraGameplayEffectContext::StaticStruct();
 }
 
 FAuraGameplayEffectContext* FAuraGameplayEffectContext::Duplicate() const
