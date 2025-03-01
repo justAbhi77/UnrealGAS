@@ -79,6 +79,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName RightHandSocketName;
 
+	// Name of the socket where the right hand is
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName TailSocketName;
+
 	// Ability System Component responsible for managing abilities
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

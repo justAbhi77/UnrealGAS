@@ -78,6 +78,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.CombatSocket_Weapon, "CombatSocket.Weapon", "Weapon");
 	RegisterTag(GameplayTags.CombatSocket_RightHand, "CombatSocket.RightHand", "Right Hand");
 	RegisterTag(GameplayTags.CombatSocket_LeftHand, "CombatSocket.LeftHand", "Left Hand");
+	RegisterTag(GameplayTags.CombatSocket_Tail, "CombatSocket.Tail", "Tail");
 
 	RegisterTag(GameplayTags.Montage_Attack_1, "Montage.Attack.1","Attack 1");
 	RegisterTag(GameplayTags.Montage_Attack_2, "Montage.Attack.2","Attack 2");

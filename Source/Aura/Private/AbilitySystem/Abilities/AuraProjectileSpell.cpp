@@ -7,7 +7,7 @@
 #include "Interaction/CombatInterface.h"
 #include "Aura/Public/AuraGameplayTags.h"
 
-void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
+void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag)
 {
 	// check for valid data
 	if(!GetAvatarActorFromActorInfo() || !ProjectileClass) return;
@@ -17,7 +17,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 
 	// Get socket location from the combat interface
 	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(),
-		FAuraGameplayTags::Get().CombatSocket_Weapon);
+		SocketTag);
 
 	// Calculate projectile direction
 	const FRotator Rotation = (ProjectileTargetLocation-SocketLocation).Rotation();

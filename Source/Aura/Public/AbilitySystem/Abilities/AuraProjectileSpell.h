@@ -8,6 +8,7 @@
 
 class AAuraProjectile;
 class UGameplayEffect;
+struct FGameplayTag;
 
 /**
  * Extends UAuraDamageGameplayAbility to implement projectile-based spell abilities.
@@ -25,5 +26,5 @@ protected:
 
 	// Spawns a projectile at the weapon socket location and sets its properties.
 	UFUNCTION(BlueprintCallable, Category="Projectile")
-	void SpawnProjectile(const FVector& ProjectileTargetLocation);
+	void SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag);
 };
