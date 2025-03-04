@@ -74,6 +74,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.Attributes_Resistance_Physical, "Attributes.Resistance.Physical", "Resistance to Physical Damage");
 
 	RegisterTag(GameplayTags.Abilities_Attack, "Abilities.Attack", "Attack Ability Tag");
+	RegisterTag(GameplayTags.Abilities_Summon, "Abilities.Summon", "Summon Ability Tag");
 
 	RegisterTag(GameplayTags.CombatSocket_Weapon, "CombatSocket.Weapon", "Weapon");
 	RegisterTag(GameplayTags.CombatSocket_RightHand, "CombatSocket.RightHand", "Right Hand");

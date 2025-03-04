@@ -48,6 +48,8 @@ public:
 
 	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 
+	virtual int32 GetMinnonCount_Implementation() override;
+
 #if WITH_EDITOR
 	// Handles property changes in the editor.
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -135,6 +137,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	USoundBase* DeathSound;
+
+	// Minions
+
+	int32 MinnonCount = 0;
 
 private:
 	// Startup Abilities of the character 

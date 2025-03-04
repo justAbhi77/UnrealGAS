@@ -69,6 +69,11 @@ FTaggedMontage AAuraCharacterBase::GetTaggedMontageByTag_Implementation(const FG
 	return FTaggedMontage();
 }
 
+int32 AAuraCharacterBase::GetMinnonCount_Implementation()
+{
+	return MinnonCount;
+}
+
 void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 {
 	bDead = true;
