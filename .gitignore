@@ -4,6 +4,8 @@
 .vscode/
 .vsconfig
 *.code-workspace
+*.clang*
+*.ignore
 
 # Compiled Object files
 *.slo
