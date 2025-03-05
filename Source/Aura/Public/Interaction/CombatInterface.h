@@ -97,4 +97,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	int32 GetMinnonCount();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void IncremenetMinionCount(int32 Amount);
 };

@@ -50,6 +50,8 @@ public:
 
 	virtual int32 GetMinnonCount_Implementation() override;
 
+	virtual void IncremenetMinionCount_Implementation(int32 Amount) override;
+
 #if WITH_EDITOR
 	// Handles property changes in the editor.
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

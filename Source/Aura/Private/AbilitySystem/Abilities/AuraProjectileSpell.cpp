@@ -7,7 +7,7 @@
 #include "Interaction/CombatInterface.h"
 #include "Aura/Public/AuraGameplayTags.h"
 
-void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag)
+void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag, bool bOverridePitch, float PitchOverride)
 {
 	// check for valid data
 	if(!GetAvatarActorFromActorInfo() || !ProjectileClass) return;
@@ -20,7 +20,9 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		SocketTag);
 
 	// Calculate projectile direction
-	const FRotator Rotation = (ProjectileTargetLocation-SocketLocation).Rotation();
+	FRotator Rotation = (ProjectileTargetLocation-SocketLocation).Rotation();
+	if(bOverridePitch)
+		Rotation.Pitch = PitchOverride;
 	FTransform SpawnTransform(Rotation, SocketLocation);
 
 	// Spawn the projectile using deferred spawning for better setup control

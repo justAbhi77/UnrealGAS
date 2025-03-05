@@ -74,6 +74,11 @@ int32 AAuraCharacterBase::GetMinnonCount_Implementation()
 	return MinnonCount;
 }
 
+void AAuraCharacterBase::IncremenetMinionCount_Implementation(int32 Amount)
+{
+	MinnonCount += Amount;
+}
+
 void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 {
 	bDead = true;
