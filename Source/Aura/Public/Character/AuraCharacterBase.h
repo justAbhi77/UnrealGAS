@@ -48,9 +48,9 @@ public:
 
 	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 
-	virtual int32 GetMinnonCount_Implementation() override;
+	virtual int32 GetMinionCount_Implementation() override;
 
-	virtual void IncremenetMinionCount_Implementation(int32 Amount) override;
+	virtual void IncrementMinionCount_Implementation(int32 Amount) override;
 
 #if WITH_EDITOR
 	// Handles property changes in the editor.
@@ -142,7 +142,7 @@ protected:
 
 	// Minions
 
-	int32 MinnonCount = 0;
+	int32 MinionCount = 0;
 
 private:
 	// Startup Abilities of the character 
