@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "AuraPlayerController.generated.h"
 
+class AAuraCharacter;
 class UDamageTextComponent;
 class UInputMappingContext;
 class UInputAction;
@@ -46,12 +47,16 @@ private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> ShiftAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ScrollAction;
+
 	bool bShiftKeyDown = false;
 
 	// Input handling
 	void Move(const FInputActionValue& InputActionValue);
 	void ShiftPressed() { bShiftKeyDown = true; }
 	void ShiftReleased() { bShiftKeyDown = false; }
+	void ScrollPressed(const FInputActionValue& InputActionValue);
 
 	// Cursor interaction
 	FHitResult CursorHit;
@@ -90,4 +95,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+
+	UPROPERTY()
+	AAuraCharacter* AuraPawn = nullptr;
 };

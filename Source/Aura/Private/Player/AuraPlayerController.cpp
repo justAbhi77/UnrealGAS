@@ -8,6 +8,7 @@
 #include "AuraGameplayTags.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
+#include "Character/AuraCharacter.h"
 #include "Components/SplineComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/EnemyInterface.h"
@@ -137,7 +138,7 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if(GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
-	
+
 	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB)) return;
 
 	if(!bTargeting && !bShiftKeyDown)
@@ -235,8 +236,11 @@ void AAuraPlayerController::SetupInputComponent()
 	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &ThisClass::ShiftPressed);
 	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &ThisClass::ShiftReleased);
 
+	AuraInputComponent->BindAction(ScrollAction, ETriggerEvent::Started, this, &ThisClass::ScrollPressed);
+
 	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed,
 		&ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -254,4 +258,14 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 		bAutoRunning = false;
 	}
+}
+
+// ReSharper disable once CppMemberFunctionMayBeStatic
+void AAuraPlayerController::ScrollPressed(const FInputActionValue& InputActionValue)
+{
+	const float InputAxisValue = InputActionValue.Get<float>();
+
+	if(!AuraPawn) AuraPawn = GetPawn<AAuraCharacter>();
+	if(AuraPawn)
+		AuraPawn->MoveSpringArm(InputAxisValue);
 }

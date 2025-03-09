@@ -14,6 +14,7 @@ class AURA_API AAuraCharacter : public AAuraCharacterBase
 {
 	GENERATED_BODY()
 
+
 public:
 	AAuraCharacter();
 
@@ -39,4 +40,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(Blueprintable, BlueprintImplementableEvent)
+	void MoveSpringArm(float Value);
 };
