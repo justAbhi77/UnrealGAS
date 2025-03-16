@@ -7,9 +7,12 @@
 #include "AuraAbilitySystemComponent.generated.h"
 
 /**
- * Multicast Delegate for to keep dependencies one way
+ * Multicast Delegate to keep dependencies one way
  */
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FAbilitiesGiven, UAuraAbilitySystemComponent*);
+
+DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
 
 /**
  * Custom Ability System Component for handling Aura-specific gameplay logic.
@@ -26,11 +29,17 @@ public:
 	// Event for tags of applied gameplay effects.
 	FEffectAssetTags EffectAssetTags;
 
+	// Event for successful application of gameplay abilities.
+	FAbilitiesGiven AbilitiesGivenDelegate;
+
 	/**
 	 * Adds abilities to the character and binds them to their input tags.
 	 * @param StartupAbilities List of gameplay abilities to add.
 	 */
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
+
+	// Flag for successful application of gameplay abilities.
+	bool bStartupAbilitiesGiven = false;
 
 	/**
 	 * Handles input held for abilities tied to a specific input tag.
@@ -44,7 +53,15 @@ public:
 	 */
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
+	void ForEachAbility(const FForEachAbility& Delegate);
+
+	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+
 protected:
+
+	virtual void OnRep_ActivateAbilities() override;
+
 	/**
 	 * Handles gameplay effects applied to the owning actor, broadcasting their asset tags.
 	 * Replicated because gameplay effects can only be applied on the server

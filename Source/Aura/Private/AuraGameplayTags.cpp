@@ -75,6 +75,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	RegisterTag(GameplayTags.Abilities_Attack, "Abilities.Attack", "Attack Ability Tag");
 	RegisterTag(GameplayTags.Abilities_Summon, "Abilities.Summon", "Summon Ability Tag");
+	
+	RegisterTag(GameplayTags.Abilities_Fire_FireBolt, "Abilities.Fire.FireBolt", "FireBolt Ability Tag");
+
+	RegisterTag(GameplayTags.Cooldown_Fire_FireBolt, "Cooldown.Fire.FireBolt", "FireBolt Cooldown Tag");
 
 	RegisterTag(GameplayTags.CombatSocket_Weapon, "CombatSocket.Weapon", "Weapon");
 	RegisterTag(GameplayTags.CombatSocket_RightHand, "CombatSocket.RightHand", "Right Hand");

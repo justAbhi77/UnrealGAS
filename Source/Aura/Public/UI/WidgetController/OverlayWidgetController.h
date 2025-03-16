@@ -7,9 +7,13 @@
 #include "OverlayWidgetController.generated.h"
 
 class UAuraUserWidget;
+class UAbilityInfo;
+class UAuraAbilitySystemComponent;
+struct FAuraAbilityInfo;
 
 // Delegate for broadcasting changes in attribute values
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, Info);
 
 // Struct defining UI Widget Row data in a DataTable
 USTRUCT(BlueprintType)
@@ -70,10 +74,16 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
+	FAbilityInfoSignature AbilityInfoDelegate;
+
 protected:
 	// DataTable containing message widget configurations
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
 
 	/**
 	 * Retrieves a row from a DataTable using a GameplayTag as a key.
@@ -83,6 +93,8 @@ protected:
 	 */
 	template<typename T>
 	static T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
+
+	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent);
 };
 
 template <typename T>
