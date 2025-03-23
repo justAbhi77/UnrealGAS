@@ -92,7 +92,7 @@ void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();
 
-	if (!bStartupAbilitiesGiven)
+	if(!bStartupAbilitiesGiven)
 	{
 		bStartupAbilitiesGiven = true;
 		AbilitiesGivenDelegate.Broadcast(this);
