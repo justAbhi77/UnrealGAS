@@ -96,4 +96,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire, GameplayTags.Attributes_Resistance_Fire);
 
 	RegisterTag(GameplayTags.Effects_HitReact, "Effects.HitReact", "Tag granted when Hit Reacting");
+
+	RegisterTag(GameplayTags.Attributes_Meta_IncomingXp, "Attributes.Meta.IncomingXP", "Incoming XP Meta Attribute");
 }

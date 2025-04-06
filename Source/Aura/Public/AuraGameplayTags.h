@@ -84,4 +84,6 @@ public:
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
 
 	FGameplayTag Effects_HitReact;
+
+	FGameplayTag Attributes_Meta_IncomingXp;
 };

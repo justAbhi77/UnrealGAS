@@ -42,6 +42,12 @@ public:
 	bool bStartupAbilitiesGiven = false;
 
 	/**
+	 * Adds Passive abilities to the character.
+	 * @param StartupPassiveAbilities List of passive gameplay abilities to add.
+	 */
+	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities);
+
+	/**
 	 * Handles input held for abilities tied to a specific input tag.
 	 * @param InputTag The tag identifying the input action.
 	 */
