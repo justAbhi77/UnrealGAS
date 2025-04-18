@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "AuraCharacterBase.h"
+#include "Interaction/PlayerInterface.h"
 #include "AuraCharacter.generated.h"
 
 /**
  * Extends AAuraCharacterBase to include player-specific functionality.
  */
 UCLASS()
-class AURA_API AAuraCharacter : public AAuraCharacterBase
+class AURA_API AAuraCharacter : public AAuraCharacterBase, public IPlayerInterface
 {
 	GENERATED_BODY()
 
@@ -30,6 +31,9 @@ public:
 
 	// Returns the player’s current level
 	virtual int32 GetPlayerLevel() const override;
+
+	// 
+	virtual void AddToXp_Implementation(int32 InXp) override;
 
 protected:
 	virtual void BeginPlay() override;

@@ -93,6 +93,13 @@ int32 AAuraCharacter::GetPlayerLevel() const
 	return 0;
 }
 
+void AAuraCharacter::AddToXp_Implementation(int32 InXP)
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+	AuraPlayerState->AddToXP(InXP);
+}
+
 void AAuraCharacter::BeginPlay()
 {
 	Super::BeginPlay();

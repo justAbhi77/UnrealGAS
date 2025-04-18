@@ -141,7 +141,10 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		const float LocalIncomingXp = GetIncomingXp();
 		SetIncomingXp(0);
-		UE_LOG(LogAura, Log, TEXT("Incoming Xp: %f"), LocalIncomingXp);
+
+		//TODO: See if we should level up
+		if (Props.SourceCharacter->Implements<UPlayerInterface>())
+			IPlayerInterface::Execute_AddToXp(Props.SourceCharacter, LocalIncomingXp);
 	}
 }
 
