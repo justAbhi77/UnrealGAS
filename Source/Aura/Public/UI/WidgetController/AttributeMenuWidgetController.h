@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -8,6 +8,7 @@
 
 class UAttributeInfo;
 struct FAuraAttributeInfo;
+struct FGameplayTag;
 
 // Delegate for broadcasting attribute information to UI
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeInfoSignature, const FAuraAttributeInfo&, Info);
@@ -31,6 +32,12 @@ public:
 	// Delegate to notify UI about attribute information updates.
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FAttributeInfoSignature AttributeInfoDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FOnPlayerStatChangedSignature AttributePointsChangedDelegate;
+
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 
 protected:
 	// Reference to the AttributeInfo asset, containing metadata for attributes.

@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 
 
 #include "UI/WidgetController/OverlayWidgetController.h"
@@ -29,6 +29,12 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
 	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXpChanged);
+	AuraPlayerState->OnLevelChangedDelegate.AddLambda(
+		[this](int32 NewLevel)
+		{
+			OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
+		}
+	);
 
 	const UAuraAttributeSet* AuraAttributeSet = CastChecked<UAuraAttributeSet>(AttributeSet);
 
@@ -73,9 +79,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		if(AuraASC->bStartupAbilitiesGiven)
 			OnInitializeStartupAbilities(AuraASC);
 		else
-			AuraASC->AbilitiesGivenDelegate.AddUObject(this, 
+			AuraASC->AbilitiesGivenDelegate.AddUObject(this,
 			&UOverlayWidgetController::OnInitializeStartupAbilities);
-		
+
 		AuraASC->EffectAssetTags.AddLambda(
 			[this](const FGameplayTagContainer& AssetTags)
 			{
@@ -84,9 +90,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 					// For example, say that Tag = Message.HealthPotion
 					// "Message.HealthPotion".MatchesTag("Message") will return True,
 					// "Message".MatchesTag("Message.HealthPotion") will return False
-					// root tag to check for messages to be spawned in ui  
+					// root tag to check for messages to be spawned in ui
 					FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName(Message));
-	
+
 					if(Tag.MatchesTag(MessageTag))
 					{
 						if(const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag))
@@ -114,7 +120,7 @@ void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemCo
 	AuraAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
 }
 
-void UOverlayWidgetController::OnXpChanged(int32 NewXP) const 
+void UOverlayWidgetController::OnXpChanged(int32 NewXP) const
 {
 	const AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
 	const ULevelUpInfo* LevelUpInfo = AuraPlayerState->LevelUpInfo;

@@ -2,8 +2,10 @@
 
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "Aura/AuraLogChannels.h"
+#include "Interaction/PlayerInterface.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -15,8 +17,8 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 	for(const auto& AbilityClass : StartupAbilities)
 	{
 		// Create a new ability spec
-		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);		
-		// we want to give an ability and activate it immediately 
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		// we want to give an ability and activate it immediately
 		// GiveAbility(AbilitySpec);
 		// GiveAbilityAndActivateOnce(AbilitySpec);
 
@@ -95,6 +97,25 @@ FGameplayTag UAuraAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbi
 		if(Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("InputTag"))))
 			return Tag;
 	return FGameplayTag();
+}
+
+void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	if(GetAvatarActor()->Implements<UPlayerInterface>())
+		if(IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
+			ServerUpgradeAttribute(AttributeTag);
+}
+
+void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
+{
+	FGameplayEventData Payload;
+	Payload.EventTag = AttributeTag;
+	Payload.EventMagnitude = 1.f;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, Payload);
+
+	if(GetAvatarActor()->Implements<UPlayerInterface>())
+		IPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(), -1);
 }
 
 void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()

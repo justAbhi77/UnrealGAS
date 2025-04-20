@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -56,7 +56,8 @@ class AURA_API ICombatInterface
 
 public:
 	// Returns the player's level. Defaults to 0.
-	virtual int32 GetPlayerLevel() const;
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetPlayerLevel() const;
 
 	/**
 	 * Retrieves the socket location on the weapon based on the montage tag.

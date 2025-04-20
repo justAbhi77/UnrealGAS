@@ -14,7 +14,7 @@ class UPlayerInterface : public UInterface
 };
 
 /**
- * 
+ *
  */
 class AURA_API IPlayerInterface
 {
@@ -22,7 +22,36 @@ class AURA_API IPlayerInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-
 	UFUNCTION(BlueprintNativeEvent)
 	void AddToXp(int32 InXP);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void AddToPlayerLevel(int32 InPlayerLevel);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void AddToAttributePoints(int32 InAttributePoints);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void AddToSpellPoints(int32 InSpellPoints);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void LevelUp();
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 FindLevelForXp(int32 InXp) const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetXp() const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetAttributePointsReward(int32 Level) const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetSpellPointsReward(int32 Level) const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetAttributePoints() const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetSpellPoints() const;
 };

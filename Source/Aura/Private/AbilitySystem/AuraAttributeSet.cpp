@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
 #include "Aura/AuraLogChannels.h"
+#include "Interaction/PlayerInterface.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -142,9 +143,49 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		const float LocalIncomingXp = GetIncomingXp();
 		SetIncomingXp(0);
 
-		//TODO: See if we should level up
-		if (Props.SourceCharacter->Implements<UPlayerInterface>())
+		if(Props.SourceCharacter->Implements<UPlayerInterface>() && Props.SourceCharacter->Implements<UCombatInterface>())
+		{
+			const int32 CurrentLevel = ICombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
+			const int32 CurrentXp = IPlayerInterface::Execute_GetXp(Props.SourceCharacter);
+
+			const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXp(Props.SourceCharacter, CurrentXp + LocalIncomingXp);
+
+			const int32 DeltaLevelUps = NewLevel - CurrentLevel;
+
+			if(DeltaLevelUps > 0)
+			{
+				// ToDo : Give Rewards for Leveling Up And Level Up(Health And Mana -> Increase and Regenerate)
+				const int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
+				const int32 SpellPointsReward = IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, CurrentLevel);
+
+				IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, DeltaLevelUps);
+				IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, AttributePointsReward);
+				IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, SpellPointsReward);
+
+				bTopOffHealth = true;
+				bTopOffMana = true;
+
+				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
+			}
+
 			IPlayerInterface::Execute_AddToXp(Props.SourceCharacter, LocalIncomingXp);
+		}
+	}
+}
+
+void UAuraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if(Attribute == GetMaxHealthAttribute() && bTopOffHealth)
+	{
+		SetHealth(GetMaxHealth());
+		bTopOffHealth = false;
+	}
+	if(Attribute == GetMaxManaAttribute() && bTopOffMana)
+	{
+		SetMana(GetMaxMana());
+		bTopOffMana = false;
 	}
 }
 
@@ -199,9 +240,9 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float D
 
 void UAuraAttributeSet::SendXpEvent(const FEffectProperties& Props)
 {
-	if(ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetCharacter))
+	if(Props.TargetCharacter->Implements<UCombatInterface>())
 	{
-		const int32 TargetLevel = CombatInterface->GetPlayerLevel();
+		const int32 TargetLevel = ICombatInterface::Execute_GetPlayerLevel(Props.TargetCharacter);
 		const ECharacterClass TargetClass = ICombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
 		const int32 XPReward = UAuraAbilitySystemLibrary::GetXpRewardForClassAndLevel(Props.TargetCharacter, TargetClass, TargetLevel);
 

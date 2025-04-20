@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 
 #pragma once
 
@@ -79,6 +79,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
 	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
+	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
 
 protected:
 	// DataTable containing message widget configurations
