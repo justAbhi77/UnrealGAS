@@ -1,4 +1,5 @@
-// Copyright Druid Mechanics
+//
+
 
 #pragma once
 
@@ -14,44 +15,55 @@ class UPlayerInterface : public UInterface
 };
 
 /**
- *
+ * Base interface class for player-related functionality.
+ * This interface is designed to be implemented by player-related classes to handle XP, levels, attributes, and spell points.
  */
 class AURA_API IPlayerInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintNativeEvent)
+	// Adds XP to the player.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|XP")
 	void AddToXp(int32 InXP);
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Adds levels to the player.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|Level")
 	void AddToPlayerLevel(int32 InPlayerLevel);
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Adds attribute points to the player.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|Attributes")
 	void AddToAttributePoints(int32 InAttributePoints);
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Adds spell points to the player.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|Spells")
 	void AddToSpellPoints(int32 InSpellPoints);
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Handles player level-up logic.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|Level")
 	void LevelUp();
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Finds the appropriate level for the given XP value.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|XP")
 	int32 FindLevelForXp(int32 InXp) const;
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Retrieves the player's current XP.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|XP")
 	int32 GetXp() const;
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Calculates the attribute points reward for a given level.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|Attributes")
 	int32 GetAttributePointsReward(int32 Level) const;
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Calculates the spell points reward for a given level.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|Spells")
 	int32 GetSpellPointsReward(int32 Level) const;
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Retrieves the player's current attribute points.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|Attributes")
 	int32 GetAttributePoints() const;
 
-	UFUNCTION(BlueprintNativeEvent)
+	// Retrieves the player's current spell points.
+	UFUNCTION(BlueprintNativeEvent, Category = "Player|Spells")
 	int32 GetSpellPoints() const;
 };

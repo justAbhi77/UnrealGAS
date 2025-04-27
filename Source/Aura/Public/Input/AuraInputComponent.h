@@ -1,10 +1,12 @@
-// 
+//
+
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "EnhancedInputComponent.h"
 #include "AuraInputConfig.h"
+#include "Aura/AuraLogChannels.h"
 #include "AuraInputComponent.generated.h"
 
 /**
@@ -18,7 +20,7 @@ class AURA_API UAuraInputComponent : public UEnhancedInputComponent
 public:
 	/**
 	 * Binds input actions for abilities defined in the input configuration.
-	 * 
+	 *
 	 * @tparam UserClass         The class type of the object receiving the bindings.
 	 * @tparam PressedFuncType   The function type for the action pressed event.
 	 * @tparam ReleasedFuncType  The function type for the action released event.
@@ -30,7 +32,7 @@ public:
 	 * @param HeldFunc           Function called when an input action is held.
 	 */
 	template <class UserClass, typename PressedFuncType, typename ReleasedFuncType, typename HeldFuncType>
-	void BindAbilityActions(const UAuraInputConfig* InputConfig, UserClass* Object, 
+	void BindAbilityActions(const UAuraInputConfig* InputConfig, UserClass* Object,
 		PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, HeldFuncType HeldFunc);
 };
 
@@ -40,6 +42,8 @@ void UAuraInputComponent::BindAbilityActions(const UAuraInputConfig* InputConfig
 {
 	// Ensure the input configuration is valid
 	check(InputConfig);
+
+	UE_LOG(LogAura, Display, TEXT("Binding input actions to abilities in [%s]"), *GetNameSafe(this));
 
 	// Iterate over ability input actions in the configuration
 	for(const auto& Action : InputConfig->AbilityInputActions)

@@ -1,4 +1,5 @@
-﻿// 
+﻿//
+
 
 #pragma once
 
@@ -14,7 +15,7 @@ class UAttributeSet;
 class UAbilitySystemComponent;
 
 /**
- * The AuraHUD class manages the user interface, including the overlay and attribute menu widgets,
+ * Manages the user interface, including the overlay and attribute menu widgets,
  * and their respective widget controllers.
  */
 UCLASS()
@@ -45,9 +46,6 @@ public:
 	 * @param AS - The attribute set.
 	 */
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
-
-protected:
-	virtual void BeginPlay() override;
 
 private:
 	// The class to use for the Overlay Widget.

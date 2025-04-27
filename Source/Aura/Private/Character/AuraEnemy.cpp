@@ -20,7 +20,6 @@ AAuraEnemy::AAuraEnemy()
 	// Ensure enemy mesh blocks visibility tracing for highlighting
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
-	// Initialize Ability System Component
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
@@ -31,35 +30,16 @@ AAuraEnemy::AAuraEnemy()
 
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
-	// Initialize Attribute Set
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
 }
 
-void AAuraEnemy::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	if(!HasAuthority()) return;
-
-	// Assign AI controller and initialize behavior tree
-	AuraAIController = Cast<AAuraAiController>(NewController);
-	if(AuraAIController && BehaviorTree)
-	{
-		UBlackboardComponent* BlackboardComp = AuraAIController->GetBlackboardComponent();
-		BlackboardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-		AuraAIController->RunBehaviorTree(BehaviorTree);
-
-		BlackboardComp->SetValueAsBool(FName("HitReacting"), false);
-		BlackboardComp->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
-	}
-}
-
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
 	// Set custom depth stencil values for highlighting
@@ -89,6 +69,25 @@ void AAuraEnemy::BeginPlay()
 
 		OnHealthChanged.Broadcast(AuraAS->GetHealth());
 		OnMaxHealthChanged.Broadcast(AuraAS->GetMaxHealth());
+	}
+}
+
+void AAuraEnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if(!HasAuthority()) return;
+
+	// Assign AI controller and initialize behavior tree
+	AuraAIController = Cast<AAuraAiController>(NewController);
+	if(AuraAIController && BehaviorTree)
+	{
+		UBlackboardComponent* BlackboardComp = AuraAIController->GetBlackboardComponent();
+		BlackboardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+		AuraAIController->RunBehaviorTree(BehaviorTree);
+
+		BlackboardComp->SetValueAsBool(FName("HitReacting"), false);
+		BlackboardComp->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 	}
 }
 

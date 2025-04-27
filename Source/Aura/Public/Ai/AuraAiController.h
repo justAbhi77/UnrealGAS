@@ -1,4 +1,5 @@
-// 
+//
+
 
 #pragma once
 
@@ -10,7 +11,7 @@ class UBlackboardComponent;
 class UBehaviorTreeComponent;
 
 /**
- * AAuraAiController - AI Controller managing blackboard and behavior tree components.
+ * AI Controller managing blackboard and behavior tree components.
  */
 UCLASS()
 class AURA_API AAuraAiController : public AAIController
@@ -22,6 +23,6 @@ public:
 
 protected:
 	// Behavior tree component handling AI logic
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComp;
 };

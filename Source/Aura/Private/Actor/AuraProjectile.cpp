@@ -1,4 +1,4 @@
-// 
+//
 
 
 #include "Actor/AuraProjectile.h"
@@ -11,13 +11,14 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Aura/Aura.h"
+#include "Aura/AuraLogChannels.h"
 
 AAuraProjectile::AAuraProjectile()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
-	// Initialize sphere collision component
+	// Initialize sphere collision
 	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
 	SetRootComponent(Sphere);
 	Sphere->SetCollisionObjectType(ECC_Projectile);
@@ -27,7 +28,7 @@ AAuraProjectile::AAuraProjectile()
 	Sphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
 	Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
-	// Initialize projectile movement component
+	// Initialize projectile movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
 	ProjectileMovement->InitialSpeed = 550.f;
 	ProjectileMovement->MaxSpeed = 550.f;
@@ -36,19 +37,19 @@ AAuraProjectile::AAuraProjectile()
 
 void AAuraProjectile::BeginPlay()
 {
+	UE_LOG(LogAura, Display, TEXT("BeginPlay for projectile actor [%s]"), *GetNameSafe(this));
 	Super::BeginPlay();
 	SetLifeSpan(LifeSpan);
 
-	// Bind overlap event
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnSphereOverlap);
 
-	// Start looping sound
 	if(LoopingSound)
 		LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent());
 }
 
 void AAuraProjectile::Destroyed()
 {
+	UE_LOG(LogAura, Display, TEXT("Projectile actor [%s] being destroyed"), *GetNameSafe(this));
 	if(!bHit) HandleImpact();
 	Super::Destroyed();
 }
@@ -57,6 +58,8 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(!DamageEffectSpecHandle.Data.IsValid()) return;
+
+	UE_LOG(LogAura, Display, TEXT("Projectile actor [%s] Overlapped with [%s]"), *GetNameSafe(this), *GetNameSafe(OtherActor));
 
 	AActor* EffectCauser = DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser();
 	if(EffectCauser == OtherActor) return;
@@ -78,15 +81,12 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 void AAuraProjectile::HandleImpact()
 {
-	// Play impact sound
 	if(ImpactSound)
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
 
-	// Spawn impact effect
 	if(ImpactEffect)
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 
-	// Stop looping sound
 	if(LoopingSoundComponent)
 		LoopingSoundComponent->Stop();
 

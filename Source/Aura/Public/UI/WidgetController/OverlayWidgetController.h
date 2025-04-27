@@ -1,9 +1,11 @@
 ﻿//
 
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "AuraWidgetController.h"
+#include "OverlayWidgetStruct.h"
 #include "OverlayWidgetController.generated.h"
 
 class UAuraUserWidget;
@@ -15,30 +17,11 @@ struct FAuraAbilityInfo;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, Info);
 
-// Struct defining UI Widget Row data in a DataTable
-USTRUCT(BlueprintType)
-struct FUIWidgetRow : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-	FGameplayTag MessageTag = FGameplayTag();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-	FText Message = FText();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-	TSubclassOf<UAuraUserWidget> MessageWidget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-	UTexture2D* Image = nullptr;
-};
-
 // Delegate for broadcasting message widget data
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUiWidgetRow, Row);
 
 /**
- * Controller for managing the overlay UI, such as health/mana updates and messages.
+ * Controller for managing the overlay widget, such as health/mana updates and messages.
  */
 UCLASS(BlueprintType, Blueprintable)
 class AURA_API UOverlayWidgetController : public UAuraWidgetController
@@ -46,8 +29,10 @@ class AURA_API UOverlayWidgetController : public UAuraWidgetController
 	GENERATED_BODY()
 
 public:
+	// Broadcasts initial values to the UI widgets.
 	virtual void BroadcastInitialValues() override;
 
+	// Binds callbacks to external dependencies.
 	virtual void BindCallbacksToDependencies() override;
 
 	// Delegates for attribute change notifications
@@ -74,12 +59,15 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 
+	// Delegate for broadcasting Ability information
 	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
 	FAbilityInfoSignature AbilityInfoDelegate;
 
+	// Delegate for broadcasting changes in Experience points
 	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
 	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
 
+	// Delegate for broadcasting changes in Player level
 	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
 	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
 
@@ -88,6 +76,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
 
+	// Ability information Data Asset
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
 
@@ -100,8 +89,10 @@ protected:
 	template<typename T>
 	static T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
 
-	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent);
+	// Broadcast initial values for all startup abilities given to this Ability System Comp
+	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent) const;
 
+	// Calculate level when experience points changes
 	void OnXpChanged(int32 NewXp) const;
 };
 

@@ -1,4 +1,5 @@
-// 
+//
+
 
 #pragma once
 
@@ -6,10 +7,6 @@
 #include "UObject/Interface.h"
 #include "EnemyInterface.generated.h"
 
-/**
- * Interface for enemy-related functionality, providing standardized methods for
- * visual effects or behaviors that can be applied to enemy actors.
- */
 UINTERFACE(MinimalAPI)
 class UEnemyInterface : public UInterface
 {
@@ -17,8 +14,8 @@ class UEnemyInterface : public UInterface
 };
 
 /**
- * Interface class that defines the methods for enemy-related behavior.
- * Classes implementing this interface are expected to define the provided functions.
+ * Interface for enemy-related functionality, providing standardized methods for
+ * visual effects or behaviors that can be applied to enemy actors.
  */
 class AURA_API IEnemyInterface
 {

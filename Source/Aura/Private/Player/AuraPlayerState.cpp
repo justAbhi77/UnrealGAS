@@ -4,18 +4,17 @@
 #include "Player/AuraPlayerState.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "Aura/AuraLogChannels.h"
 #include "Net/UnrealNetwork.h"
 
 AAuraPlayerState::AAuraPlayerState()
 {
 	NetUpdateFrequency = 100.f;
 
-	// Initialize and configure the Ability System Component
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
-	// Initialize the Attribute Set
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
@@ -23,10 +22,10 @@ void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AAuraPlayerState, Level);
-	DOREPLIFETIME(AAuraPlayerState, Exp);
-	DOREPLIFETIME(AAuraPlayerState, AttributePoints);
-	DOREPLIFETIME(AAuraPlayerState, SpellPoints);
+	DOREPLIFETIME(ThisClass, PlayerLevel);
+	DOREPLIFETIME(ThisClass, Exp);
+	DOREPLIFETIME(ThisClass, AttributePoints);
+	DOREPLIFETIME(ThisClass, SpellPoints);
 }
 
 UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
@@ -37,24 +36,28 @@ UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
 void AAuraPlayerState::AddToXP(int32 InXP)
 {
 	Exp += InXP;
+	UE_LOG(LogAura, Display, TEXT("Player received %d Experience points"), InXP);
 	OnXPChangedDelegate.Broadcast(Exp);
 }
 
 void AAuraPlayerState::AddToLevel(int32 InLevel)
 {
-	Level += InLevel;
-	OnLevelChangedDelegate.Broadcast(Level);
+	PlayerLevel += InLevel;
+	UE_LOG(LogAura, Display, TEXT("Player leveled up by %d"), InLevel);
+	OnLevelChangedDelegate.Broadcast(PlayerLevel);
 }
 
 void AAuraPlayerState::AddToAttributePoints(int32 InPoints)
 {
 	AttributePoints += InPoints;
+	UE_LOG(LogAura, Display, TEXT("Player received %d Attribute points"), InPoints);
 	OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
 }
 
 void AAuraPlayerState::AddToSpellPoints(int32 InPoints)
 {
 	SpellPoints += InPoints;
+	UE_LOG(LogAura, Display, TEXT("Player received %d Spell points"), InPoints);
 	OnSpellPointsChangedDelegate.Broadcast(SpellPoints);
 }
 
@@ -66,26 +69,30 @@ void AAuraPlayerState::SetXP(int32 InXP)
 
 void AAuraPlayerState::SetLevel(int32 InLevel)
 {
-	Level = InLevel;
-	OnLevelChangedDelegate.Broadcast(Level);
+	PlayerLevel = InLevel;
+	OnLevelChangedDelegate.Broadcast(PlayerLevel);
 }
 
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)
 {
-	OnLevelChangedDelegate.Broadcast(Level);
+	UE_LOG(LogAura, Display, TEXT("Player leveled up by %d"), PlayerLevel);
+	OnLevelChangedDelegate.Broadcast(PlayerLevel);
 }
 
 void AAuraPlayerState::OnRep_Exp(int32 OldExp)
 {
+	UE_LOG(LogAura, Display, TEXT("Player received %d Experience points"), Exp);
 	OnXPChangedDelegate.Broadcast(Exp);
 }
 
 void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
 {
+	UE_LOG(LogAura, Display, TEXT("Player received %d Attribute points"), AttributePoints);
 	OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
 }
 
 void AAuraPlayerState::OnRep_SpellPoints(int32 OldSpellPoints)
 {
- 	OnSpellPointsChangedDelegate.Broadcast(SpellPoints);
+	UE_LOG(LogAura, Display, TEXT("Player received %d Spell points"), SpellPoints);
+	OnSpellPointsChangedDelegate.Broadcast(SpellPoints);
 }

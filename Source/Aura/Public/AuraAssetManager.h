@@ -1,4 +1,5 @@
-// 
+//
+
 
 #pragma once
 
@@ -7,7 +8,7 @@
 #include "AuraAssetManager.generated.h"
 
 /**
- * UAuraAssetManager is the custom Asset Manager class for the Aura project.
+ * Custom Asset Manager class for the Aura project.
  * It ensures proper initialization of game assets and handles native gameplay tag setup.
  */
 UCLASS()

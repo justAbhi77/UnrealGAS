@@ -1,22 +1,17 @@
-// 
+//
 
 
 #include "Actor/AuraEffectActor.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Aura/AuraLogChannels.h"
 
 AAuraEffectActor::AAuraEffectActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	// Initialize root component
 	SceneComponent = CreateDefaultSubobject<USceneComponent>("SceneRoot");
 	SetRootComponent(SceneComponent);
-}
-
-void AAuraEffectActor::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 void AAuraEffectActor::OnOverlap(AActor* TargetActor)
@@ -24,12 +19,14 @@ void AAuraEffectActor::OnOverlap(AActor* TargetActor)
 	// Skip if target is an enemy and effects shouldn't be applied to enemies
 	if(TargetActor->ActorHasTag(FName("Enemy")) && !bApplyEffectsToEnemies) return;
 
+	UE_LOG(LogAura, Display, TEXT("Applying Begin Overlap effects to actor [%s] from [%hs]"), *GetNameSafe(TargetActor) ,__FUNCTION__);
+
 	// Apply effects that should trigger on overlap
 	for(const auto& EffectToApply : EffectsToApply)
 		if(EffectToApply.EffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
 			ApplyEffectToTarget(TargetActor, EffectToApply.GameplayEffectClass, EffectToApply.EffectRemovalPolicy);
 
-	// Destroy the actor if required
+	// Destroy self if required
 	if(bCanDestroyOnEffectApplication && bDestroyOnEffectApplication)
 		Destroy();
 }
@@ -38,7 +35,8 @@ void AAuraEffectActor::OnEndOverlap(AActor* TargetActor)
 {
 	if(TargetActor->ActorHasTag(FName("Enemy")) && !bApplyEffectsToEnemies) return;
 
-	// Apply effects that should trigger when overlap ends
+	UE_LOG(LogAura, Display, TEXT("Applying End Overlap effects to actor [%s] from [%hs]"), *GetNameSafe(TargetActor) ,__FUNCTION__);
+
 	for(const auto& EffectToApply : EffectsToApply)
 		if(EffectToApply.EffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
 			ApplyEffectToTarget(TargetActor, EffectToApply.GameplayEffectClass, EffectToApply.EffectRemovalPolicy);
@@ -48,7 +46,10 @@ void AAuraEffectActor::OnEndOverlap(AActor* TargetActor)
 
 	// Destroy the actor if required
 	if(bCanDestroyOnEffectRemoval && bDestroyOnEffectRemoval)
+	{
+		UE_LOG(LogAura, Display, TEXT("Destroying self after applying effects from [%hs]"), __FUNCTION__);
 		Destroy();
+	}
 }
 
 void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, const TSubclassOf<UGameplayEffect> GameplayEffectClass, EEffectRemovalPolicy RemovalPolicy)

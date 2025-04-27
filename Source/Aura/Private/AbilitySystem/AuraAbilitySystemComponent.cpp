@@ -79,7 +79,7 @@ void UAuraAbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate
 	FScopedAbilityListLock ActiveScopeLock(*this);
 	for(const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 		if(!Delegate.ExecuteIfBound(AbilitySpec))
-			UE_LOG(LogAura, Error, TEXT("Failed to execute delegate in %hs"), __FUNCTION__);
+			UE_LOG(LogAura, Error, TEXT("Failed to execute delegate in [%hs]"), __FUNCTION__);
 }
 
 FGameplayTag UAuraAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)

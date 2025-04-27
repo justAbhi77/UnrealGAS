@@ -1,5 +1,6 @@
 ﻿//
 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -18,7 +19,7 @@ class UAuraAbilitySystemComponent;
 class USplineComponent;
 
 /**
- * Handles player input, cursor interaction, and autonomous movement.
+ * Handles player input, cursor interaction, auto-running, and combat-related ability inputs.
  */
 UCLASS()
 class AURA_API AAuraPlayerController : public APlayerController
@@ -44,25 +45,37 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
 
-	UPROPERTY(EditAnywhere, Category="Input")
+	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> ShiftAction;
 
-	UPROPERTY(EditAnywhere, Category="Input")
+	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> ScrollAction;
 
-	bool bShiftKeyDown = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UAuraInputConfig> InputConfig;
 
-	// Input handling
+	// Ability system
+	UPROPERTY()
+	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
+
+	UAuraAbilitySystemComponent* GetASC();
+
+	// Input functions
 	void Move(const FInputActionValue& InputActionValue);
-	void ShiftPressed() { bShiftKeyDown = true; }
-	void ShiftReleased() { bShiftKeyDown = false; }
-	void ScrollPressed(const FInputActionValue& InputActionValue);
+	void ShiftPressed();
+	void ShiftReleased();
+	void ScrollMoved(const FInputActionValue& InputActionValue);
 
-	// Cursor interaction
+	// State flags
+	bool bShiftKeyDown = false;
+	bool bAutoRunning = false;
+	bool bTargeting = false;
+
+	// Cursor trace info
 	FHitResult CursorHit;
 	void CursorTrace();
 
-	// Handles actor highlighting
+	// Actor highlighting(Reference to Interfaces)
 	TScriptInterface<IEnemyInterface> LastActor, ThisActor;
 
 	// Ability input handling
@@ -70,32 +83,26 @@ private:
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UAuraInputConfig> InputConfig;
-
-	UPROPERTY()
-	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
-
-	UAuraAbilitySystemComponent* GetASC();
-
-	// Auto-run functionality
-	FVector CachedDestination = FVector::ZeroVector;
-	float FollowTime = 0.f;
-	const float ShortPressThreshold = 0.5f;
-	bool bAutoRunning = false;
-	bool bTargeting = false;
-
-	UPROPERTY(EditDefaultsOnly)
+	// Auto-run settings
+	UPROPERTY(EditDefaultsOnly, Category = "AutoRun")
 	float AutoRunAcceptanceRadius = 50.f;
 
+	// For auto-run navigation
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
 
 	void AutoRun();
 
+	// Movement cache
+	FVector CachedDestination = FVector::ZeroVector;
+	float FollowTime = 0.f;
+	const float ShortPressThreshold = 0.5f;
+
+	// Damage number display
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 
+	// Cached reference to Aura character
 	UPROPERTY()
 	AAuraCharacter* AuraPawn = nullptr;
 };

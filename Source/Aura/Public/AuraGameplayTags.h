@@ -1,4 +1,5 @@
-// 
+//
+
 
 #pragma once
 
@@ -6,20 +7,15 @@
 #include "GameplayTagContainer.h"
 
 /**
- * FAuraGameplayTags is a singleton struct that contains all native gameplay tags used in the Aura project.
+ * Singleton struct that contains all native gameplay tags for the Aura project.
  */
 struct FAuraGameplayTags
 {
 public:
-	/**
-	 * Retrieves the singleton instance of FAuraGameplayTags.
-	 * @return A reference to the static GameplayTags instance.
-	 */
+	// Returns the singleton instance
 	static const FAuraGameplayTags& Get() { return GameplayTags; }
 
-	/**
-	 * Initializes and registers all native gameplay tags with the Gameplay Tags Manager.
-	 */
+	// Initializes and registers all native gameplay tags
 	static void InitializeNativeGameplayTags();
 
 private:
@@ -44,6 +40,15 @@ public:
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxMana;
 
+	// Resistance Attributes
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Lighting;
+	FGameplayTag Attributes_Resistance_Arcane;
+	FGameplayTag Attributes_Resistance_Physical;
+
+	// Meta Attributes
+	FGameplayTag Attributes_Meta_IncomingXp;
+
 	// Input Tags
 	FGameplayTag InputTag_LMB;
 	FGameplayTag InputTag_RMB;
@@ -52,38 +57,36 @@ public:
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
 
+	// Damage Tags
 	FGameplayTag Damage;
-
 	FGameplayTag Damage_Fire;
 	FGameplayTag Damage_Lighting;
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
 
-	FGameplayTag Attributes_Resistance_Fire;
-	FGameplayTag Attributes_Resistance_Lighting;
-	FGameplayTag Attributes_Resistance_Arcane;
-	FGameplayTag Attributes_Resistance_Physical;
-
+	// Ability Tags
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_Summon;
-
 	FGameplayTag Abilities_Fire_FireBolt;
 
+	// Cooldown Tags
 	FGameplayTag Cooldown_Fire_FireBolt;
 
+	// Combat Socket Tags
 	FGameplayTag CombatSocket_Weapon;
 	FGameplayTag CombatSocket_RightHand;
 	FGameplayTag CombatSocket_LeftHand;
 	FGameplayTag CombatSocket_Tail;
 
+	// Montage Tags
 	FGameplayTag Montage_Attack_1;
 	FGameplayTag Montage_Attack_2;
 	FGameplayTag Montage_Attack_3;
 	FGameplayTag Montage_Attack_4;
 
-	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
-
+	// Effects
 	FGameplayTag Effects_HitReact;
 
-	FGameplayTag Attributes_Meta_IncomingXp;
+	// Maps Damage Types to corresponding Resistance Tags
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
 };

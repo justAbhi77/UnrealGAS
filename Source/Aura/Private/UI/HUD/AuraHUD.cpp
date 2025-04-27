@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 
 
 #include "UI/HUD/AuraHUD.h"
@@ -48,9 +48,4 @@ void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyst
 
 	// Add the widget to the viewport
 	Widget->AddToViewport();
-}
-
-void AAuraHUD::BeginPlay()
-{
-	Super::BeginPlay();
 }

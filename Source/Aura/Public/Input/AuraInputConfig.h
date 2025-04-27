@@ -1,4 +1,5 @@
-// 
+//
+
 
 #pragma once
 
@@ -35,7 +36,7 @@ class AURA_API UAuraInputConfig : public UDataAsset
 public:
 	/**
 	 * Finds the input action associated with a specific gameplay tag.
-	 * 
+	 *
 	 * @param InputTag The gameplay tag to search for.
 	 * @param bLogNotFound If true, logs an error if the action is not found.
 	 * @return A pointer to the input action, or nullptr if not found.

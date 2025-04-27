@@ -1,5 +1,6 @@
 //
 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -27,46 +28,49 @@ class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInte
 public:
 	AAuraCharacterBase();
 
-	// Returns the Ability System Component of the character
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override{ return AbilitySystemComponent; }
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
-	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
-
 	virtual void Die() override;
+	virtual bool IsDead_Implementation() const override { return bDead; }
+	virtual AActor* GetAvatar_Implementation() override{ return this; }
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override{ return AttackMontages; }
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override{ return BloodEffect; }
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override{ return HitReactMontage; }
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
+	virtual int32 GetMinionCount_Implementation() override{ return MinionCount; }
+	virtual void IncrementMinionCount_Implementation(int32 Amount) override{ MinionCount += Amount; }
+	virtual ECharacterClass GetCharacterClass_Implementation() override{ return CharacterClass; }
 
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
-
-	virtual bool IsDead_Implementation() const override;
-
-	virtual AActor* GetAvatar_Implementation() override;
-
-	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
-
-	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
-
-	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
-
-	virtual int32 GetMinionCount_Implementation() override;
-
-	virtual void IncrementMinionCount_Implementation(int32 Amount) override;
-
-	virtual ECharacterClass GetCharacterClass_Implementation() override;
 
 #if WITH_EDITOR
 	// Handles property changes in the editor.
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+protected:
+	bool bDead = false;
+	int32 MinionCount = 0;
+
+	// Initializes the actor info for the ability system
+	virtual void InitAbilityActorInfo();
+
+	// Initialize default attributes
+	virtual void InitializeDefaultAttributes() const;
+
+	void AddCharacterAbilities();
+
+	// Applies a specified effect to self
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
+
+	void Dissolve();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TArray<FTaggedMontage> AttackMontages;
 
-protected:
-	virtual void BeginPlay() override;
-
-	// Skeletal mesh component for the character's weapon
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
@@ -86,11 +90,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName RightHandSocketName;
 
-	// Name of the socket where the right hand is
+	// Name of the socket where the tail hand is
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName TailSocketName;
 
-	// Ability System Component responsible for managing abilities
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
@@ -98,38 +101,28 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
 
-	// Initializes the actor info for the ability system
-	virtual void InitAbilityActorInfo();
-
+	// Character's primary attributes
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
 
+	// Character's secondary attributes
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
 
+	// Character's vital attributes
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
 
-	// Applies a specified effect to self
-	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
+	// Character's abilities at the start
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
-	// Initialize default attributes
-	virtual void InitializeDefaultAttributes() const;
+	// Character's passive abilities at the start
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;
 
-	// Add abilities to self
-	void AddCharacterAbilities();
-
-	// Return the location of the weapon tip socket
-	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
-
-	// Dissolve Effects
-	void Dissolve();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
@@ -143,23 +136,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	USoundBase* DeathSound;
 
-	// Minions
-
-	int32 MinionCount = 0;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
-private:
-	// Startup Abilities of the character 
-	UPROPERTY(EditAnywhere, Category = "Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
 
-	UPROPERTY(EditAnywhere, Category = "Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;
-
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	TObjectPtr<UAnimMontage> HitReactMontage;
-
-	bool bDead = false;
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
 };

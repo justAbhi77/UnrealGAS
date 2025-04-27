@@ -1,5 +1,6 @@
 //
 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,7 +11,7 @@ class UAttributeInfo;
 struct FAuraAttributeInfo;
 struct FGameplayTag;
 
-// Delegate for broadcasting attribute information to UI
+// Delegate for broadcasting attribute information to the controlled widgets
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeInfoSignature, const FAuraAttributeInfo&, Info);
 
 /**
@@ -33,9 +34,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FAttributeInfoSignature AttributeInfoDelegate;
 
+	// Delegate to notify UI about attribute points updates.
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FOnPlayerStatChangedSignature AttributePointsChangedDelegate;
 
+	// Function to upgrade the attribute if points where spent on it.
 	UFUNCTION(BlueprintCallable)
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 

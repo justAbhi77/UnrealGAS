@@ -1,4 +1,5 @@
-// 
+//
+
 
 #pragma once
 
@@ -14,7 +15,7 @@ class UAudioComponent;
 class USoundBase;
 
 /**
- * A projectile actor with collision, movement, and impact effects.
+ * A projectile actor with collision, movement, and audio/visual impact effects.
  */
 UCLASS()
 class AURA_API AAuraProjectile : public AActor
@@ -24,29 +25,28 @@ class AURA_API AAuraProjectile : public AActor
 public:
 	AAuraProjectile();
 
-	// Projectile movement component
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	// Handles movement of the projectile
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
-	// Gameplay effect applied on hit
+	// Effect to apply on collision
 	UPROPERTY(BlueprintReadWrite, meta=(ExposeOnSpawn=true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 
 protected:
 	virtual void BeginPlay() override;
-
 	virtual void Destroyed() override;
 
-	// Handles collision overlap
+	// Called when the projectile overlaps with another actor
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta=(AllowPrivateAccess="true"))
 	TObjectPtr<USphereComponent> Sphere;
 
 private:
-	// Handles impact effects and sound
+	// Plays impact VFX and sound
 	void HandleImpact();
 
 	UPROPERTY(EditDefaultsOnly)

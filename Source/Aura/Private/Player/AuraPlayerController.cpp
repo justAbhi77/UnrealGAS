@@ -18,31 +18,34 @@
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
-
-	// Initialize spline for auto-run navigation
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
+}
+
+void AAuraPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if(!AuraContext) return;
+
+	UE_LOG(LogAura, Display, TEXT("PlayerController Initialized"));
+
+	if(UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+		Subsystem->AddMappingContext(AuraContext, 0);
+
+	bShowMouseCursor = true;
+	DefaultMouseCursor = EMouseCursor::Default;
+
+	FInputModeGameAndUI InputModeData;
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputModeData.SetHideCursorDuringCapture(false);
+	SetInputMode(InputModeData);
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
-	// Handle cursor tracing and auto-run
-	CursorTrace();
+	CursorTrace(); // Handle cursor tracing and auto-run
 	AutoRun();
-}
-
-void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter,
-	bool bBlockedHit, bool bCriticalHit)
-{
-	if(IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
-	{
-		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
-		DamageText->RegisterComponent();
-		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-		DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit);
-	}
 }
 
 void AAuraPlayerController::CursorTrace()
@@ -56,8 +59,16 @@ void AAuraPlayerController::CursorTrace()
 	// Handle actor highlighting
 	if(LastActor != ThisActor)
 	{
-		if(LastActor) LastActor->UnHighlightActor();
-		if(ThisActor) ThisActor->HighlightActor();
+		if(LastActor)
+		{
+			LastActor->UnHighlightActor();
+			UE_LOG(LogAura, Display, TEXT("Highlight disabled for [%s]"), *GetNameSafe(LastActor.GetObject()));
+		}
+		if(ThisActor)
+		{
+			ThisActor->HighlightActor();
+			UE_LOG(LogAura, Display, TEXT("Highlight enabled for [%s]"), *GetNameSafe(ThisActor.GetObject()));
+		}
 	}
 
 	/*
@@ -122,12 +133,17 @@ void AAuraPlayerController::AutoRun()
 		// ReSharper disable once CppTooWideScopeInitStatement
 		const float DistanceToDestination = FVector::Dist(LocationOnSpline, CachedDestination);
 		if(FMath::IsNearlyZero(DistanceToDestination, AutoRunAcceptanceRadius))
+		{
+			UE_LOG(LogAura, Display, TEXT("Auto Running Completed"));
 			bAutoRunning = false;
+		}
 	}
 }
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+	UE_LOG(LogAura, Display, TEXT("Input Pressed [%s]"), *InputTag.ToString());
+
 	if(InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
 		bTargeting = ThisActor != nullptr;
@@ -201,29 +217,16 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	}
 }
 
-UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
+void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
 {
-	if(!AuraAbilitySystemComponent)
-		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
-	return AuraAbilitySystemComponent;
-}
-
-void AAuraPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if(!AuraContext) return;
-
-	if(UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-		Subsystem->AddMappingContext(AuraContext, 0);
-
-	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Default;
-
-	FInputModeGameAndUI InputModeData;
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputModeData.SetHideCursorDuringCapture(false);
-	SetInputMode(InputModeData);
+	if(IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
+	{
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit);
+	}
 }
 
 void AAuraPlayerController::SetupInputComponent()
@@ -232,40 +235,57 @@ void AAuraPlayerController::SetupInputComponent()
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
 
 	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
-
 	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &ThisClass::ShiftPressed);
 	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &ThisClass::ShiftReleased);
+	AuraInputComponent->BindAction(ScrollAction, ETriggerEvent::Started, this, &ThisClass::ScrollMoved);
 
-	AuraInputComponent->BindAction(ScrollAction, ETriggerEvent::Started, this, &ThisClass::ScrollPressed);
-
-	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed,
-		&ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
-
+	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	const FRotator Rotation = GetControlRotation(), YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	const FRotator Rotation = GetControlRotation(), YawRotation(0.f, Rotation.Yaw, 0.f);
 
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X),
-	RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X), RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	if(APawn* ControlledPawn = GetPawn<APawn>())
+	if(APawn* ControlledPawn = GetPawn())
 	{
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+		if(bAutoRunning)
+			UE_LOG(LogAura, Display, TEXT("Auto Running Canceled by movement input"));
 		bAutoRunning = false;
 	}
 }
 
+inline void AAuraPlayerController::ShiftPressed()
+{
+	UE_LOG(LogAura, Display, TEXT("Shift Key Pressed"));
+	bShiftKeyDown = true;
+}
+
+inline void AAuraPlayerController::ShiftReleased()
+{
+	UE_LOG(LogAura, Display, TEXT("Shift Key Released"));
+	bShiftKeyDown = false;
+}
+
 // ReSharper disable once CppMemberFunctionMayBeStatic
-void AAuraPlayerController::ScrollPressed(const FInputActionValue& InputActionValue)
+void AAuraPlayerController::ScrollMoved(const FInputActionValue& InputActionValue)
 {
 	const float InputAxisValue = InputActionValue.Get<float>();
 
+	UE_LOG(LogAura, Display, TEXT("Scroll Wheel moved"));
+
 	if(!AuraPawn) AuraPawn = GetPawn<AAuraCharacter>();
-	if(AuraPawn)
-		AuraPawn->MoveSpringArm(InputAxisValue);
+	if(AuraPawn) AuraPawn->MoveSpringArm(InputAxisValue);
+}
+
+UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
+{
+	if(!AuraAbilitySystemComponent)
+		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+	return AuraAbilitySystemComponent;
 }

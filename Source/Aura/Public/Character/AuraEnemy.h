@@ -1,5 +1,6 @@
 ﻿//
 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -13,7 +14,7 @@ class UBehaviorTree;
 class AAuraAiController;
 
 /**
- * Extends AAuraCharacterBase and implements the IEnemyInterface.
+ * Enemy character that extends AuraCharacterBase and implements IEnemyInterface.
  */
 UCLASS()
 class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
@@ -30,8 +31,7 @@ public:
 #endif
 
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	// Enemy Interface
 	virtual void HighlightActor() override;
@@ -43,9 +43,9 @@ public:
 	virtual int32 GetPlayerLevel_Implementation() const override;
 	virtual void Die() override;
 
+	// Attribute Change Delegates
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;
-
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
 
@@ -74,11 +74,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
 
-	UPROPERTY(EditAnywhere, Category = "Ai")
+	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 	UPROPERTY()
 	TObjectPtr<AAuraAiController> AuraAIController;
+
 private:
 	// Custom Depth Stencil value for highlighting
 	UPROPERTY(EditAnywhere, Category = "Highlighting")
