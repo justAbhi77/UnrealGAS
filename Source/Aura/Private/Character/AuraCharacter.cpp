@@ -12,13 +12,14 @@
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
 #include "NiagaraComponent.h"
+#include "Aura/AuraLogChannels.h"
 
 AAuraCharacter::AAuraCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
-	CameraBoom->SetupAttachment(GetRootComponent());
+	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true);
 	CameraBoom->bDoCollisionTest = false;
 
@@ -27,21 +28,20 @@ AAuraCharacter::AAuraCharacter()
 	TopDownCameraComponent->bUsePawnControlRotation = false;
 
 	LevelUpNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("LevelUpNiagaraComponent");
-	LevelUpNiagaraComponent->SetupAttachment(GetRootComponent());
+	LevelUpNiagaraComponent->SetupAttachment(RootComponent);
 	LevelUpNiagaraComponent->bAutoActivate = false;
 
-	// Configure character movement
 	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	MovementComponent->bOrientRotationToMovement = true;
 	MovementComponent->RotationRate = FRotator(0, 400, 0);
 	MovementComponent->bConstrainToPlane = true;
 	MovementComponent->bSnapToPlaneAtStart = true;
 
-	// Disable controller-based rotation
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 
+	// Aura is Elementalist by Design
 	CharacterClass = ECharacterClass::Elementalist;
 }
 
@@ -50,38 +50,57 @@ void AAuraCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	const FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+	const FName PropertyName = PropertyChangedEvent.Property ? PropertyChangedEvent.Property->GetFName() : NAME_None;
 
 	if(PropertyName == GET_MEMBER_NAME_CHECKED(AAuraCharacter, WeaponSocket))
 		if(Weapon && GetMesh())
-			Weapon->AttachToComponent(GetMesh(),
-				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false), FName(WeaponSocket));
+			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 }
 #endif
 
+void AAuraCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UE_LOG(LogAura, Display, TEXT("Begin Play for [%s]"), *GetNameSafe(this));
+
+	AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+}
+
 void AAuraCharacter::InitAbilityActorInfo()
 {
-	// Retrieve player state and ensure it's valid
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 	if(!AuraPlayerState) return;
 
-	// Initialize Ability System Component
 	UAbilitySystemComponent* SystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	SystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
 
-	// Notify Ability System Component
 	if(UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(SystemComponent))
 		AuraASC->AbilityActorInfoSet();
 
 	AbilitySystemComponent = SystemComponent;
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 
-	// Initialize HUD overlay
 	if(auto* AuraPC = Cast<AAuraPlayerController>(GetController()))
 		if(auto* AuraHUD = Cast<AAuraHUD>(AuraPC->GetHUD()))
 			AuraHUD->InitOverlay(AuraPC, AuraPlayerState, AbilitySystemComponent, AttributeSet);
 
 	InitializeDefaultAttributes();
+}
+
+void AAuraCharacter::MoveSpringArm(float Value)
+{
+	if(!CameraBoom) return;
+	DesiredTargetArmLength = FMath::Clamp(CameraBoom->TargetArmLength + (Value * ScrollMultiplier), 200.f, 1000.f);
+}
+
+void AAuraCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(!CameraBoom) return;
+	const float CurrentArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, DesiredTargetArmLength, DeltaSeconds, CameraZoomInterpSpeed);
+	CameraBoom->TargetArmLength = CurrentArmLength;
 }
 
 void AAuraCharacter::MulticastLevelUpParticles_Implementation() const
@@ -100,7 +119,8 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	// Initialize ability system and grant abilities
+	UE_LOG(LogAura, Display, TEXT("Player [%s] possessed by [%s]"), *GetNameSafe(this), *GetNameSafe(NewController));
+
 	InitAbilityActorInfo();
 	AddCharacterAbilities();
 }
@@ -109,45 +129,46 @@ void AAuraCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	// Initialize ability system when PlayerState is replicated
+	UE_LOG(LogAura, Display, TEXT("PlayerState [%s] replicated for [%s]"), *GetNameSafe(GetPlayerState()), *GetNameSafe(this));
 	InitAbilityActorInfo();
 }
 
+// Interface implementations
+
 int32 AAuraCharacter::GetPlayerLevel_Implementation() const
 {
-	// Retrieve player level from PlayerState
-	if(const AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>())
-		return AuraPlayerState->GetPlayerLevel();
+	//if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 
+	if(AuraPlayerState) return AuraPlayerState->GetPlayerLevel();
 	return 0;
 }
 
-void AAuraCharacter::AddToXp_Implementation(int32 InXP)
+void AAuraCharacter::AddToXp_Implementation(int32 InXp)
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	AuraPlayerState->AddToXP(InXP);
+	if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	if(AuraPlayerState) AuraPlayerState->AddToXp(InXp);
 }
 
 void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	AuraPlayerState->AddToLevel(InPlayerLevel);
+	if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	if(AuraPlayerState) AuraPlayerState->AddToLevel(InPlayerLevel);
 }
 
 void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	AuraPlayerState->AddToSpellPoints(InSpellPoints);
+	if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	if(AuraPlayerState) AuraPlayerState->AddToSpellPoints(InSpellPoints);
 }
 
 void AAuraCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	AuraPlayerState->AddToAttributePoints(InAttributePoints);
+	if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	if(AuraPlayerState) AuraPlayerState->AddToAttributePoints(InAttributePoints);
 }
 
 void AAuraCharacter::LevelUp_Implementation()
@@ -157,57 +178,48 @@ void AAuraCharacter::LevelUp_Implementation()
 
 int32 AAuraCharacter::GetXp_Implementation() const
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	return AuraPlayerState->GetPlayerExp();
+	//if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	if(AuraPlayerState)	return AuraPlayerState->GetPlayerExp();
+	return 0;
 }
 
 int32 AAuraCharacter::FindLevelForXp_Implementation(int32 InXp) const
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	return AuraPlayerState->LevelUpInfo->FindLevelForXP(InXp);
+	//if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	if(AuraPlayerState)	return AuraPlayerState->LevelUpInfo->FindLevelForXP(InXp);
+	return 0;
 }
 
 int32 AAuraCharacter::GetAttributePointsReward_Implementation(int32 Level) const
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	return AuraPlayerState->LevelUpInfo->LevelUpInformation[Level].AttributePointAward;
+	//if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	if(AuraPlayerState)	return AuraPlayerState->LevelUpInfo->LevelUpInformation[Level].AttributePointAward;
+	return 0;
 }
 
 int32 AAuraCharacter::GetSpellPointsReward_Implementation(int32 Level) const
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	return AuraPlayerState->LevelUpInfo->LevelUpInformation[Level].SpellPointAward;
+	//if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	if(AuraPlayerState)	return AuraPlayerState->LevelUpInfo->LevelUpInformation[Level].SpellPointAward;;
+	return 0;
 }
 
 int32 AAuraCharacter::GetAttributePoints_Implementation() const
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	return AuraPlayerState->GetAttributePoints();
+	//if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	if(AuraPlayerState)	return AuraPlayerState->GetAttributePoints();
+	return 0;
 }
 
 int32 AAuraCharacter::GetSpellPoints_Implementation() const
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	return AuraPlayerState->GetSpellPoints();
-}
+	//if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 
-void AAuraCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AAuraCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AAuraCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if(AuraPlayerState)	return AuraPlayerState->GetSpellPoints();
+	return 0;
 }

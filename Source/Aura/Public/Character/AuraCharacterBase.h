@@ -76,7 +76,7 @@ protected:
 
 	// Name of the socket where the weapon is attached
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	FString WeaponSocket = "WeaponHandSocket";
+	FName WeaponSocket = "WeaponHandSocket";
 
 	// Socket name for the tip of the weapon
 	UPROPERTY(EditAnywhere, Category = "Combat")

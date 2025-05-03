@@ -37,7 +37,7 @@ public:
 	FORCEINLINE int32 GetAttributePoints() const { return AttributePoints; }
 	FORCEINLINE int32 GetSpellPoints() const { return SpellPoints; }
 
-	void AddToXP(int32 InXP);
+	void AddToXp(int32 InXp);
 	void AddToLevel(int32 InLevel);
 	void AddToAttributePoints(int32 InPoints);
 	void AddToSpellPoints(int32 InPoints);

@@ -30,17 +30,14 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
 	// Enemy Interface
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
-	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
-	virtual AActor* GetCombatTarget_Implementation() const override;
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override{ CombatTarget = InCombatTarget; }
+	virtual AActor* GetCombatTarget_Implementation() const override { return CombatTarget; }
 
 	// Combat Interface
-	virtual int32 GetPlayerLevel_Implementation() const override;
+	virtual int32 GetPlayerLevel_Implementation() const override{ return Level; }
 	virtual void Die() override;
 
 	// Attribute Change Delegates

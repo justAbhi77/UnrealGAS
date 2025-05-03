@@ -33,10 +33,10 @@ UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AAuraPlayerState::AddToXP(int32 InXP)
+void AAuraPlayerState::AddToXp(int32 InXp)
 {
-	Exp += InXP;
-	UE_LOG(LogAura, Display, TEXT("Player received %d Experience points"), InXP);
+	Exp += InXp;
+	UE_LOG(LogAura, Display, TEXT("Player received %d Experience points"), InXp);
 	OnXPChangedDelegate.Broadcast(Exp);
 }
 

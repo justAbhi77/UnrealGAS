@@ -9,6 +9,7 @@
 #include "UI/Widget/AuraUserWidget.h"
 #include "AuraGameplayTags.h"
 #include "Ai/AuraAiController.h"
+#include "Aura/AuraLogChannels.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -39,6 +40,8 @@ AAuraEnemy::AAuraEnemy()
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogAura, Display, TEXT("Begin Play for [%s]"), *GetNameSafe(this));
 
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
@@ -76,6 +79,8 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	UE_LOG(LogAura, Display, TEXT("Enemy [%s] Possessed by [%s]"), *GetNameSafe(this), *GetNameSafe(NewController));
+
 	if(!HasAuthority()) return;
 
 	// Assign AI controller and initialize behavior tree
@@ -102,12 +107,13 @@ void AAuraEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEv
 	if(PropertyName == GET_MEMBER_NAME_CHECKED(AAuraEnemy, WeaponSocket))
 		if(Weapon && GetMesh())
 			Weapon->AttachToComponent(GetMesh(),
-				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false), FName(WeaponSocket));
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false), WeaponSocket);
 }
 #endif
 
 void AAuraEnemy::HighlightActor()
 {
+	UE_LOG(LogAura, Display, TEXT("Highlight enabled for [%s]"), *GetNameSafe(this));
 	// Enable custom depth rendering for mesh and weapon
 	GetMesh()->SetRenderCustomDepth(true);
 	if(Weapon) Weapon->SetRenderCustomDepth(true);
@@ -115,24 +121,10 @@ void AAuraEnemy::HighlightActor()
 
 void AAuraEnemy::UnHighlightActor()
 {
+	UE_LOG(LogAura, Display, TEXT("Highlight Disabled for [%s]"), *GetNameSafe(this));
 	// Disable custom depth rendering for mesh and weapon
 	GetMesh()->SetRenderCustomDepth(false);
 	if(Weapon) Weapon->SetRenderCustomDepth(false);
-}
-
-void AAuraEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
-{
-	CombatTarget = InCombatTarget;
-}
-
-AActor* AAuraEnemy::GetCombatTarget_Implementation() const
-{
-	return CombatTarget;
-}
-
-int32 AAuraEnemy::GetPlayerLevel_Implementation() const
-{
-	return Level;
 }
 
 void AAuraEnemy::InitAbilityActorInfo()
@@ -151,16 +143,6 @@ void AAuraEnemy::InitAbilityActorInfo()
 void AAuraEnemy::InitializeDefaultAttributes() const
 {
 	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
-}
-
-void AAuraEnemy::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AAuraEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
 void AAuraEnemy::Die()
