@@ -57,6 +57,10 @@ public:
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
 
+	// Passive Input Tags
+	FGameplayTag InputTag_Passive_1;
+	FGameplayTag InputTag_Passive_2;
+
 	// Damage Tags
 	FGameplayTag Damage;
 	FGameplayTag Damage_Fire;

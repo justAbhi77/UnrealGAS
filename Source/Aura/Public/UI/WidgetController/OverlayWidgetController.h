@@ -15,7 +15,6 @@ struct FAuraAbilityInfo;
 
 // Delegate for broadcasting changes in attribute values
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, Info);
 
 // Delegate for broadcasting message widget data
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUiWidgetRow, Row);
@@ -59,10 +58,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 
-	// Delegate for broadcasting Ability information
-	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
-	FAbilityInfoSignature AbilityInfoDelegate;
-
 	// Delegate for broadcasting changes in Experience points
 	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
 	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
@@ -76,10 +71,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
 
-	// Ability information Data Asset
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
-	TObjectPtr<UAbilityInfo> AbilityInfo;
-
 	/**
 	 * Retrieves a row from a DataTable using a GameplayTag as a key.
 	 * @param DataTable - The DataTable to search.
@@ -90,10 +81,10 @@ protected:
 	static T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
 
 	// Broadcast initial values for all startup abilities given to this Ability System Comp
-	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent) const;
+	// void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent) const;
 
 	// Calculate level when experience points changes
-	void OnXpChanged(int32 NewXp) const;
+	void OnXpChanged(int32 NewXp);
 };
 
 template <typename T>

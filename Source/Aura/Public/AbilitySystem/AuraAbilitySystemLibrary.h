@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -8,9 +8,12 @@
 #include "Data/CharacterClassInfo.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class AAuraHUD;
 class UOverlayWidgetController;
 class UAttributeMenuWidgetController;
 class UAbilitySystemComponent;
+class USpellMenuWidgetController;
+struct FWidgetControllerParams;
 
 /**
  * Blueprint Function Library for retrieving widget controllers in the Aura system.
@@ -21,12 +24,15 @@ class AURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
+	static bool MakeWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutWcParams, AAuraHUD*& OutAuraHud);
+
 	/**
 	 * Retrieves the Overlay Widget Controller from the player's HUD.
 	 * @param WorldContextObject The context object for accessing the world.
 	 * @return A pointer to the Overlay Widget Controller, or nullptr if not found.
 	 */
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|WidgetController")
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static UOverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
 
 	/**
@@ -34,8 +40,16 @@ public:
 	 * @param WorldContextObject The context object for accessing the world.
 	 * @return A pointer to the Attribute Menu Widget Controller, or nullptr if not found.
 	 */
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|WidgetController")
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const UObject* WorldContextObject);
+
+	/**
+	 * Retrieves the Spell Menu Widget Controller from the player's HUD.
+	 * @param WorldContextObject The context object for accessing the world.
+	 * @return A pointer to the Spell Menu Widget Controller, or nullptr if not found.
+	 */
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
+	static USpellMenuWidgetController* GetSpellMenuWidgetController(const UObject* WorldContextObject);
 
 	/** Initializes default attributes for a character based on class and level.
 	 * @param WorldContextObject The context object for accessing the world.
@@ -74,10 +88,10 @@ public:
 
 	/** Retrieves live players within a specified radius, ignoring certain actors.
 	 * @param WorldContextObject The context object for accessing the world.
-	 * @param OutOverlappingActors The array of overlapping actors 
+	 * @param OutOverlappingActors The array of overlapping actors
 	 * @param ActorsToIgnore The actors to ignore when querying the World
 	 * @param Radius The radius of the sphere to query within
-	 * @param SphereOrigin The origin of the sphere in the world 
+	 * @param SphereOrigin The origin of the sphere in the world
 	 */
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static void GetLivePlayersWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors,

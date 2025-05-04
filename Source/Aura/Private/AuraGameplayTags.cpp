@@ -55,6 +55,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.InputTag_3, "InputTag.3", "Input for key 3");
 	RegisterTag(GameplayTags.InputTag_4, "InputTag.4", "Input for key 4");
 
+	// Passive Input Tags
+	RegisterTag(GameplayTags.InputTag_Passive_1, "InputTag.Passive.1", "Input for Passive key 1");
+	RegisterTag(GameplayTags.InputTag_Passive_2, "InputTag.Passive.2", "Input for Passive key 2");
+
 	// Damage Tags
 	RegisterTag(GameplayTags.Damage, "Damage", "Base damage tag");
 	RegisterTag(GameplayTags.Damage_Fire, "Damage.Fire", "Fire damage type");

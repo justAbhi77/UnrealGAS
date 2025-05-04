@@ -13,6 +13,7 @@ class UAuraUserWidget;
 struct FWidgetControllerParams;
 class UAttributeSet;
 class UAbilitySystemComponent;
+class USpellMenuWidgetController;
 
 /**
  * Manages the user interface, including the overlay and attribute menu widgets,
@@ -37,6 +38,13 @@ public:
 	 * @return A pointer to the Attribute Menu Widget Controller.
 	 */
 	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
+
+	/**
+	 * Retrieves or creates the Spell Menu Widget Controller.
+	 * @param WCParams - Parameters required to initialize the controller.
+	 * @return A pointer to the Spell Menu Widget Controller.
+	 */
+	USpellMenuWidgetController* GetSpellMenuWidgetController(const FWidgetControllerParams& WCParams);
 
 	/**
 	 * Initializes the Overlay Widget, sets its controller, and adds it to the viewport.
@@ -71,4 +79,12 @@ private:
 	// The instance of the Attribute Menu Widget Controller.
 	UPROPERTY()
 	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
+
+	// The class to use for the Spell Menu Widget Controller.
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<USpellMenuWidgetController> SpellMenuWidgetControllerClass;
+
+	// The instance of the Spell Menu Widget Controller.
+	UPROPERTY()
+	TObjectPtr<USpellMenuWidgetController> SpellMenuWidgetController;
 };
