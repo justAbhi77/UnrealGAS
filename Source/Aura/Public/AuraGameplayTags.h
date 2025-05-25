@@ -46,6 +46,8 @@ public:
 	FGameplayTag Attributes_Resistance_Arcane;
 	FGameplayTag Attributes_Resistance_Physical;
 
+	FGameplayTag Abilities_None;
+
 	// Meta Attributes
 	FGameplayTag Attributes_Meta_IncomingXp;
 
@@ -72,6 +74,18 @@ public:
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_Summon;
 	FGameplayTag Abilities_Fire_FireBolt;
+	FGameplayTag Abilities_Lighting_Electrocute;
+
+	FGameplayTag Abilities_HitReact;
+
+	FGameplayTag Abilities_Status_Locked;
+	FGameplayTag Abilities_Status_Eligible;
+	FGameplayTag Abilities_Status_Unlocked;
+	FGameplayTag Abilities_Status_Equipped;
+
+	FGameplayTag Abilities_Type_Offensive;
+	FGameplayTag Abilities_Type_Passive;
+	FGameplayTag Abilities_Type_None;
 
 	// Cooldown Tags
 	FGameplayTag Cooldown_Fire_FireBolt;

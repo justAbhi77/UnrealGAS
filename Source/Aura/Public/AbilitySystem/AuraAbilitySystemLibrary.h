@@ -14,6 +14,7 @@ class UAttributeMenuWidgetController;
 class UAbilitySystemComponent;
 class USpellMenuWidgetController;
 struct FWidgetControllerParams;
+class UAbilityInfo;
 
 /**
  * Blueprint Function Library for retrieving widget controllers in the Aura system.
@@ -69,6 +70,9 @@ public:
 	// Retrieves character class information.
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
 
 	// Checks if a hit was blocked.
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")

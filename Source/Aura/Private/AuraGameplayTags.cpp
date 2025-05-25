@@ -66,10 +66,24 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.Damage_Arcane, "Damage.Arcane", "Arcane damage type");
 	RegisterTag(GameplayTags.Damage_Physical, "Damage.Physical", "Physical damage type");
 
+	RegisterTag(GameplayTags.Abilities_None, "Abilities.None", "No Ability");
+
 	// Ability Tags
 	RegisterTag(GameplayTags.Abilities_Attack, "Abilities.Attack", "Attack ability tag");
 	RegisterTag(GameplayTags.Abilities_Summon, "Abilities.Summon", "Summon ability tag");
 	RegisterTag(GameplayTags.Abilities_Fire_FireBolt, "Abilities.Fire.FireBolt", "FireBolt ability tag");
+	RegisterTag(GameplayTags.Abilities_Lighting_Electrocute, "Abilities.Lighting.Electrocute", "Electrocute ability tag");
+
+	RegisterTag(GameplayTags.Abilities_HitReact, "Abilities.HitReact", "Hit reaction ability");
+	RegisterTag(GameplayTags.Abilities_Status_Locked, "Abilities.Status.Locked", "Ability is locked and cannot be activated");
+	RegisterTag(GameplayTags.Abilities_Status_Eligible, "Abilities.Status.Eligible", "Ability is eligible for activation");
+	RegisterTag(GameplayTags.Abilities_Status_Unlocked, "Abilities.Status.Unlocked", "Ability is unlocked and can be activated");
+	RegisterTag(GameplayTags.Abilities_Status_Equipped, "Abilities.Status.Equipped", "Ability is Equipped");
+
+	
+	RegisterTag(GameplayTags.Abilities_Type_Offensive, "Abilities.Type.Offensive", "Offensive ability type");
+	RegisterTag(GameplayTags.Abilities_Type_Passive, "Abilities.Type.Passive", "Passive ability type");
+	RegisterTag(GameplayTags.Abilities_Type_None, "Abilities.Type.None", "No ability type");
 
 	// Cooldown Tags
 	RegisterTag(GameplayTags.Cooldown_Fire_FireBolt, "Cooldown.Fire.FireBolt", "FireBolt ability cooldown");

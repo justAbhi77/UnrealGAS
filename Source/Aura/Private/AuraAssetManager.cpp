@@ -23,6 +23,7 @@ void UAuraAssetManager::StartInitialLoading()
 	Super::StartInitialLoading();
 
 	UE_LOG(LogAura, Display, TEXT("Initializing Native GameplayTags from from [%hs]"), __FUNCTION__);
+
 	// Initialize the native gameplay tags for the project.
 	FAuraGameplayTags::InitializeNativeGameplayTags();
 

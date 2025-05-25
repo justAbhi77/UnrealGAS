@@ -8,6 +8,7 @@
 #include "AuraGameModeBase.generated.h"
 
 class UCharacterClassInfo;
+class UAbilityInfo;
 
 /**
  * Manages default character class information.
@@ -20,4 +21,7 @@ public:
 	// Stores default character class information, used for enemy initialization
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Class Defaults")
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
+
+	UPROPERTY(EditdefaultsOnly, Category = "Ability Info")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
 };

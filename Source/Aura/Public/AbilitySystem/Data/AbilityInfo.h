@@ -8,6 +8,8 @@
 #include "GameplayTagContainer.h"
 #include "AbilityInfo.generated.h"
 
+class UGameplayAbility;
+
 /**
  * Holds metadata for an ability, such as tags and UI assets
  */
@@ -24,6 +26,9 @@ struct FAuraAbilityInfo
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag = FGameplayTag();
 
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag StatusTag = FGameplayTag();
+
 	// Tag used for identifying cooldown effects
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag CooldownTag = FGameplayTag();
@@ -35,6 +40,12 @@ struct FAuraAbilityInfo
 	// Background material used for UI slot
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UMaterialInterface> BackgroundMaterial = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 LevelRequirement = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayAbility> Ability;
 };
 
 /**
