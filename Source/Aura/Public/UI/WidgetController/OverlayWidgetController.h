@@ -85,6 +85,8 @@ protected:
 
 	// Calculate level when experience points changes
 	void OnXpChanged(int32 NewXp);
+
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot) const;
 };
 
 template <typename T>
