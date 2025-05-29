@@ -22,18 +22,13 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 			// Cooldown
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
 			
-			"<Default>Launches a bolt of fire, "
-			"exploding on impact and dealing: </>"
+			"<Default>Launches a bolt of fire, exploding on impact and dealing: </>"
 
 			// Damage
-			"<Damage>%d</><Default> fire damage with"
-			" a chance to burn</>"),
+			"<Damage>%d</><Default> fire damage with a chance to burn</>"),
 
 			// Values
-			Level,
-			ManaCost,
-			Cooldown,
-			Damage);
+			Level, ManaCost, Cooldown, Damage);
 	}
 	else
 	{
@@ -49,19 +44,13 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
 
 			// Number of FireBolts
-			"<Default>Launches %d bolts of fire, "
-			"exploding on impact and dealing: </>"
+			"<Default>Launches %d bolts of fire, exploding on impact and dealing: </>"
 
 			// Damage
-			"<Damage>%d</><Default> fire damage with"
-			" a chance to burn</>"),
+			"<Damage>%d</><Default> fire damage with a chance to burn</>"),
 
 			// Values
-			Level,
-			ManaCost,
-			Cooldown,
-			FMath::Min(Level, NumProjectiles),
-			Damage);
+			Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), Damage);
 		
 	}
 }
@@ -83,17 +72,11 @@ FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
 
 			// Number of FireBolts
-			"<Default>Launches %d bolts of fire, "
-			"exploding on impact and dealing: </>"
+			"<Default>Launches %d bolts of fire, exploding on impact and dealing: </>"
 
 			// Damage
-			"<Damage>%d</><Default> fire damage with"
-			" a chance to burn</>"),
+			"<Damage>%d</><Default> fire damage with a chance to burn</>"),
 
 			// Values
-			Level,
-			ManaCost,
-			Cooldown,
-			FMath::Min(Level, NumProjectiles),
-			Damage);
+			Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), Damage);
 }

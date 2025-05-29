@@ -14,6 +14,6 @@ class AURA_API UAuraFireBolt : public UAuraProjectileSpell
 {
 	GENERATED_BODY()
 public:
-	FString GetDescription(int32 Level);
-	FString GetNextLevelDescription(int32 Level);
+	virtual FString GetDescription(int32 Level) override;
+	virtual FString GetNextLevelDescription(int32 Level) override;
 };
