@@ -103,9 +103,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	// Effects
 	RegisterTag(GameplayTags.Effects_HitReact, "Effects.HitReact", "Tag for hit reacting");
 
+	// Debuffs
+	RegisterTag(GameplayTags.Debuff_Arcane, "Debuff.Arcane", "Debuff for Arcane damage");
+	RegisterTag(GameplayTags.Debuff_Burn, "Debuff.Burn", "Debuff for Fire damage");
+	RegisterTag(GameplayTags.Debuff_Physical, "Debuff.Physical", "Debuff for Physical damage");
+	RegisterTag(GameplayTags.Debuff_Stun, "Debuff.Stun", "Debuff for Lighting damage");
+
+	RegisterTag(GameplayTags.Debuff_Chance, "Debuff.Chance", "Debuff Chance");
+	RegisterTag(GameplayTags.Debuff_Damage, "Debuff.Damage", "Debuff Damage");
+	RegisterTag(GameplayTags.Debuff_Duration, "Debuff.Duration", "Debuff Duration");
+	RegisterTag(GameplayTags.Debuff_Frequency, "Debuff.Frequency", "Debuff Frequency");
+
 	// Map Damage Types to Resistances
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire, GameplayTags.Attributes_Resistance_Fire);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lighting, GameplayTags.Attributes_Resistance_Lighting);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Arcane, GameplayTags.Attributes_Resistance_Arcane);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
+
+	// Map Damage Types to Debuffs
+	GameplayTags.DamageTypesToDebuff.Add(GameplayTags.Damage_Arcane, GameplayTags.Debuff_Arcane);
+	GameplayTags.DamageTypesToDebuff.Add(GameplayTags.Damage_Lighting, GameplayTags.Debuff_Stun);
+	GameplayTags.DamageTypesToDebuff.Add(GameplayTags.Damage_Physical, GameplayTags.Debuff_Physical);
+	GameplayTags.DamageTypesToDebuff.Add(GameplayTags.Damage_Fire, GameplayTags.Debuff_Burn);
 }

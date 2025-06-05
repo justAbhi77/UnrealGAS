@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AuraAbilityTypes.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "Interaction/CombatInterface.h"
 #include "AuraDamageGameplayAbility.generated.h"
@@ -25,17 +26,29 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CauseDamage(AActor* TargetActor);
 
+	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr) const;
 protected:
 	// Gameplay effect class that defines the damage applied by this ability.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
-	/** 
-	 * A map containing various damage types and their corresponding scalable values.
-	 * The values are adjusted based on the ability's level.
-	 */
-	UPROPERTY(EditDefaultsOnly, Category="Damage")
-	TMap<FGameplayTag, FScalableFloat> DamageTypes;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FGameplayTag DamageType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FScalableFloat Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float DebuffChance = 20.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float DebuffDamage = 5.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float DebuffFrequency = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float DebuffDuration = 5.f;
 
 	/** 
 	 * Selects a random animation montage from the provided array.
@@ -44,6 +57,4 @@ protected:
 	 */
 	UFUNCTION(BlueprintPure)
 	static FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages);
-
-	float GetDamageByDamageType(float InLevel, const FGameplayTag& DamageType);
 };
