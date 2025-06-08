@@ -218,5 +218,11 @@ private:
 
 	void SendXpEvent(const FEffectProperties& Props);
 
+	void HandleIncomingDamage(const FEffectProperties& Props);
+
+	void HandleIncomingXp(const FEffectProperties& Props);
+
+	void Debuff(const FEffectProperties& Props);
+
 	bool bTopOffHealth = false,bTopOffMana = false;
 };

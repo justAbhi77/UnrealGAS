@@ -16,6 +16,7 @@ class UAttributeSet;
 class UGameplayEffect;
 class UAnimMontage;
 class UNiagaraSystem;
+class UDebuffNiagaraComponent;
 
 /**
  * Base class for characters with abilities and combat capabilities.
@@ -31,7 +32,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override{ return AbilitySystemComponent; }
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	virtual bool IsDead_Implementation() const override { return bDead; }
 	virtual AActor* GetAvatar_Implementation() override{ return this; }
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override{ return AttackMontages; }
@@ -42,9 +43,12 @@ public:
 	virtual int32 GetMinionCount_Implementation() override{ return MinionCount; }
 	virtual void IncrementMinionCount_Implementation(int32 Amount) override{ MinionCount += Amount; }
 	virtual ECharacterClass GetCharacterClass_Implementation() override{ return CharacterClass; }
+	virtual FOnAscRegistered GetOnAscRegisteredDelegate() override{ return OnAscRegistered; }
+
+	FOnAscRegistered OnAscRegistered;
 
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastHandleDeath();
+	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 #if WITH_EDITOR
 	// Handles property changes in the editor.
@@ -144,4 +148,7 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+
+	UPROPERTY(VisibleAnywhere, Category = "Debuff")
+	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
 };

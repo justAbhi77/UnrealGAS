@@ -38,7 +38,7 @@ public:
 
 	// Combat Interface
 	virtual int32 GetPlayerLevel_Implementation() const override{ return Level; }
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 
 	// Attribute Change Delegates
 	UPROPERTY(BlueprintAssignable)

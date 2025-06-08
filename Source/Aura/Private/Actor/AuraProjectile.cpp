@@ -50,28 +50,43 @@ void AAuraProjectile::BeginPlay()
 void AAuraProjectile::Destroyed()
 {
 	UE_LOG(LogAura, Display, TEXT("Projectile actor [%s] being destroyed"), *GetNameSafe(this));
-	if(!bHit) HandleImpact();
+	if(!bHit && !HasAuthority()) HandleImpact();
 	Super::Destroyed();
 }
 
 void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(!DamageEffectSpecHandle.Data.IsValid()) return;
-
 	UE_LOG(LogAura, Display, TEXT("Projectile actor [%s] Overlapped with [%s]"), *GetNameSafe(this), *GetNameSafe(OtherActor));
 
-	AActor* EffectCauser = DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser();
-	if(EffectCauser == OtherActor) return;
+	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
+	if(SourceAvatarActor == OtherActor) return;
 
-	if(!bFriendlyFire && !UAuraAbilitySystemLibrary::IsNotFriend(EffectCauser, OtherActor)) return;
+	if(!bFriendlyFire && !UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return;
 
 	if(!bHit) HandleImpact();
 
 	if(HasAuthority())
 	{
 		if(UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
-			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+		{
+			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
+			DamageEffectParams.DeathImpulse = DeathImpulse;
+			DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
+
+			const bool bKnockback = FMath::RandRange(1, 100) < DamageEffectParams.KnockbackChance;
+			if(bKnockback)
+			{
+				FRotator Rotation = GetActorRotation();
+				Rotation.Pitch = 45.f;
+				
+				const FVector KnockbackDirection = Rotation.Vector();
+				const FVector KnockbackForce = KnockbackDirection * DamageEffectParams.KnockbackForceMagnitude;
+				DamageEffectParams.KnockbackForce = KnockbackForce;
+			}
+
+			UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
+		}
 
 		Destroy();
 	}

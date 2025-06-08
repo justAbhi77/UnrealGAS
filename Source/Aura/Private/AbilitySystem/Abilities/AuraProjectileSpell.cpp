@@ -31,6 +31,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 
 	if(!Projectile) return;
 
+	/**
 	// Create effect context for applying damage effects
 	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 	FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
@@ -49,6 +50,9 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageType, ScaledDamage);
 
 	Projectile->DamageEffectSpecHandle = SpecHandle;
+	*/
+
+	Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 
 	// Complete the spawning process
 	Projectile->FinishSpawning(SpawnTransform);

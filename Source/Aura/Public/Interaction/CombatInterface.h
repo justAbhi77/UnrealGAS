@@ -12,6 +12,9 @@
 class UAnimMontage;
 class UNiagaraSystem;
 class USoundBase;
+class UAbilitySystemComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAscRegistered, UAbilitySystemComponent*)
 
 /**
  * Struct representing an attack montage with associated tags and effects.
@@ -81,7 +84,7 @@ public:
 	AActor* GetAvatar();
 
 	// Handles the death logic for the actor.
-	virtual void Die() = 0;
+	virtual void Die(const FVector& DeathImpulse) = 0;
 
 	// Returns a list of attack montages available to the actor.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
@@ -106,4 +109,6 @@ public:
 	// Returns the character class.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterClass GetCharacterClass();
+
+	virtual FOnAscRegistered GetOnAscRegisteredDelegate() = 0;
 };
