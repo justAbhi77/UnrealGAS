@@ -17,6 +17,7 @@ class IEnemyInterface;
 class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
+class UNiagaraSystem;
 
 /**
  * Handles player input, cursor interaction, auto-running, and combat-related ability inputs.
@@ -90,6 +91,9 @@ private:
 	// For auto-run navigation
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AutoRun")
+	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
 
 	void AutoRun();
 

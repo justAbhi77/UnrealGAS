@@ -54,6 +54,12 @@ public:
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities);
 
 	/**
+	 * Handles input pressed for abilities tied to a specific input tag.
+	 * @param InputTag The tag identifying the input action.
+	 */
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
+
+	/**
 	 * Handles input held for abilities tied to a specific input tag.
 	 * @param InputTag The tag identifying the input action.
 	 */

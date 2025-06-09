@@ -50,7 +50,15 @@ void AAuraProjectile::BeginPlay()
 void AAuraProjectile::Destroyed()
 {
 	UE_LOG(LogAura, Display, TEXT("Projectile actor [%s] being destroyed"), *GetNameSafe(this));
+
+	if(LoopingSoundComponent)
+	{
+		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
+	}
+
 	if(!bHit && !HasAuthority()) HandleImpact();
+
 	Super::Destroyed();
 }
 
@@ -103,7 +111,10 @@ void AAuraProjectile::HandleImpact()
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 
 	if(LoopingSoundComponent)
+	{
 		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
+	}
 
 	bHit = true;
 }

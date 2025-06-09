@@ -14,6 +14,7 @@
 #include "Interaction/EnemyInterface.h"
 #include "GameFramework/Character.h"
 #include "UI/Widget/DamageTextComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -149,6 +150,8 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 		bTargeting = ThisActor != nullptr;
 		bAutoRunning = false;
 	}
+
+	if(GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
@@ -164,8 +167,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 			if(ControlledPawn && FollowTime <= ShortPressThreshold)
 			{
 				// Find a path to the cached destination using the navigation system.
-				if(UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(
-					this, ControlledPawn->GetActorLocation(), CachedDestination))
+				if(UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
 				{
 					// Clear the current spline path and rebuild it using the calculated navigation path.
 					Spline->ClearSplinePoints();
@@ -179,6 +181,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 					bAutoRunning = !NavPath->PathPoints.IsEmpty(); // Mark the character for auto-running.
 				}
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 			}
 
 		// Reset data since input released
