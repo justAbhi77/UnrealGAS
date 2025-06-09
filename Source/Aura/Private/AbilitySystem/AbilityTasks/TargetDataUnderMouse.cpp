@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/AbilityTasks/TargetDataUnderMouse.h"
 #include "AbilitySystemComponent.h"
+#include "GameFramework/PlayerController.h"
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
 {
@@ -34,7 +35,23 @@ void UTargetDataUnderMouse::SendMouseCursorData() const
 	if(!PC) return;
 
 	FHitResult CursorHit;
-	PC->GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	bool HitResult = PC->GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	if(!HitResult)
+	{
+		// If no hit under cursor, apply fallback
+		FVector WorldLocation, WorldDirection;
+		if(PC->DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
+		{
+			FVector TraceStart = WorldLocation;
+			FVector TraceEnd = TraceStart + WorldDirection * 1000.f; // 1,000 units forward
+
+			// set location far in the direction
+			CursorHit.Location = TraceEnd;
+			CursorHit.ImpactPoint = TraceEnd;
+			CursorHit.TraceEnd = TraceEnd;
+			CursorHit.bBlockingHit = false;
+		}
+	}
 
 	// Create gameplay target data
 	FGameplayAbilityTargetDataHandle DataHandle;
