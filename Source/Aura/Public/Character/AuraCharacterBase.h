@@ -44,6 +44,7 @@ public:
 	virtual void IncrementMinionCount_Implementation(int32 Amount) override{ MinionCount += Amount; }
 	virtual ECharacterClass GetCharacterClass_Implementation() override{ return CharacterClass; }
 	virtual FOnAscRegistered GetOnAscRegisteredDelegate() override{ return OnAscRegistered; }
+	virtual USkeletalMeshComponent* GetWeapon_Implementation() override{ return Weapon; }
 
 	FOnAscRegistered OnAscRegistered;
 

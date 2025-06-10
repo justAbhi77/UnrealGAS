@@ -114,6 +114,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.Debuff_Duration, "Debuff.Duration", "Debuff Duration");
 	RegisterTag(GameplayTags.Debuff_Frequency, "Debuff.Frequency", "Debuff Frequency");
 
+	// Player Block Tags
+	RegisterTag(GameplayTags.Player_Block_CursorTrace, "Player.Block.CursorTrace", "Block tracing under the cursor");
+	RegisterTag(GameplayTags.Player_Block_InputHeld, "Player.Block.InputHeld", "Block Input Held callback for input");
+	RegisterTag(GameplayTags.Player_Block_InputPressed, "Player.Block.InputPressed", "Block Input Pressed callback for input");
+	RegisterTag(GameplayTags.Player_Block_InputReleased, "Player.Block.InputReleased", "Block Input Released callback for input");
+
 	// Map Damage Types to Resistances
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire, GameplayTags.Attributes_Resistance_Fire);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lighting, GameplayTags.Attributes_Resistance_Lighting);
