@@ -13,6 +13,8 @@
 #include "UI/HUD/AuraHUD.h"
 #include "NiagaraComponent.h"
 #include "Aura/AuraLogChannels.h"
+#include "AuraGameplayTags.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -81,6 +83,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = SystemComponent;
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 	OnAscRegistered.Broadcast(AbilitySystemComponent);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Debuff_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AAuraCharacter::StunTagChanged);
 
 	if(auto* AuraPC = Cast<AAuraPlayerController>(GetController()))
 		if(auto* AuraHUD = Cast<AAuraHUD>(AuraPC->GetHUD()))
@@ -102,6 +105,35 @@ void AAuraCharacter::Tick(float DeltaSeconds)
 	if(!CameraBoom) return;
 	const float CurrentArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, DesiredTargetArmLength, DeltaSeconds, CameraZoomInterpSpeed);
 	CameraBoom->TargetArmLength = CurrentArmLength;
+}
+
+void AAuraCharacter::OnRep_Stunned()
+{
+	if(UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+		FGameplayTagContainer BlockedTags;
+		BlockedTags.AddTag(GameplayTags.Player_Block_CursorTrace);
+		BlockedTags.AddTag(GameplayTags.Player_Block_InputHeld);
+		BlockedTags.AddTag(GameplayTags.Player_Block_InputPressed);
+		BlockedTags.AddTag(GameplayTags.Player_Block_InputReleased);
+		if(bIsStunned)
+		{
+			AuraASC->AddLooseGameplayTags(BlockedTags);
+			StunDebuffComponent->Activate();
+		}
+		else
+		{
+			AuraASC->RemoveLooseGameplayTags(BlockedTags);
+			StunDebuffComponent->Deactivate();
+		}
+	}
+}
+
+void AAuraCharacter::OnRep_Burned()
+{
+	if(bIsBurned) BurnDebuffComponent->Activate();
+	else BurnDebuffComponent->Deactivate();
 }
 
 void AAuraCharacter::MulticastLevelUpParticles_Implementation() const

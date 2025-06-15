@@ -124,7 +124,7 @@ void USpellMenuWidgetController::EquipButtonPressed()
 	
 	const FGameplayTag SelectedStatus = GetAuraAsc()->GetStatusFromAbilityTag(SelectedAbility.AbilityTag);
 	if(SelectedStatus.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Equipped))
-		SelectedSlot = GetAuraAsc()->GetInputTagFromAbilityTag(SelectedAbility.AbilityTag);
+		SelectedSlot = GetAuraAsc()->GetSlotFromAbilityTag(SelectedAbility.AbilityTag);
 }
 
 void USpellMenuWidgetController::SpellRowGlobePressed(const FGameplayTag& SlotTag, const FGameplayTag& AbilityType)

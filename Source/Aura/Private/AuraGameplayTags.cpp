@@ -120,6 +120,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.Player_Block_InputPressed, "Player.Block.InputPressed", "Block Input Pressed callback for input");
 	RegisterTag(GameplayTags.Player_Block_InputReleased, "Player.Block.InputReleased", "Block Input Released callback for input");
 
+	RegisterTag(GameplayTags.Abilities_Passive_LifeSiphon , "Abilities.Passive.LifeSiphon", "Life Siphon");
+	RegisterTag(GameplayTags.Abilities_Passive_ManaSiphon , "Abilities.Passive.ManaSiphon", "Mana Siphon");
+	RegisterTag(GameplayTags.Abilities_Passive_HaloOfProtection , "Abilities.Passive.HaloOfProtection", "Halo Of Protection");
+
 	// Map Damage Types to Resistances
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire, GameplayTags.Attributes_Resistance_Fire);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lighting, GameplayTags.Attributes_Resistance_Lighting);

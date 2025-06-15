@@ -53,6 +53,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	virtual void OnRep_Stunned() override;
+	virtual void OnRep_Burned() override;
 protected:
 	// Spring arm that controls the camera position
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")

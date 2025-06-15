@@ -29,6 +29,8 @@ class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInte
 public:
 	AAuraCharacterBase();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override{ return AbilitySystemComponent; }
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
@@ -43,10 +45,14 @@ public:
 	virtual int32 GetMinionCount_Implementation() override{ return MinionCount; }
 	virtual void IncrementMinionCount_Implementation(int32 Amount) override{ MinionCount += Amount; }
 	virtual ECharacterClass GetCharacterClass_Implementation() override{ return CharacterClass; }
-	virtual FOnAscRegistered GetOnAscRegisteredDelegate() override{ return OnAscRegistered; }
+	virtual FOnAscRegistered& GetOnAscRegisteredDelegate() override{ return OnAscRegistered; }
+	virtual FOnDeathSignature& GetOnDeathDelegate() override{ return OnDeathDelegate; }
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override{ return Weapon; }
+	virtual void SetIsBeingShocked_Implementation(bool bInShock) override{ bIsBeingShocked = bInShock; }
+	virtual bool IsBeingShocked_Implementation() const override{ return bIsBeingShocked; }
 
 	FOnAscRegistered OnAscRegistered;
+	FOnDeathSignature OnDeathDelegate;
 
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
@@ -55,6 +61,21 @@ public:
 	// Handles property changes in the editor.
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
+
+	UPROPERTY(ReplicatedUsing=OnRep_Stunned, BlueprintReadOnly)
+	bool bIsStunned = false;
+
+	UPROPERTY(ReplicatedUsing=OnRep_Burned, BlueprintReadOnly)
+	bool bIsBurned = false;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsBeingShocked = false;
+
+	UFUNCTION()
+	virtual void OnRep_Stunned();
+
+	UFUNCTION()
+	virtual void OnRep_Burned();
 
 protected:
 	bool bDead = false;
@@ -98,6 +119,11 @@ protected:
 	// Name of the socket where the tail hand is
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName TailSocketName;
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float BaseWalkSpeed = 600.f;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -152,4 +178,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Debuff")
 	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Debuff")
+	TObjectPtr<UDebuffNiagaraComponent> StunDebuffComponent;
 };

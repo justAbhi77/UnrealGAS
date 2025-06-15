@@ -28,6 +28,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr) const;
+
+	UFUNCTION(BlueprintPure)
+	float GetDamageAtLevel() const{ return Damage.GetValueAtLevel(GetAbilityLevel()); }
 protected:
 	// Gameplay effect class that defines the damage applied by this ability.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage")

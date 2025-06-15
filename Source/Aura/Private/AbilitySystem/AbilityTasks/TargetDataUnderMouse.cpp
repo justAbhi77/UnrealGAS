@@ -4,6 +4,7 @@
 #include "AbilitySystem/AbilityTasks/TargetDataUnderMouse.h"
 #include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "Aura/Aura.h"
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
 {
@@ -35,7 +36,7 @@ void UTargetDataUnderMouse::SendMouseCursorData() const
 	if(!PC) return;
 
 	FHitResult CursorHit;
-	bool HitResult = PC->GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	bool HitResult = PC->GetHitResultUnderCursor(ECC_Target, false, CursorHit);
 	if(!HitResult)
 	{
 		// If no hit under cursor, apply fallback

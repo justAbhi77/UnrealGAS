@@ -123,6 +123,11 @@ public:
 	FGameplayTag Player_Block_InputHeld;
 	FGameplayTag Player_Block_InputReleased;
 
+	// Passive
+	FGameplayTag Abilities_Passive_HaloOfProtection;
+	FGameplayTag Abilities_Passive_LifeSiphon;
+	FGameplayTag Abilities_Passive_ManaSiphon;
+
 	// Maps Damage Types to corresponding Resistance Tags
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuff;

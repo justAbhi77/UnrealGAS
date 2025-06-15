@@ -15,6 +15,7 @@ class USoundBase;
 class UAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnAscRegistered, UAbilitySystemComponent*)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignature, AActor*, DeadActor);
 
 /**
  * Struct representing an attack montage with associated tags and effects.
@@ -86,6 +87,9 @@ public:
 	// Handles the death logic for the actor.
 	virtual void Die(const FVector& DeathImpulse) = 0;
 
+	// Returns the death delegate for when the actor dies.
+	virtual FOnDeathSignature& GetOnDeathDelegate() = 0;
+
 	// Returns a list of attack montages available to the actor.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	TArray<FTaggedMontage> GetAttackMontages();
@@ -110,11 +114,17 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterClass GetCharacterClass();
 
-	virtual FOnAscRegistered GetOnAscRegisteredDelegate() = 0;
+	virtual FOnAscRegistered& GetOnAscRegisteredDelegate() = 0;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetInShockLoop(bool bInLoop);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USkeletalMeshComponent* GetWeapon();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsBeingShocked() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetIsBeingShocked(bool bInShock);
 };
