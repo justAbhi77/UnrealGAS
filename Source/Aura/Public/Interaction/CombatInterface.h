@@ -16,6 +16,7 @@ class UAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnAscRegistered, UAbilitySystemComponent*)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignature, AActor*, DeadActor);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamageSignature, float /*DamageAmount*/);
 
 /**
  * Struct representing an attack montage with associated tags and effects.
@@ -89,6 +90,9 @@ public:
 
 	// Returns the death delegate for when the actor dies.
 	virtual FOnDeathSignature& GetOnDeathDelegate() = 0;
+
+	// Returns the damage delegate for when the actor receives damage.
+	virtual FOnDamageSignature& GetOnDamageSignature() = 0;
 
 	// Returns a list of attack montages available to the actor.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)

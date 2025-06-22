@@ -17,6 +17,7 @@ class UGameplayEffect;
 class UAnimMontage;
 class UNiagaraSystem;
 class UDebuffNiagaraComponent;
+class UPassiveNiagaraComponent;
 
 /**
  * Base class for characters with abilities and combat capabilities.
@@ -30,6 +31,10 @@ public:
 	AAuraCharacterBase();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
+	virtual void Tick(float DeltaTime) override;
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override{ return AbilitySystemComponent; }
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
@@ -50,9 +55,11 @@ public:
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override{ return Weapon; }
 	virtual void SetIsBeingShocked_Implementation(bool bInShock) override{ bIsBeingShocked = bInShock; }
 	virtual bool IsBeingShocked_Implementation() const override{ return bIsBeingShocked; }
+	virtual FOnDamageSignature& GetOnDamageSignature() override{ return OnDamageDelegate; }
 
 	FOnAscRegistered OnAscRegistered;
 	FOnDeathSignature OnDeathDelegate;
+	FOnDamageSignature OnDamageDelegate;
 
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
@@ -154,6 +161,18 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> HaloOfProtectionNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> LifeSiphonNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> ManaSiphonNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> EffectAttachComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;

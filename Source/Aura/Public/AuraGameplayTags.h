@@ -75,6 +75,7 @@ public:
 	FGameplayTag Abilities_Summon;
 	FGameplayTag Abilities_Fire_FireBolt;
 	FGameplayTag Abilities_Lighting_Electrocute;
+	FGameplayTag Abilities_Arcane_ArcaneShards;
 
 	FGameplayTag Abilities_HitReact;
 

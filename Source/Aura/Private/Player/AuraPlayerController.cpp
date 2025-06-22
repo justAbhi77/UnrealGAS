@@ -2,6 +2,7 @@
 
 
 #include "Player/AuraPlayerController.h"
+#include "Engine/EngineTypes.h"
 #include "EnhancedInputSubsystems.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
@@ -15,6 +16,9 @@
 #include "GameFramework/Character.h"
 #include "UI/Widget/DamageTextComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Actor/MagicCircle.h"
+#include "Components/DecalComponent.h"
+#include "Aura/Aura.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -47,6 +51,7 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 	CursorTrace(); // Handle cursor tracing and auto-run
 	AutoRun();
+	UpdateMagicCircleLocation();
 }
 
 void AAuraPlayerController::CursorTrace()
@@ -60,7 +65,8 @@ void AAuraPlayerController::CursorTrace()
 		return;
 	}
 
-	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	const ECollisionChannel TraceChannel = IsValid(MagicCircle) ? ECC_ExcludePlayers : ECC_Visibility;
+	GetHitResultUnderCursor(TraceChannel, false, CursorHit);
 	if(!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
@@ -251,6 +257,22 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, 
 	}
 }
 
+void AAuraPlayerController::ShowMagicCircle(UMaterialInterface* DecalMaterial)
+{
+	if(!IsValid(MagicCircle))
+	{
+		MagicCircle = GetWorld()->SpawnActor<AMagicCircle>(MagicCircleClass);
+		if(DecalMaterial)
+			MagicCircle->MagicCircleDecal->SetMaterial(0, DecalMaterial);
+	}
+}
+
+void AAuraPlayerController::HideMagicCircle()
+{
+	if(IsValid(MagicCircle))
+		MagicCircle->Destroy();
+}
+
 void AAuraPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -283,6 +305,12 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 			UE_LOG(LogAura, Display, TEXT("Auto Running Canceled by movement input"));
 		bAutoRunning = false;
 	}
+}
+
+void AAuraPlayerController::UpdateMagicCircleLocation()
+{
+	if(IsValid(MagicCircle))
+		MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
 }
 
 inline void AAuraPlayerController::ShiftPressed()

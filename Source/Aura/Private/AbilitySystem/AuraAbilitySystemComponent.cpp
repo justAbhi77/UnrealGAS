@@ -191,10 +191,14 @@ void UAuraAbilitySystemComponent::AssignSlotToAbility(FGameplayAbilitySpec& Spec
 	Spec.DynamicAbilityTags.AddTag(Slot);
 }
 
+void UAuraAbilitySystemComponent::MulticastActivatePassiveEffect_Implementation(const FGameplayTag& AbilityTag, bool bActivate)
+{
+	ActivatePassiveEffect.Broadcast(AbilityTag, bActivate);
+}
+
 FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(const FGameplayTag& AbilityTag)
 {
 	FScopedAbilityListLock ActiveScopeLoc(*this);
-	
 	for(FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 		for(FGameplayTag Tag : AbilitySpec.Ability.Get()->AbilityTags)
 			if(Tag.MatchesTag(AbilityTag))
@@ -276,7 +280,7 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 		const bool bStatusValid = Status == GameplayTags.Abilities_Status_Equipped || Status == GameplayTags.Abilities_Status_Unlocked;
 		if(bStatusValid)
 		{
-			// Handle activation/deactivation for passive abilitiesAdd commentMore actions
+			// Handle activation/deactivation for passive abilities
 
 			if(!SlotIsEmpty(Slot)) // There is an ability in this slot already. Deactivate and clear its slot.
 			{
@@ -291,16 +295,22 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 					}
 
 					if(IsPassiveAbility(*SpecWithSlot))
+					{
+						MulticastActivatePassiveEffect(GetAbilityTagFromSpec(*SpecWithSlot), false);
 						DeactivatePassiveAbility.Broadcast(GetAbilityTagFromSpec(*SpecWithSlot));
+					}
 
 					ClearSlot(SpecWithSlot);
 				}
 			}
 
-			if(!AbilityHasAnySlot(*AbilitySpec)) // Ability doesn't yet have a slot (it's not active)Add commentMore actions
+			if(!AbilityHasAnySlot(*AbilitySpec)) // Ability doesn't yet have a slot (it's not active)
 			{
 				if(IsPassiveAbility(*AbilitySpec))
+				{
 					TryActivateAbility(AbilitySpec->Handle);
+					MulticastActivatePassiveEffect(AbilityTag, true);
+				}
 			}
 			AssignSlotToAbility(*AbilitySpec, Slot);
 

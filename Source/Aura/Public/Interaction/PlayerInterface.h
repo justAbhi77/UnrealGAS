@@ -66,4 +66,10 @@ public:
 	// Retrieves the player's current spell points.
 	UFUNCTION(BlueprintNativeEvent, Category = "Player|Spells")
 	int32 GetSpellPoints() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void HideMagicCircle();
 };

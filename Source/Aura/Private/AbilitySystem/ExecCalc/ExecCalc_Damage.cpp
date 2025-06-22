@@ -7,7 +7,10 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
+#include "GameplayEffectTypes.h"
 #include "Interaction/CombatInterface.h"
+#include "Camera/CameraShakeSourceActor.h"
+#include "Kismet/GameplayStatics.h"
 
 // Struct to store attribute capture definitions for damage calculations.
 struct AuraDamageStatics
@@ -94,6 +97,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		TargetPlayerLevel = ICombatInterface::Execute_GetPlayerLevel(TargetAvatar);
 
 	const FGameplayEffectSpec& GameplayEffectSpec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = GameplayEffectSpec.GetContext();
 	const FGameplayTagContainer* SourceTags = GameplayEffectSpec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = GameplayEffectSpec.CapturedTargetTags.GetAggregatedTags();
 
@@ -118,7 +122,27 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
 
 		float DamageTypeValue = GameplayEffectSpec.GetSetByCallerMagnitude(DamageTag, false);
+
+		if(DamageTypeValue <= 0.f)
+			continue;
+
 		DamageTypeValue *= (100.f - Resistance) / 100;
+
+		if(UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			if(ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
+				CombatInterface->GetOnDamageSignature().AddLambda([&](float DamageAmount)
+					{
+						DamageTypeValue = DamageAmount;
+					});
+
+			UGameplayStatics::ApplyRadialDamageWithFalloff(TargetAvatar, DamageTypeValue, 0.f, 
+				UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle), 
+				UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle), 
+				UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle), 
+				1.f, UDamageType::StaticClass(), TArray<AActor*>(), SourceAvatar, nullptr);
+		}
+
 		Damage += DamageTypeValue;
 	}
 
@@ -160,7 +184,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const bool bCriticalHit = FMath::RandRange(1, 100) < FMath::Max(EffectiveCriticalHitChance, 0.f);
 	Damage = bCriticalHit ? 2.f * Damage + SourceCriticalHitDamage : Damage;
 
-	FGameplayEffectContextHandle EffectContextHandle = GameplayEffectSpec.GetContext();
 	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
 	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCriticalHit);
 
