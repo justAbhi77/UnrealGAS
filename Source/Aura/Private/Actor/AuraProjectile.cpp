@@ -68,11 +68,7 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 {
 	UE_LOG(LogAura, Display, TEXT("Projectile actor [%s] Overlapped with [%s]"), *GetNameSafe(this), *GetNameSafe(OtherActor));
 
-	if(DamageEffectParams.SourceAbilitySystemComponent == nullptr) return;
-	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
-	if(SourceAvatarActor == OtherActor) return;
-
-	if(!bFriendlyFire && !UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return;
+	if(!IsValidOverlap(OtherActor)) return;
 
 	if(!bHit) HandleImpact();
 
@@ -119,4 +115,14 @@ void AAuraProjectile::HandleImpact()
 	}
 
 	bHit = true;
+}
+
+bool AAuraProjectile::IsValidOverlap(AActor* OtherActor)
+{
+	if (DamageEffectParams.SourceAbilitySystemComponent == nullptr) return false;
+	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
+	if (SourceAvatarActor == OtherActor) return false;
+	if (!bFriendlyFire && !UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return false;
+
+	return true;
 }

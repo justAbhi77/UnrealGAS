@@ -74,6 +74,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.Abilities_Fire_FireBolt, "Abilities.Fire.FireBolt", "FireBolt ability tag");
 	RegisterTag(GameplayTags.Abilities_Lighting_Electrocute, "Abilities.Lighting.Electrocute", "Electrocute ability tag");
 	RegisterTag(GameplayTags.Abilities_Arcane_ArcaneShards , "Abilities.Arcane.ArcaneShards", "Arcane Shards Ability Tag");
+	RegisterTag(GameplayTags.Abilities_Fire_FireBlast, "Abilities.Fire.FireBolt", "FireBlast Ability Tag");
 
 	RegisterTag(GameplayTags.Abilities_HitReact, "Abilities.HitReact", "Hit reaction ability");
 	RegisterTag(GameplayTags.Abilities_Status_Locked, "Abilities.Status.Locked", "Ability is locked and cannot be activated");

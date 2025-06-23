@@ -35,13 +35,16 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<USceneComponent> HomingTargetSceneComponent;
+
+	bool IsValidOverlap(AActor* OtherActor);
+	bool bHit = false;
 protected:
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 
 	// Called when the projectile overlaps with another actor
 	UFUNCTION()
-	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta=(AllowPrivateAccess="true"))
@@ -49,12 +52,11 @@ protected:
 
 private:
 	// Plays impact VFX and sound
+	UFUNCTION(BlueprintCallable)
 	void HandleImpact();
 
 	UPROPERTY(EditDefaultsOnly)
 	float LifeSpan = 15.f;
-
-	bool bHit = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	TObjectPtr<UNiagaraSystem> ImpactEffect;
