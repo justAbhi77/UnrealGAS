@@ -126,6 +126,8 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	RegisterTag(GameplayTags.Abilities_Passive_ManaSiphon , "Abilities.Passive.ManaSiphon", "Mana Siphon");
 	RegisterTag(GameplayTags.Abilities_Passive_HaloOfProtection , "Abilities.Passive.HaloOfProtection", "Halo Of Protection");
 
+	RegisterTag(GameplayTags.GameplayCue_FireBlast, "GameplayCue.FireBlast", "FireBlast GameplayCue Tag");
+
 	// Map Damage Types to Resistances
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire, GameplayTags.Attributes_Resistance_Fire);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lighting, GameplayTags.Attributes_Resistance_Lighting);

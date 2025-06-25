@@ -50,13 +50,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta=(AllowPrivateAccess="true"))
 	TObjectPtr<USphereComponent> Sphere;
 
-private:
 	// Plays impact VFX and sound
 	UFUNCTION(BlueprintCallable)
-	void HandleImpact();
-
-	UPROPERTY(EditDefaultsOnly)
-	float LifeSpan = 15.f;
+	virtual void HandleImpact();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	TObjectPtr<UNiagaraSystem> ImpactEffect;
@@ -64,11 +60,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	TObjectPtr<USoundBase> ImpactSound;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
 	TObjectPtr<USoundBase> LoopingSound;
 
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
+private:
+	UPROPERTY(EditDefaultsOnly)
+	float LifeSpan = 15.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	bool bFriendlyFire = true;

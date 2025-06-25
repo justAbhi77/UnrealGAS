@@ -130,6 +130,8 @@ public:
 	FGameplayTag Abilities_Passive_LifeSiphon;
 	FGameplayTag Abilities_Passive_ManaSiphon;
 
+	FGameplayTag GameplayCue_FireBlast;
+
 	// Maps Damage Types to corresponding Resistance Tags
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuff;
