@@ -119,10 +119,10 @@ void AAuraProjectile::HandleImpact()
 
 bool AAuraProjectile::IsValidOverlap(AActor* OtherActor)
 {
-	if (DamageEffectParams.SourceAbilitySystemComponent == nullptr) return false;
+	if(DamageEffectParams.SourceAbilitySystemComponent == nullptr) return false;
 	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
-	if (SourceAvatarActor == OtherActor) return false;
-	if (!bFriendlyFire && !UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return false;
+	if(SourceAvatarActor == OtherActor) return false;
+	if(!bFriendlyFire && !UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return false;
 
 	return true;
 }

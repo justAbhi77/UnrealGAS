@@ -35,9 +35,6 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<USceneComponent> HomingTargetSceneComponent;
-
-	bool IsValidOverlap(AActor* OtherActor);
-	bool bHit = false;
 protected:
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
@@ -65,10 +62,14 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
-private:
+
 	UPROPERTY(EditDefaultsOnly)
 	float LifeSpan = 15.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	bool bFriendlyFire = true;
+
+	bool IsValidOverlap(AActor* OtherActor);
+
+	bool bHit = false;
 };

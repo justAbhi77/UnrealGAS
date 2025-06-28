@@ -22,7 +22,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<AAuraFireBall*> SpawnFireBalls();
 protected:
-
 	UPROPERTY(EditDefaultsOnly, Category = "FireBlast")
 	int32 NumFireBalls = 12;
 private:

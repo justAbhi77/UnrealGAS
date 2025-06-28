@@ -18,6 +18,7 @@
 #include "AuraAbilityTypes.h"
 #include "Interaction/PlayerInterface.h"
 #include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -229,7 +230,15 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 
 			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if(!KnockbackForce.IsNearlyZero(1.f))
-				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true); // true for XY override, true for Z override
+			{
+				Props.TargetCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+				
+				Props.TargetCharacter->LaunchCharacter(KnockbackForce, false, false); // XY override, Z override true for full force knockback false for counteract
+				// (I wanted this so enemies standing still receive the full launch force, while those running towards Aura counteract that force).
+				// Thank you Diego for the suggestion!
+				
+				Props.TargetCharacter->GetCharacterMovement()->StopMovementImmediately();
+			}
 		}
 
 		const bool bBlock = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
