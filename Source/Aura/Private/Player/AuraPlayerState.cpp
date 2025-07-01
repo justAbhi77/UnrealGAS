@@ -44,7 +44,7 @@ void AAuraPlayerState::AddToLevel(int32 InLevel)
 {
 	PlayerLevel += InLevel;
 	UE_LOG(LogAura, Display, TEXT("Player leveled up by %d"), InLevel);
-	OnLevelChangedDelegate.Broadcast(PlayerLevel);
+	OnLevelChangedDelegate.Broadcast(PlayerLevel, true);
 }
 
 void AAuraPlayerState::AddToAttributePoints(int32 InPoints)
@@ -70,13 +70,13 @@ void AAuraPlayerState::SetXP(int32 InXP)
 void AAuraPlayerState::SetLevel(int32 InLevel)
 {
 	PlayerLevel = InLevel;
-	OnLevelChangedDelegate.Broadcast(PlayerLevel);
+	OnLevelChangedDelegate.Broadcast(PlayerLevel, false);
 }
 
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)
 {
 	UE_LOG(LogAura, Display, TEXT("Player leveled up by %d"), PlayerLevel);
-	OnLevelChangedDelegate.Broadcast(PlayerLevel);
+	OnLevelChangedDelegate.Broadcast(PlayerLevel, true);
 }
 
 void AAuraPlayerState::OnRep_Exp(int32 OldExp)
@@ -94,5 +94,17 @@ void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
 void AAuraPlayerState::OnRep_SpellPoints(int32 OldSpellPoints)
 {
 	UE_LOG(LogAura, Display, TEXT("Player received %d Spell points"), SpellPoints);
+	OnSpellPointsChangedDelegate.Broadcast(SpellPoints);
+}
+
+void AAuraPlayerState::SetAttributePoints(int32 InPoints)
+{
+	AttributePoints = InPoints;
+	OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
+}
+
+void AAuraPlayerState::SetSpellPoints(int32 InPoints)
+{
+	SpellPoints = InPoints;
 	OnSpellPointsChangedDelegate.Broadcast(SpellPoints);
 }

@@ -15,6 +15,8 @@ class ULevelUpInfo;
 // Delegate for broadcasting player stat changes
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /*StatValue*/);
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, int32 /*StatValue*/, bool /*bLevelUp*/)
+
 /**
  * Handles player attributes, experience, leveling, and implements ability system interface.
  */
@@ -44,12 +46,14 @@ public:
 
 	void SetXP(int32 InXP);
 	void SetLevel(int32 InLevel);
+	void SetAttributePoints(int32 InPoints);
+	void SetSpellPoints(int32 InPoints);
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULevelUpInfo> LevelUpInfo;
 
 	FOnPlayerStatChanged OnXPChangedDelegate;
-	FOnPlayerStatChanged OnLevelChangedDelegate;
+	FOnLevelChanged OnLevelChangedDelegate;
 	FOnPlayerStatChanged OnAttributePointsChangedDelegate;
 	FOnPlayerStatChanged OnSpellPointsChangedDelegate;
 
@@ -66,7 +70,7 @@ private:
 	int32 PlayerLevel = 1;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Exp, Category = "PlayerState")
-	int32 Exp = 1;
+	int32 Exp = 0;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_AttributePoints, Category = "PlayerState")
 	int32 AttributePoints = 0;

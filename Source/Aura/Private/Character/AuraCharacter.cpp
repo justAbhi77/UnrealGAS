@@ -15,6 +15,12 @@
 #include "Aura/AuraLogChannels.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
+#include "Game/AuraGameInstance.h"
+#include "Game/AuraGameModeBase.h"
+#include "Game/LoadScreenSaveGame.h"
+#include "Kismet/GameplayStatics.h"
+#include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -88,8 +94,6 @@ void AAuraCharacter::InitAbilityActorInfo()
 	if(auto* AuraPC = Cast<AAuraPlayerController>(GetController()))
 		if(auto* AuraHUD = Cast<AAuraHUD>(AuraPC->GetHUD()))
 			AuraHUD->InitOverlay(AuraPC, AuraPlayerState, AbilitySystemComponent, AttributeSet);
-
-	InitializeDefaultAttributes();
 }
 
 void AAuraCharacter::MoveSpringArm(float Value)
@@ -155,7 +159,8 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	UE_LOG(LogAura, Display, TEXT("Player [%s] possessed by [%s]"), *GetNameSafe(this), *GetNameSafe(NewController));
 
 	InitAbilityActorInfo();
-	AddCharacterAbilities();
+
+	LoadProgress();
 }
 
 void AAuraCharacter::OnRep_PlayerState()
@@ -275,5 +280,62 @@ void AAuraCharacter::HideMagicCircle_Implementation()
 	{
 		AuraPlayerController->HideMagicCircle();
 		AuraPlayerController->bShowMouseCursor = true;
+	}
+}
+
+void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if(AuraGameMode)
+	{
+		ULoadScreenSaveGame* SaveData = AuraGameMode->RetrieveInGameSaveData();
+		if(SaveData == nullptr) return;
+
+		SaveData->PlayerStartTag = CheckpointTag;
+
+		if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+		if(AuraPlayerState)
+		{
+			SaveData->PlayerLevel = AuraPlayerState->GetPlayerLevel();
+			SaveData->XP = AuraPlayerState->GetPlayerExp();
+			SaveData->AttributePoints = AuraPlayerState->GetAttributePoints();
+			SaveData->SpellPoints = AuraPlayerState->GetSpellPoints();
+		}
+		SaveData->Strength = UAuraAttributeSet::GetStrengthAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Intelligence = UAuraAttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Resilience = UAuraAttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Vigor = UAuraAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
+
+		SaveData->bFirstTimeLoadIn = false;
+		AuraGameMode->SaveInGameProgressData(SaveData);
+	}
+}
+
+void AAuraCharacter::LoadProgress()
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if(AuraGameMode)
+	{
+		ULoadScreenSaveGame* SaveData = AuraGameMode->RetrieveInGameSaveData();
+		if(SaveData == nullptr) return;
+
+		if(SaveData->bFirstTimeLoadIn)
+		{
+			InitializeDefaultAttributes();
+			AddCharacterAbilities();
+		}
+		else
+		{
+			if(!AuraPlayerState) AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+			if(AuraPlayerState)
+			{
+				AuraPlayerState->SetLevel(SaveData->PlayerLevel);
+				AuraPlayerState->SetXP(SaveData->XP);
+				AuraPlayerState->SetAttributePoints(SaveData->AttributePoints);
+				AuraPlayerState->SetSpellPoints(SaveData->SpellPoints);
+			}
+
+			UAuraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(this, AbilitySystemComponent, SaveData);
+		}
 	}
 }

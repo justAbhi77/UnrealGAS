@@ -17,6 +17,7 @@ class UAbilitySystemComponent;
 class USpellMenuWidgetController;
 struct FWidgetControllerParams;
 class UAbilityInfo;
+class ULoadScreenSaveGame;
 
 /**
  * Blueprint Function Library for retrieving widget controllers in the Aura system.
@@ -203,4 +204,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|DamageEffect")
 	static void SetTargetEffectParamsASC(UPARAM(ref) FDamageEffectParams& DamageEffectParams, UAbilitySystemComponent* InASC);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	static void InitializeDefaultAttributesFromSaveData(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ULoadScreenSaveGame* SaveGame);
 };

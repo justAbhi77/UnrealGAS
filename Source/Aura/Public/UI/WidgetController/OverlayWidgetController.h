@@ -19,6 +19,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float,
 // Delegate for broadcasting message widget data
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUiWidgetRow, Row);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChangedSignature, int32, NewLevel, bool, bLevelUp);
+
 /**
  * Controller for managing the overlay widget, such as health/mana updates and messages.
  */
@@ -64,7 +66,7 @@ public:
 
 	// Delegate for broadcasting changes in Player level
 	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
-	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
+	FOnLevelChangedSignature OnPlayerLevelChangedDelegate;
 
 protected:
 	// DataTable containing message widget configurations
