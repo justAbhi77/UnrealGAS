@@ -48,8 +48,8 @@ void AAuraEnemy::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
 	// Set custom depth stencil values for highlighting
-	GetMesh()->SetCustomDepthStencilValue(HighlightValue);
-	if(Weapon) Weapon->SetCustomDepthStencilValue(HighlightValue);
+	GetMesh()->SetCustomDepthStencilValue((int32)HighlightValue);
+	if(Weapon) Weapon->SetCustomDepthStencilValue((int32)HighlightValue);
 
 	// Initialize ability system
 	InitAbilityActorInfo();
@@ -113,7 +113,7 @@ void AAuraEnemy::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEv
 }
 #endif
 
-void AAuraEnemy::HighlightActor()
+void AAuraEnemy::HighlightActor_Implementation()
 {
 	UE_LOG(LogAura, Display, TEXT("Highlight enabled for [%s]"), *GetNameSafe(this));
 	// Enable custom depth rendering for mesh and weapon
@@ -121,7 +121,7 @@ void AAuraEnemy::HighlightActor()
 	if(Weapon) Weapon->SetRenderCustomDepth(true);
 }
 
-void AAuraEnemy::UnHighlightActor()
+void AAuraEnemy::UnHighlightActor_Implementation()
 {
 	UE_LOG(LogAura, Display, TEXT("Highlight Disabled for [%s]"), *GetNameSafe(this));
 	// Disable custom depth rendering for mesh and weapon

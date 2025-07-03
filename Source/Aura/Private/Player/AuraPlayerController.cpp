@@ -19,6 +19,7 @@
 #include "Actor/MagicCircle.h"
 #include "Components/DecalComponent.h"
 #include "Aura/Aura.h"
+#include "Interaction/HighlightInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -58,8 +59,11 @@ void AAuraPlayerController::CursorTrace()
 {
 	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
 	{
-		if(LastActor) LastActor->UnHighlightActor();
-		if(ThisActor) ThisActor->UnHighlightActor();
+		UnHighlightActor(LastActor);
+		UnHighlightActor(ThisActor);
+
+		if(IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
+
 		LastActor = nullptr;
 		ThisActor = nullptr;
 		return;
@@ -70,21 +74,16 @@ void AAuraPlayerController::CursorTrace()
 	if(!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
-	ThisActor = CursorHit.GetActor();
+	if(IsValid(CursorHit.GetActor()) && CursorHit.GetActor()->Implements<UHighlightInterface>())
+		ThisActor = CursorHit.GetActor();
+	else
+		ThisActor = nullptr;
 
 	// Handle actor highlighting
 	if(LastActor != ThisActor)
 	{
-		if(LastActor)
-		{
-			LastActor->UnHighlightActor();
-			UE_LOG(LogAura, Display, TEXT("Highlight disabled for [%s]"), *GetNameSafe(LastActor.GetObject()));
-		}
-		if(ThisActor)
-		{
-			ThisActor->HighlightActor();
-			UE_LOG(LogAura, Display, TEXT("Highlight enabled for [%s]"), *GetNameSafe(ThisActor.GetObject()));
-		}
+		UnHighlightActor(LastActor);
+		HighlightActor(ThisActor);
 	}
 
 	/*
@@ -135,6 +134,18 @@ void AAuraPlayerController::CursorTrace()
 	*/
 }
 
+void AAuraPlayerController::HighlightActor(AActor* InActor)
+{
+	if(IsValid(InActor) && InActor->Implements<UHighlightInterface>())
+		IHighlightInterface::Execute_HighlightActor(InActor);
+}
+
+void AAuraPlayerController::UnHighlightActor(AActor* InActor)
+{
+	if(IsValid(InActor) && InActor->Implements<UHighlightInterface>())
+		IHighlightInterface::Execute_UnHighlightActor(InActor);
+}
+
 void AAuraPlayerController::AutoRun()
 {
 	if(!bAutoRunning) return;
@@ -165,8 +176,13 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 
 	if(InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		bTargeting = ThisActor != nullptr;
-		bAutoRunning = false;
+		if(IsValid(ThisActor))
+		{
+			TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingNonEnemy;
+			bAutoRunning = false;
+		}
+		else
+			TargetingStatus = ETargetingStatus::NotTargeting;
 	}
 
 	if(GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
@@ -181,7 +197,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB)) return;
 
-	if(!bTargeting && !bShiftKeyDown)
+	if(TargetingStatus != ETargetingStatus::TargetingEnemy && !bShiftKeyDown)
 	{
 		// If not targeting, get the controlled pawn and process the pathfinding logic.
 		if(const APawn* ControlledPawn = GetPawn())
@@ -208,7 +224,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 		// Reset data since input released
 		FollowTime = 0.f;
-		bTargeting = false;
+		TargetingStatus = ETargetingStatus::NotTargeting;
 	}
 }
 
@@ -223,7 +239,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		return;
 	}
 
-	if(bTargeting || bShiftKeyDown)
+	if(TargetingStatus == ETargetingStatus::TargetingEnemy || bShiftKeyDown)
 	{
 		if(GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
 	}

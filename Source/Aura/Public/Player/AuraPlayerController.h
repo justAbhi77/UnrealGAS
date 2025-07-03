@@ -13,12 +13,19 @@ class UDamageTextComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
-class IEnemyInterface;
 class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
 class UNiagaraSystem;
 class AMagicCircle;
+class IHighlightInterface;
+
+enum class ETargetingStatus : uint8
+{
+	TargetingEnemy,
+	TargetingNonEnemy,
+	NotTargeting
+};
 
 /**
  * Handles player input, cursor interaction, auto-running, and combat-related ability inputs.
@@ -77,14 +84,17 @@ private:
 	// State flags
 	bool bShiftKeyDown = false;
 	bool bAutoRunning = false;
-	bool bTargeting = false;
+	ETargetingStatus TargetingStatus = ETargetingStatus::NotTargeting;
 
 	// Cursor trace info
 	FHitResult CursorHit;
 	void CursorTrace();
 
 	// Actor highlighting(Reference to Interfaces)
-	TScriptInterface<IEnemyInterface> LastActor, ThisActor;
+	TObjectPtr<AActor> LastActor, ThisActor;
+
+	static void HighlightActor(AActor* InActor);
+	static void UnHighlightActor(AActor* InActor);
 
 	// Ability input handling
 	void AbilityInputTagPressed(FGameplayTag InputTag);

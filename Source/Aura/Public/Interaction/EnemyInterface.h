@@ -22,12 +22,6 @@ class AURA_API IEnemyInterface
 	GENERATED_BODY()
 
 public:
-	// Highlights the actor, for visual feedback while hovering.
-	virtual void HighlightActor() PURE_VIRTUAL(IEnemyInterface::HighlightActor);
-
-	// Removes any highlight effect applied to the actor.
-	virtual void UnHighlightActor() PURE_VIRTUAL(IEnemyInterface::UnHighlightActor);
-
 	// Set the current target
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetCombatTarget(AActor* InCombatTarget);

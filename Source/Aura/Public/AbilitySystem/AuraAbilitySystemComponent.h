@@ -6,6 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class ULoadScreenSaveGame;
+
 /**
  * Multicast Delegate to keep dependencies one way
  */
@@ -48,6 +50,8 @@ public:
 	 * @param StartupAbilities List of gameplay abilities to add.
 	 */
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
+
+	void AddCharacterAbilitiesFromSaveData(ULoadScreenSaveGame* SaveData);
 
 	// Flag for successful application of gameplay abilities.
 	bool bStartupAbilitiesGiven = false;

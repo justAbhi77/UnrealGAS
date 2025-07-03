@@ -6,7 +6,9 @@
 #include "CoreMinimal.h"
 #include "AuraCharacterBase.h"
 #include "Interaction/EnemyInterface.h"
+#include "Interaction/HighlightInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
+#include "Aura/Aura.h"
 #include "AuraEnemy.generated.h"
 
 class UWidgetComponent;
@@ -17,7 +19,7 @@ class AAuraAiController;
  * Enemy character that extends AuraCharacterBase and implements IEnemyInterface.
  */
 UCLASS()
-class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
+class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface, public IHighlightInterface
 {
 	GENERATED_BODY()
 
@@ -30,9 +32,11 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
+	// Highlight Interface
+	virtual void HighlightActor_Implementation() override;
+	virtual void UnHighlightActor_Implementation() override;
+	
 	// Enemy Interface
-	virtual void HighlightActor() override;
-	virtual void UnHighlightActor() override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override{ CombatTarget = InCombatTarget; }
 	virtual AActor* GetCombatTarget_Implementation() const override { return CombatTarget; }
 
@@ -78,5 +82,5 @@ protected:
 private:
 	// Custom Depth Stencil value for highlighting
 	UPROPERTY(EditAnywhere, Category = "Highlighting")
-	int32 HighlightValue = 250;
+	CustomDepthHighlight HighlightValue = CustomDepthHighlight::Red;
 };
