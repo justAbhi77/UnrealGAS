@@ -18,6 +18,7 @@ class USpellMenuWidgetController;
 struct FWidgetControllerParams;
 class UAbilityInfo;
 class ULoadScreenSaveGame;
+class ULootTiers;
 
 /**
  * Blueprint Function Library for retrieving widget controllers in the Aura system.
@@ -207,4 +208,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void InitializeDefaultAttributesFromSaveData(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ULoadScreenSaveGame* SaveGame);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults", meta = (DefaultToSelf = "WorldContextObject"))
+	static ULootTiers* GetLootTiers(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemBlueprintLibrary|Gameplay Mechanics", meta = (DefaultToSelf = "WorldContextObject"))
+	static bool FindClosestLocationOnFloor(const UObject* WorldContextObject, const FVector& Origin, FVector& OutClosestLocation, float SearchHalfLength = 1000.0f, float ZOffset = 0.0f);
 };

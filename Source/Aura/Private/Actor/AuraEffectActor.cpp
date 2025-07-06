@@ -5,10 +5,12 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Aura/AuraLogChannels.h"
+#include "Interaction/EnemyInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AAuraEffectActor::AAuraEffectActor()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SceneComponent = CreateDefaultSubobject<USceneComponent>("SceneRoot");
 	SetRootComponent(SceneComponent);
@@ -17,7 +19,7 @@ AAuraEffectActor::AAuraEffectActor()
 void AAuraEffectActor::OnOverlap(AActor* TargetActor)
 {
 	// Skip if target is an enemy and effects shouldn't be applied to enemies
-	if(TargetActor->ActorHasTag(FName("Enemy")) && !bApplyEffectsToEnemies) return;
+	if(TargetActor->Implements<UEnemyInterface>() && !bApplyEffectsToEnemies) return;
 
 	UE_LOG(LogAura, Display, TEXT("Applying Begin Overlap effects to actor [%s] from [%hs]"), *GetNameSafe(TargetActor) ,__FUNCTION__);
 
@@ -33,7 +35,7 @@ void AAuraEffectActor::OnOverlap(AActor* TargetActor)
 
 void AAuraEffectActor::OnEndOverlap(AActor* TargetActor)
 {
-	if(TargetActor->ActorHasTag(FName("Enemy")) && !bApplyEffectsToEnemies) return;
+	if(TargetActor->Implements<UEnemyInterface>() && !bApplyEffectsToEnemies) return;
 
 	UE_LOG(LogAura, Display, TEXT("Applying End Overlap effects to actor [%s] from [%hs]"), *GetNameSafe(TargetActor) ,__FUNCTION__);
 
@@ -57,7 +59,7 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, const TSubclassO
 	if(!GameplayEffectClass) return;
 
 	// Skip if target is an enemy and effects shouldn't be applied to enemies
-	if(TargetActor->ActorHasTag(FName("Enemy")) && !bApplyEffectsToEnemies) return;
+	if(TargetActor->Implements<UEnemyInterface>() && !bApplyEffectsToEnemies) return;
 
 	if(UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor))
 	{
@@ -103,4 +105,53 @@ void AAuraEffectActor::RemoveEffectsFromTarget(AActor* TargetActor)
 
 	if(ActiveEffectHandles.Num() == 0)
 		bCanDestroyOnEffectRemoval = true;
+}
+
+void AAuraEffectActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	RunningTime += DeltaTime;
+	const float SinePeriod = 2 * PI / SinePeriodConstant;
+
+	if(RunningTime > SinePeriod)
+		RunningTime = 0.f;
+
+	ItemMovement(DeltaTime);
+}
+
+void AAuraEffectActor::ItemMovement(float DeltaTime)
+{
+	if(bRotates)
+	{
+		const FRotator DeltaRotation(0.f, DeltaTime * RotationRate, 0.f);
+		CalculatedRotation = UKismetMathLibrary::ComposeRotators(CalculatedRotation, DeltaRotation);
+	}
+
+	if(bSinusoidalMovement)
+	{
+		const float Sine = SineAmplitude * FMath::Sin(RunningTime * SinePeriodConstant);
+		CalculatedLocation = InitialLocation + FVector(0.f, 0.f, Sine);
+	}
+}
+
+void AAuraEffectActor::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+	CalculatedRotation = GetActorRotation();
+}
+
+void AAuraEffectActor::StartSinusoidalMovement()
+{
+	bSinusoidalMovement = true;
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+}
+
+void AAuraEffectActor::StartRotation()
+{
+	bRotates = true;
+	CalculatedRotation = GetActorRotation();
 }

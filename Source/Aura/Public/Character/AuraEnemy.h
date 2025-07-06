@@ -35,6 +35,7 @@ public:
 	// Highlight Interface
 	virtual void HighlightActor_Implementation() override;
 	virtual void UnHighlightActor_Implementation() override;
+	virtual void SetMoveToLocation_Implementation(FVector& OutDestination) override;
 	
 	// Enemy Interface
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override{ CombatTarget = InCombatTarget; }
@@ -61,6 +62,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
 	TObjectPtr<AActor> CombatTarget;
 
+	void SetLevel(int32 InLevel) { Level = InLevel; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
@@ -79,6 +81,8 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AAuraAiController> AuraAIController;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnLoot();
 private:
 	// Custom Depth Stencil value for highlighting
 	UPROPERTY(EditAnywhere, Category = "Highlighting")

@@ -38,7 +38,7 @@ struct FSavedAbility
 	FGameplayTag AbilityType = FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 AbilityLevel;
+	int32 AbilityLevel = 1;
 };
 
 inline bool operator==(const FSavedAbility& Left, const FSavedAbility& Right)
@@ -101,6 +101,9 @@ public:
 	FString MapName = FString("Default Map Name");
 
 	UPROPERTY()
+	FString MapAssetName = FString("Default Map Asset Name");
+
+	UPROPERTY()
 	FName PlayerStartTag;
 
 	UPROPERTY()
@@ -110,7 +113,7 @@ public:
 	bool bFirstTimeLoadIn = true;
 
 	UPROPERTY()
-	int32 PlayerLevel = 0;
+	int32 PlayerLevel = 1;
 
 	UPROPERTY()
 	int32 XP = 0;

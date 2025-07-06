@@ -2,6 +2,8 @@
 
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineTypes.h"
 #include "Interaction/CombatInterface.h"
 #include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
@@ -483,4 +485,33 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(const UO
 	VitalAttributesContextHandle.AddSourceObject(SourceAvatarActor);
 	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, 1.f, VitalAttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalAttributesSpecHandle.Data.Get());
+}
+
+ULootTiers* UAuraAbilitySystemLibrary::GetLootTiers(const UObject* WorldContextObject)
+{
+	const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(AuraGameMode == nullptr) return nullptr;
+	return AuraGameMode->LootTiers;
+}
+
+bool UAuraAbilitySystemLibrary::FindClosestLocationOnFloor(const UObject* WorldContextObject, const FVector& Origin, FVector& OutClosestLocation, const float SearchHalfLength, const float ZOffset)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if(World)
+	{
+		FHitResult HitResult;
+		const FVector TraceStart = Origin + FVector(0.0f, 0.0f, SearchHalfLength);
+		const FVector TraceEnd = Origin - FVector(0.0f, 0.0f, SearchHalfLength);
+		World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility);
+		if(HitResult.bBlockingHit)
+		{
+			OutClosestLocation = HitResult.ImpactPoint;
+			OutClosestLocation.Z += ZOffset;
+			return true;
+		}
+	}
+
+	OutClosestLocation = Origin;
+	// OutClosestLocation.Z = ZOffset;
+	return false;
 }

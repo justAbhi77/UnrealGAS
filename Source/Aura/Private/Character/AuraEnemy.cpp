@@ -5,7 +5,10 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/GameModeBase.h"
+#include "Math/MathFwd.h"
 #include "UI/Widget/AuraUserWidget.h"
 #include "AuraGameplayTags.h"
 #include "Ai/AuraAiController.h"
@@ -165,6 +168,7 @@ void AAuraEnemy::Die(const FVector& DeathImpulse)
 
 	if(AuraAIController) AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
 
+	SpawnLoot();
 	Super::Die(DeathImpulse);
 }
 
@@ -176,4 +180,9 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 	if(AuraAIController)
 		if(UBlackboardComponent* BlackboardComponent = AuraAIController->GetBlackboardComponent())
 			BlackboardComponent->SetValueAsBool(FName("HitReacting"), bHitReacting);
+}
+
+void AAuraEnemy::SetMoveToLocation_Implementation(FVector& OutDestination)
+{
+	
 }

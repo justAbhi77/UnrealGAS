@@ -12,6 +12,7 @@ class UAbilityInfo;
 class USaveGame;
 class UMVVM_LoadSlot;
 class ULoadScreenSaveGame;
+class ULootTiers;
 
 /**
  * Manages default character class information.
@@ -57,10 +58,16 @@ public:
 
 	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject);
 
-	void SaveWorldState(UWorld* World) const;
+	void SaveWorldState(UWorld* World, const FString& DestinationMapAssetName = FString("")) const;
 
 	void LoadWorldState(UWorld* World) const;
 
+	FString GetMapNameFromMapAssetName(const FString& MapAssetName) const;
+
+	void PlayerDied(ACharacter* DeadCharacter);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Loot Tiers")
+	TObjectPtr<ULootTiers> LootTiers;
 protected:
 	virtual void BeginPlay() override;
 };

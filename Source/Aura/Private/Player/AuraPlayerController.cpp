@@ -62,8 +62,6 @@ void AAuraPlayerController::CursorTrace()
 		UnHighlightActor(LastActor);
 		UnHighlightActor(ThisActor);
 
-		if(IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
-
 		LastActor = nullptr;
 		ThisActor = nullptr;
 		return;
@@ -177,12 +175,11 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	if(InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
 		if(IsValid(ThisActor))
-		{
 			TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingNonEnemy;
-			bAutoRunning = false;
-		}
 		else
 			TargetingStatus = ETargetingStatus::NotTargeting;
+		
+		bAutoRunning = false;
 	}
 
 	if(GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
@@ -203,6 +200,11 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		if(const APawn* ControlledPawn = GetPawn())
 			if(ControlledPawn && FollowTime <= ShortPressThreshold)
 			{
+				if(IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
+					IHighlightInterface::Execute_SetMoveToLocation(ThisActor, CachedDestination);
+				else if(GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+
 				// Find a path to the cached destination using the navigation system.
 				if(UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
 				{
@@ -218,8 +220,6 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 					bAutoRunning = !NavPath->PathPoints.IsEmpty(); // Mark the character for auto-running.
 				}
-				if(GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 			}
 
 		// Reset data since input released

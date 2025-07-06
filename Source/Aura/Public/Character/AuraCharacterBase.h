@@ -84,8 +84,11 @@ public:
 	UFUNCTION()
 	virtual void OnRep_Burned();
 
+	void SetCharacterClass(ECharacterClass InClass) { CharacterClass = InClass; }
 protected:
+	UPROPERTY(BlueprintReadOnly)
 	bool bDead = false;
+
 	int32 MinionCount = 0;
 
 	// Initializes the actor info for the ability system
