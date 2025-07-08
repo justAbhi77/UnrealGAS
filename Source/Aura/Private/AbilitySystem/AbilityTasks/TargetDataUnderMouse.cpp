@@ -36,7 +36,7 @@ void UTargetDataUnderMouse::SendMouseCursorData() const
 	if(!PC) return;
 
 	FHitResult CursorHit;
-	bool HitResult = PC->GetHitResultUnderCursor(ECC_Target, false, CursorHit);
+	bool HitResult = PC->GetHitResultUnderCursor(ECC_TARGET, false, CursorHit);
 	if(!HitResult)
 	{
 		// If no hit under cursor, apply fallback

@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -20,9 +20,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	FGameplayTag StartupInputTag;
 
-	virtual FString GetDescription(int32 Level);
-	virtual FString GetNextLevelDescription(int32 Level);
-	static FString GetLockedDescription(int32 Level);
+	virtual FString GetDescription(const int32 InLevel){ return FString::Printf(TEXT("<Default>%s, </><Level>%d</>"), L"Description coming soon.", InLevel); }
+	virtual FString GetNextLevelDescription(const int32 InLevel){ return FString::Printf(TEXT("<Default>Next Level: </><Level>%d</> \n<Default>Next Level coming soon. </>"), InLevel); }
+	static FString GetLockedDescription(const int32 InLevel) { return FString::Printf(TEXT("<Default>Spell Locked Until Level: %d</>"), InLevel); }
 
 protected:
 	float GetManaCost(float InLevel = 1.f) const;

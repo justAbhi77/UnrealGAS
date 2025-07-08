@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -7,16 +7,20 @@
 #include "ArcaneShards.generated.h"
 
 /**
- * 
+ * Gameplay ability for summoning multiple arcane shards that deal radial damage.
+ * Inherits from UAuraDamageGameplayAbility.
  */
 UCLASS()
 class AURA_API UArcaneShards : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
-public:
-	virtual FString GetDescription(int32 Level) override;
-	virtual FString GetNextLevelDescription(int32 Level) override;
 
+public:
+	virtual FString GetDescription(const int32 InLevel) override;
+
+	virtual FString GetNextLevelDescription(const int32 InLevel) override;
+
+	// Maximum number of shards that can be summoned.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 MaxNumShards = 11;
 };

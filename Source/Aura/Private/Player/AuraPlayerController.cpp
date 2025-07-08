@@ -69,7 +69,7 @@ void AAuraPlayerController::CursorTrace()
 		return;
 	}
 
-	const ECollisionChannel TraceChannel = IsValid(MagicCircle) ? ECC_ExcludePlayers : ECC_Visibility;
+	const ECollisionChannel TraceChannel = IsValid(MagicCircle) ? ECC_EXCLUDE_PLAYERS : ECC_Visibility;
 	GetHitResultUnderCursor(TraceChannel, false, CursorHit);
 	if(!CursorHit.bBlockingHit) return;
 

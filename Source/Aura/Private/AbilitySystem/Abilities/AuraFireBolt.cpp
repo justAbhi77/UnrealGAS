@@ -1,4 +1,4 @@
-// 
+//
 
 
 #include "AbilitySystem/Abilities/AuraFireBolt.h"
@@ -8,12 +8,12 @@
 #include "Actor/AuraProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
-FString UAuraFireBolt::GetDescription(int32 Level)
+FString UAuraFireBolt::GetDescription(const int32 InLevel)
 {
-	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
-	const float Cooldown = GetCooldown(Level);
-	if(Level == 1)
+	const int32 ScaledDamage = Damage.GetValueAtLevel(InLevel);
+	const float ManaCost = FMath::Abs(GetManaCost(InLevel));
+	const float Cooldown = GetCooldown(InLevel);
+	if(InLevel == 1)
 	{
 		return FString::Printf(TEXT(
 			// Title
@@ -25,14 +25,14 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 			"<Small>ManaCost: </><ManaCost>%.1f</>\n"
 			// Cooldown
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
-			
+
 			"<Default>Launches a bolt of fire, exploding on impact and dealing: </>"
 
 			// Damage
 			"<Damage>%d</><Default> fire damage with a chance to burn</>"),
 
 			// Values
-			Level, ManaCost, Cooldown, ScaledDamage);
+			InLevel, ManaCost, Cooldown, ScaledDamage);
 	}
 	else
 	{
@@ -54,16 +54,15 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 			"<Damage>%d</><Default> fire damage with a chance to burn</>"),
 
 			// Values
-			Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), ScaledDamage);
-		
+			InLevel, ManaCost, Cooldown, FMath::Min(InLevel, NumProjectiles), ScaledDamage);
 	}
 }
 
-FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
+FString UAuraFireBolt::GetNextLevelDescription(const int32 InLevel)
 {
-	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
-	const float Cooldown = GetCooldown(Level);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(InLevel);
+	const float ManaCost = FMath::Abs(GetManaCost(InLevel));
+	const float Cooldown = GetCooldown(InLevel);
 	return FString::Printf(TEXT(
 			// Title
 			"<Title>NEXT LEVEL: </>\n\n"
@@ -82,22 +81,24 @@ FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 			"<Damage>%d</><Default> fire damage with a chance to burn</>"),
 
 			// Values
-			Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), ScaledDamage);
+			InLevel, ManaCost, Cooldown, FMath::Min(InLevel, NumProjectiles), ScaledDamage);
 }
 
-void UAuraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag, bool bOverridePitch, float PitchOverride, AActor* HomingTarget)
+void UAuraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag, const bool bOverridePitch, const float PitchOverride, AActor* HomingTarget) const
 {
-	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
-	if(!bIsServer) return;
+	// Only execute on the server
+	if(!GetAvatarActorFromActorInfo()->HasAuthority()) return;
 
+	// Get the socket location and calculate the rotation towards the target
 	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 	if(bOverridePitch) Rotation.Pitch = PitchOverride;
-	
+
 	const FVector Forward = Rotation.Vector();
 	const int32 EffectiveNumProjectiles = FMath::Min(NumProjectiles, GetAbilityLevel());
 
-	// UAuraAbilitySystemLibrary::EvenlyRotatedVectors will work too 
+	// Generate evenly spaced rotations for projectile spread
+	// UAuraAbilitySystemLibrary::EvenlyRotatedVectors will work too
 	TArray<FRotator> Rotations = UAuraAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, ProjectileSpread, EffectiveNumProjectiles);
 
 	for(const FRotator& Rot : Rotations)
@@ -107,9 +108,10 @@ void UAuraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, co
 		SpawnTransform.SetRotation(Rot.Quaternion());
 
 		AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	
+
 		Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 
+		// Set up homing target
 		if(HomingTarget && HomingTarget->Implements<UCombatInterface>())
 			Projectile->ProjectileMovement->HomingTargetComponent = HomingTarget->GetRootComponent();
 		else
@@ -120,7 +122,7 @@ void UAuraFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, co
 		}
 		Projectile->ProjectileMovement->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
 		Projectile->ProjectileMovement->bIsHomingProjectile = bLaunchHomingProjectiles;
-		
+
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }

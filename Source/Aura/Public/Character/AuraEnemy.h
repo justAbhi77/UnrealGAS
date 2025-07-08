@@ -86,5 +86,5 @@ protected:
 private:
 	// Custom Depth Stencil value for highlighting
 	UPROPERTY(EditAnywhere, Category = "Highlighting")
-	CustomDepthHighlight HighlightValue = CustomDepthHighlight::Red;
+	ECustomDepthHighlight HighlightValue = ECustomDepthHighlight::Red;
 };

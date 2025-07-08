@@ -1,15 +1,15 @@
-// 
+//
 
 
 #include "AbilitySystem/Abilities/AuraFireBlast.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/AuraFireBall.h"
 
-FString UAuraFireBlast::GetDescription(int32 Level)
+FString UAuraFireBlast::GetDescription(const int32 InLevel)
 {
-	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
-	const float Cooldown = GetCooldown(Level);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(InLevel);
+	const float ManaCost = FMath::Abs(GetManaCost(InLevel));
+	const float Cooldown = GetCooldown(InLevel);
 	return FString::Printf(TEXT(
 			// Title
 			"<Title>FIRE BLAST</>\n\n"
@@ -21,7 +21,7 @@ FString UAuraFireBlast::GetDescription(int32 Level)
 			// Cooldown
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
 
-			// Number of Fire Balls
+			// Number of Fireballs
 			"<Default>Launches %d </>"
 			"<Default>fire balls in all directions, each coming back and </>"
 			"<Default>exploding upon return, causing </>"
@@ -31,18 +31,18 @@ FString UAuraFireBlast::GetDescription(int32 Level)
 			" a chance to burn</>"),
 
 			// Values
-			Level,
+			InLevel,
 			ManaCost,
 			Cooldown,
 			NumFireBalls,
 			ScaledDamage);
 }
 
-FString UAuraFireBlast::GetNextLevelDescription(int32 Level)
+FString UAuraFireBlast::GetNextLevelDescription(const int32 InLevel)
 {
-	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
-	const float ManaCost = FMath::Abs(GetManaCost(Level));
-	const float Cooldown = GetCooldown(Level);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(InLevel);
+	const float ManaCost = FMath::Abs(GetManaCost(InLevel));
+	const float Cooldown = GetCooldown(InLevel);
 	return FString::Printf(TEXT(
 			// Title
 			"<Title>NEXT LEVEL:</>\n\n"
@@ -54,7 +54,7 @@ FString UAuraFireBlast::GetNextLevelDescription(int32 Level)
 			// Cooldown
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
 
-			// Number of Fire Balls
+			// Number of Fireballs
 			"<Default>Launches %d </>"
 			"<Default>fire balls in all directions, each coming back and </>"
 			"<Default>exploding upon return, causing </>"
@@ -64,14 +64,14 @@ FString UAuraFireBlast::GetNextLevelDescription(int32 Level)
 			" a chance to burn</>"),
 
 			// Values
-			Level,
+			InLevel,
 			ManaCost,
 			Cooldown,
 			NumFireBalls,
 			ScaledDamage);
 }
 
-TArray<AAuraFireBall*> UAuraFireBlast::SpawnFireBalls()
+TArray<AAuraFireBall*> UAuraFireBlast::SpawnFireBalls() const
 {
 	TArray<AAuraFireBall*> FireBalls;
 	const FVector Forward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
@@ -83,19 +83,17 @@ TArray<AAuraFireBall*> UAuraFireBlast::SpawnFireBalls()
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(Location);
 		SpawnTransform.SetRotation(Rotator.Quaternion());
-		
-		AAuraFireBall* FireBall = GetWorld()->SpawnActorDeferred<AAuraFireBall>(FireBallClass, SpawnTransform, GetOwningActorFromActorInfo(), CurrentActorInfo->PlayerController->GetPawn(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-		
-		FireBall->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
-		FireBall->ReturnToActor = GetAvatarActorFromActorInfo();
-		FireBall->SetOwner(GetAvatarActorFromActorInfo());
 
-		FireBall->ExplosionDamageParams = MakeDamageEffectParamsFromClassDefaults();
-
-		FireBalls.Add(FireBall);
-
-		FireBall->FinishSpawning(SpawnTransform);
+		if(AAuraFireBall* FireBall = GetWorld()->SpawnActorDeferred<AAuraFireBall>(FireBallClass, SpawnTransform, GetOwningActorFromActorInfo(), CurrentActorInfo->PlayerController->GetPawn(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
+		{
+			FireBall->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
+			FireBall->ReturnToActor = GetAvatarActorFromActorInfo();
+			FireBall->SetOwner(GetAvatarActorFromActorInfo());
+			FireBall->ExplosionDamageParams = MakeDamageEffectParamsFromClassDefaults();
+			FireBalls.Add(FireBall);
+			FireBall->FinishSpawning(SpawnTransform);
+		}
 	}
-	
+
 	return FireBalls;
 }

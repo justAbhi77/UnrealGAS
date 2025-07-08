@@ -54,7 +54,7 @@ protected:
 	TObjectPtr<USceneComponent> MoveToComponent;
 	
 	UPROPERTY(EditDefaultsOnly)
-	CustomDepthHighlight CustomDepthStencilOverride = CustomDepthHighlight::Tan;
+	ECustomDepthHighlight CustomDepthStencilOverride = ECustomDepthHighlight::Tan;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
