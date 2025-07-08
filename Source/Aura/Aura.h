@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 
+/**
+ Enum for visualling highlighting actors on mouse hover.
+ */
 UENUM(BlueprintType)
 enum class CustomDepthHighlight : uint8
 {

@@ -45,6 +45,8 @@ void AAuraPlayerController::BeginPlay()
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	InputModeData.SetHideCursorDuringCapture(false);
 	SetInputMode(InputModeData);
+
+	SetControlRotation(FRotator(0,0,0));
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)
