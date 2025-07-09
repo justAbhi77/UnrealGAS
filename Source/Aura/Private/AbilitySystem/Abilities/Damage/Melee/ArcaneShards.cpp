@@ -1,7 +1,7 @@
 //
 
 
-#include "AbilitySystem/Abilities/ArcaneShards.h"
+#include "AbilitySystem/Abilities/Damage/Melee/ArcaneShards.h"
 
 FString UArcaneShards::GetDescription(const int32 InLevel)
 {

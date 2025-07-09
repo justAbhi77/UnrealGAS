@@ -1,6 +1,5 @@
 ﻿//
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -79,14 +78,14 @@ private:
 	int32 SpellPoints = 0;
 
 	UFUNCTION()
-	void OnRep_Level(int32 OldLevel);
+	void OnRep_Level(int32 OldLevel) const;
 
 	UFUNCTION()
-	void OnRep_Exp(int32 OldExp);
+	void OnRep_Exp(int32 OldExp) const;
 
 	UFUNCTION()
-	void OnRep_AttributePoints(int32 OldAttributePoints);
+	void OnRep_AttributePoints(int32 OldAttributePoints) const;
 
 	UFUNCTION()
-	void OnRep_SpellPoints(int32 OldSpellPoints);
+	void OnRep_SpellPoints(int32 OldSpellPoints) const;
 };

@@ -1,4 +1,4 @@
-// 
+//
 
 
 #include "AbilitySystem/AbilityTasks/TargetDataUnderMouse.h"
@@ -36,8 +36,7 @@ void UTargetDataUnderMouse::SendMouseCursorData() const
 	if(!PC) return;
 
 	FHitResult CursorHit;
-	bool HitResult = PC->GetHitResultUnderCursor(ECC_TARGET, false, CursorHit);
-	if(!HitResult)
+	if(!PC->GetHitResultUnderCursor(ECC_TARGET, false, CursorHit))
 	{
 		// If no hit under cursor, apply fallback
 		FVector WorldLocation, WorldDirection;

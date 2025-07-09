@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -11,12 +11,12 @@
  * Calculates the maximum health based on Vigor attribute and player level.
  */
 UCLASS()
-class AURA_API UMMC_MaxHealth : public UGameplayModMagnitudeCalculation
+class AURA_API UMmc_MaxHealth : public UGameplayModMagnitudeCalculation
 {
 	GENERATED_BODY()
 
 public:
-	UMMC_MaxHealth();
+	UMmc_MaxHealth();
 
 	/**
 	 * Calculates the base magnitude for the Gameplay Effect.

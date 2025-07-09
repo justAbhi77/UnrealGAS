@@ -13,7 +13,7 @@
 #include "Aura/AuraLogChannels.h"
 #include "GameFramework/Character.h"
 
-void AAuraGameModeBase::SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex)
+void AAuraGameModeBase::SaveSlotData(UMvvm_LoadSlot* LoadSlot, const int32 SlotIndex) const
 {
 	if(UGameplayStatics::DoesSaveGameExist(LoadSlot->GetLoadSlotName(), SlotIndex))
 		UGameplayStatics::DeleteGameInSlot(LoadSlot->GetLoadSlotName(), SlotIndex);
@@ -29,9 +29,9 @@ void AAuraGameModeBase::SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex)
 	UGameplayStatics::SaveGameToSlot(LoadScreenSaveGame, LoadSlot->GetLoadSlotName(), SlotIndex);
 }
 
-ULoadScreenSaveGame* AAuraGameModeBase::GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const
+ULoadScreenSaveGame* AAuraGameModeBase::GetSaveSlotData(const FString& SlotName, const int32 SlotIndex) const
 {
-	USaveGame* SaveGameObject = nullptr;
+	USaveGame* SaveGameObject;
 
 	if(UGameplayStatics::DoesSaveGameExist(SlotName, SlotIndex))
 		SaveGameObject = UGameplayStatics::LoadGameFromSlot(SlotName, SlotIndex);
@@ -42,7 +42,7 @@ ULoadScreenSaveGame* AAuraGameModeBase::GetSaveSlotData(const FString& SlotName,
 	return LoadScreenSaveGame;
 }
 
-void AAuraGameModeBase::DeleteSlot(const FString& SlotName, int32 SlotIndex)
+void AAuraGameModeBase::DeleteSlot(const FString& SlotName, const int32 SlotIndex)
 {
 	if(UGameplayStatics::DoesSaveGameExist(SlotName, SlotIndex))
 		UGameplayStatics::DeleteGameInSlot(SlotName, SlotIndex);
@@ -54,11 +54,8 @@ void AAuraGameModeBase::BeginPlay()
 	Maps.Add(DefaultMapName, DefaultMap);
 }
 
-void AAuraGameModeBase::TravelToMap(UMVVM_LoadSlot* Slot)
+void AAuraGameModeBase::TravelToMap(const UMvvm_LoadSlot* Slot)
 {
-	const FString SlotName = Slot->GetLoadSlotName();
-	const int32 SlotIndex = Slot->SlotIndex;
-
 	UGameplayStatics::OpenLevelBySoftObjectPtr(Slot, Maps.FindChecked(Slot->GetMapName()));
 }
 
@@ -90,9 +87,9 @@ AActor* AAuraGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
 	return nullptr;
 }
 
-ULoadScreenSaveGame* AAuraGameModeBase::RetrieveInGameSaveData()
+ULoadScreenSaveGame* AAuraGameModeBase::RetrieveInGameSaveData() const
 {
-	UAuraGameInstance* AuraGameInstance = Cast<UAuraGameInstance>(GetGameInstance());
+	const UAuraGameInstance* AuraGameInstance = Cast<UAuraGameInstance>(GetGameInstance());
 
 	const FString InGameLoadSlotName = AuraGameInstance->LoadSlotName;
 	const int32 InGameLoadSlotIndex = AuraGameInstance->LoadSlotIndex;
@@ -100,7 +97,7 @@ ULoadScreenSaveGame* AAuraGameModeBase::RetrieveInGameSaveData()
 	return GetSaveSlotData(InGameLoadSlotName, InGameLoadSlotIndex);
 }
 
-void AAuraGameModeBase::SaveInGameProgressData(ULoadScreenSaveGame* SaveObject)
+void AAuraGameModeBase::SaveInGameProgressData(ULoadScreenSaveGame* SaveObject) const
 {
 	UAuraGameInstance* AuraGameInstance = Cast<UAuraGameInstance>(GetGameInstance());
 
@@ -182,7 +179,7 @@ void AAuraGameModeBase::LoadWorldState(UWorld* World) const
 			UE_LOG(LogAura, Error, TEXT("Failed to load slot"));
 			return;
 		}
-		
+
 		for(FActorIterator It(World); It; ++It)
 		{
 			AActor* Actor = *It;
@@ -218,9 +215,9 @@ FString AAuraGameModeBase::GetMapNameFromMapAssetName(const FString& MapAssetNam
 	return FString();
 }
 
-void AAuraGameModeBase::PlayerDied(ACharacter* DeadCharacter)
+void AAuraGameModeBase::PlayerDied(const ACharacter* DeadCharacter) const
 {
-	ULoadScreenSaveGame* SaveGame = RetrieveInGameSaveData();
+	const ULoadScreenSaveGame* SaveGame = RetrieveInGameSaveData();
 	if(!IsValid(SaveGame)) return;
 
 	UGameplayStatics::OpenLevel(DeadCharacter, FName(SaveGame->MapAssetName));

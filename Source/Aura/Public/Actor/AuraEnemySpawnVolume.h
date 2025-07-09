@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -11,7 +11,7 @@ class AAuraEnemySpawnPoint;
 class UBoxComponent;
 
 /**
- * 
+ * Spawns Enemies at SpawnPoints when the player enters the volume.
  */
 UCLASS()
 class AURA_API AAuraEnemySpawnVolume : public AActor, public ISaveInterface
@@ -20,8 +20,10 @@ class AURA_API AAuraEnemySpawnVolume : public AActor, public ISaveInterface
 public:
 	AAuraEnemySpawnVolume();
 
+	// Saves state of the volume
 	virtual void LoadActor_Implementation() override;
 
+	// was this volume overlapped by any player?
 	UPROPERTY(BlueprintReadOnly, SaveGame)
 	bool bReached = false;
 protected:

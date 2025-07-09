@@ -1,7 +1,7 @@
 //
 
 
-#include "AbilitySystem/Abilities/AuraFireBlast.h"
+#include "AbilitySystem/Abilities/Damage/Projectile/AuraFireBlast.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/AuraFireBall.h"
 

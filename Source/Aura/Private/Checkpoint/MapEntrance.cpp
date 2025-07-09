@@ -1,4 +1,4 @@
-// 
+//
 
 
 #include "Checkpoint/MapEntrance.h"
@@ -20,7 +20,7 @@ void AMapEntrance::HighlightActor_Implementation()
 
 void AMapEntrance::LoadActor_Implementation()
 {
-	// no glow efefct for map entrances
+	// no glow effect for map entrances
 }
 
 void AMapEntrance::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -29,9 +29,9 @@ void AMapEntrance::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		bReached = true;
 
-		if(AAuraGameModeBase* AuraGM = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
-			AuraGM->SaveWorldState(GetWorld(), DestinationMap.ToSoftObjectPath().GetAssetName());
-		
+		if(const AAuraGameModeBase* AuraGm = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
+			AuraGm->SaveWorldState(GetWorld(), DestinationMap.ToSoftObjectPath().GetAssetName());
+
 		IPlayerInterface::Execute_SaveProgress(OtherActor, DestinationPlayerStartTag);
 
 		UGameplayStatics::OpenLevelBySoftObjectPtr(this, DestinationMap);

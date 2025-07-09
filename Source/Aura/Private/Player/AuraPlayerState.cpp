@@ -47,7 +47,7 @@ void AAuraPlayerState::AddToLevel(int32 InLevel)
 	OnLevelChangedDelegate.Broadcast(PlayerLevel, true);
 }
 
-void AAuraPlayerState::AddToAttributePoints(int32 InPoints)
+void AAuraPlayerState::AddToAttributePoints(const int32 InPoints)
 {
 	AttributePoints += InPoints;
 	UE_LOG(LogAura, Display, TEXT("Player received %d Attribute points"), InPoints);
@@ -73,25 +73,25 @@ void AAuraPlayerState::SetLevel(int32 InLevel)
 	OnLevelChangedDelegate.Broadcast(PlayerLevel, false);
 }
 
-void AAuraPlayerState::OnRep_Level(int32 OldLevel)
+void AAuraPlayerState::OnRep_Level(int32 OldLevel) const
 {
 	UE_LOG(LogAura, Display, TEXT("Player leveled up by %d"), PlayerLevel);
 	OnLevelChangedDelegate.Broadcast(PlayerLevel, true);
 }
 
-void AAuraPlayerState::OnRep_Exp(int32 OldExp)
+void AAuraPlayerState::OnRep_Exp(int32 OldExp) const
 {
 	UE_LOG(LogAura, Display, TEXT("Player received %d Experience points"), Exp);
 	OnXPChangedDelegate.Broadcast(Exp);
 }
 
-void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
+void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints) const
 {
 	UE_LOG(LogAura, Display, TEXT("Player received %d Attribute points"), AttributePoints);
 	OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
 }
 
-void AAuraPlayerState::OnRep_SpellPoints(int32 OldSpellPoints)
+void AAuraPlayerState::OnRep_SpellPoints(int32 OldSpellPoints) const
 {
 	UE_LOG(LogAura, Display, TEXT("Player received %d Spell points"), SpellPoints);
 	OnSpellPointsChangedDelegate.Broadcast(SpellPoints);

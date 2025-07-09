@@ -1,17 +1,15 @@
 //
 
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Abilities/AuraDamageGameplayAbility.h"
+#include "AbilitySystem/Abilities/Damage/AuraDamageGameplayAbility.h"
 #include "AuraFireBlast.generated.h"
 
 class AAuraFireBall;
 
 /**
  * Gameplay ability for launching fireballs in all directions, each returning and exploding.
- * Inherits from UAuraDamageGameplayAbility.
  */
 UCLASS()
 class AURA_API UAuraFireBlast : public UAuraDamageGameplayAbility

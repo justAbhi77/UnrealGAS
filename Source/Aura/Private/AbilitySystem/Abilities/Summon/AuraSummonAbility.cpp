@@ -1,11 +1,11 @@
 //
 
 
-#include "AbilitySystem/Abilities/AuraSummonAbility.h"
+#include "AbilitySystem/Abilities/Summon/AuraSummonAbility.h"
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
 
-TArray<FTransform> UAuraSummonAbility::GetSpawnLocations()
+TArray<FTransform> UAuraSummonAbility::GetSpawnLocations() const
 {
 	const FVector Forward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
 	const FVector Location = GetAvatarActorFromActorInfo()->GetActorLocation();

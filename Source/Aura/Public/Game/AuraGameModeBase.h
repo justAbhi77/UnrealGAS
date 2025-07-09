@@ -1,6 +1,5 @@
 //
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,12 +9,12 @@
 class UCharacterClassInfo;
 class UAbilityInfo;
 class USaveGame;
-class UMVVM_LoadSlot;
+class UMvvm_LoadSlot;
 class ULoadScreenSaveGame;
 class ULootTiers;
 
 /**
- * Manages default character class information.
+ * Manages default character class information and Save state.
  */
 UCLASS()
 class AURA_API AAuraGameModeBase : public AGameModeBase
@@ -29,13 +28,13 @@ public:
 	UPROPERTY(EditdefaultsOnly, Category = "Ability Info")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
 
-	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
+	void SaveSlotData(UMvvm_LoadSlot* LoadSlot, int32 SlotIndex) const;
 
 	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const;
 
 	static void DeleteSlot(const FString& SlotName, int32 SlotIndex);
 
-	void TravelToMap(UMVVM_LoadSlot* Slot);
+	void TravelToMap(const UMvvm_LoadSlot* Slot);
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
@@ -54,9 +53,9 @@ public:
 
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
-	ULoadScreenSaveGame* RetrieveInGameSaveData();
+	ULoadScreenSaveGame* RetrieveInGameSaveData() const;
 
-	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject);
+	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject) const;
 
 	void SaveWorldState(UWorld* World, const FString& DestinationMapAssetName = FString("")) const;
 
@@ -64,7 +63,7 @@ public:
 
 	FString GetMapNameFromMapAssetName(const FString& MapAssetName) const;
 
-	void PlayerDied(ACharacter* DeadCharacter);
+	void PlayerDied(const ACharacter* DeadCharacter) const;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Loot Tiers")
 	TObjectPtr<ULootTiers> LootTiers;

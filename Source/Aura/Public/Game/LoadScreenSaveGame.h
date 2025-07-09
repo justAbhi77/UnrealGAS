@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -80,14 +80,14 @@ struct FSavedMap
 };
 
 /**
- * 
+ * Save game class. Used to store information about the current game state.
  */
 UCLASS()
 class AURA_API ULoadScreenSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 public:
-	
+
 	UPROPERTY()
 	FString SlotName = FString();
 

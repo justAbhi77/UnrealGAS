@@ -1,6 +1,5 @@
 //
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -18,7 +17,7 @@ class AURA_API UAuraSummonAbility : public UAuraGameplayAbility
 public:
 	// Returns a set of world-space spawn transforms for minions
 	UFUNCTION(BlueprintCallable)
-	TArray<FTransform> GetSpawnLocations();
+	TArray<FTransform> GetSpawnLocations() const;
 
 	// Returns a random minion class from the list
 	UFUNCTION(BlueprintPure, Category = "Summoning")

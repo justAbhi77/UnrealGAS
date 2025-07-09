@@ -1,4 +1,4 @@
-// Copyright Druid Mechanics
+//
 
 #pragma once
 
@@ -7,7 +7,7 @@
 #include "AuraGameInstance.generated.h"
 
 /**
- * 
+ * Game instance that handles the save state functionalities for the project.
  */
 UCLASS()
 class AURA_API UAuraGameInstance : public UGameInstance

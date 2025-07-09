@@ -1,6 +1,5 @@
 //
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -118,14 +117,18 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterClass GetCharacterClass();
 
+	// Used by actors that are spawned before the Ability system Component is ready for this actor
 	virtual FOnAscRegistered& GetOnAscRegisteredDelegate() = 0;
 
+	// Sets the actor to be stunned or not
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetInShockLoop(bool bInLoop);
 
+	// Returns this actor's Weapon.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USkeletalMeshComponent* GetWeapon();
 
+	// Whether to play the shock animation or not
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool IsBeingShocked() const;
 

@@ -1,7 +1,7 @@
 //
 
 
-#include "AbilitySystem/Abilities/AuraBeamSpell.h"
+#include "AbilitySystem/Abilities/Damage/Beam/AuraBeamSpell.h"
 #include "AuraGameplayTags.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"

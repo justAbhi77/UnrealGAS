@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -7,7 +7,7 @@
 #include "AuraFireBall.generated.h"
 
 /**
- * 
+ * Projectile class that explodes on overlap and applies gameplay effects.
  */
 UCLASS()
 class AURA_API AAuraFireBall : public AAuraProjectile

@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -6,11 +6,11 @@
 #include "GameFramework/HUD.h"
 #include "LoadScreenHUD.generated.h"
 
-class UMVVM_LoadScreen;
+class UMvvm_LoadScreen;
 class ULoadScreenWidget;
 
 /**
- * 
+ * Manages the load screen HUD and its associated view model.
  */
 UCLASS()
 class AURA_API ALoadScreenHUD : public AHUD
@@ -24,10 +24,10 @@ public:
 	TObjectPtr<ULoadScreenWidget> LoadScreenWidget;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UMVVM_LoadScreen> LoadScreenViewModelClass;
+	TSubclassOf<UMvvm_LoadScreen> LoadScreenViewModelClass;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UMVVM_LoadScreen> LoadScreenViewModel;
+	TObjectPtr<UMvvm_LoadScreen> LoadScreenViewModel;
 protected:
 	virtual void BeginPlay() override;
 };

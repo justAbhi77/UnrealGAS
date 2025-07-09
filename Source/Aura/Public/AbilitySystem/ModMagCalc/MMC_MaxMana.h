@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -11,12 +11,12 @@
  * Calculates the maximum Mana based on Intelligence attribute and player level.
  */
 UCLASS()
-class AURA_API UMMC_MaxMana : public UGameplayModMagnitudeCalculation
+class AURA_API UMmc_MaxMana : public UGameplayModMagnitudeCalculation
 {
 	GENERATED_BODY()
 
 public:
-	UMMC_MaxMana();
+	UMmc_MaxMana();
 
 	// Calculates the base magnitude for the Gameplay Effect.
 	virtual float CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const override;

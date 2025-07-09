@@ -1,4 +1,4 @@
-// 
+//
 
 
 #include "AbilitySystem/Passive/PassiveNiagaraComponent.h"
@@ -16,23 +16,23 @@ void UPassiveNiagaraComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner())))
+	if(UAuraAbilitySystemComponent* AuraAsc = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner())))
 	{
-		AuraASC->ActivatePassiveEffect.AddUObject(this, &UPassiveNiagaraComponent::OnPassiveActivate);
-		ActivateIfEquipped(AuraASC);
+		AuraAsc->ActivatePassiveEffect.AddUObject(this, &UPassiveNiagaraComponent::OnPassiveActivate);
+		ActivateIfEquipped(AuraAsc);
 	}
 	else if(ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetOwner()))
-		CombatInterface->GetOnAscRegisteredDelegate().AddLambda([this](UAbilitySystemComponent* ASC)
+		CombatInterface->GetOnAscRegisteredDelegate().AddLambda([this](UAbilitySystemComponent* InAsc)
 		{
-			if(UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner())))
+			if(UAuraAbilitySystemComponent* RegisteredAuraAsc = Cast<UAuraAbilitySystemComponent>(InAsc))
 			{
-				AuraASC->ActivatePassiveEffect.AddUObject(this, &UPassiveNiagaraComponent::OnPassiveActivate);
-				ActivateIfEquipped(AuraASC);
+				RegisteredAuraAsc->ActivatePassiveEffect.AddUObject(this, &UPassiveNiagaraComponent::OnPassiveActivate);
+				ActivateIfEquipped(RegisteredAuraAsc);
 			}
 		});
 }
 
-void UPassiveNiagaraComponent::OnPassiveActivate(const FGameplayTag& AbilityTag, bool bActivate)
+void UPassiveNiagaraComponent::OnPassiveActivate(const FGameplayTag& AbilityTag, const bool bActivate)
 {
 	if(AbilityTag.MatchesTagExact(PassiveSpellTag))
 	{
@@ -43,9 +43,9 @@ void UPassiveNiagaraComponent::OnPassiveActivate(const FGameplayTag& AbilityTag,
 	}
 }
 
-void UPassiveNiagaraComponent::ActivateIfEquipped(UAuraAbilitySystemComponent* AuraASC)
-{	
-	if(AuraASC->bStartupAbilitiesGiven)
-		if(AuraASC->GetStatusFromAbilityTag(PassiveSpellTag) == FAuraGameplayTags::Get().Abilities_Status_Equipped)
+void UPassiveNiagaraComponent::ActivateIfEquipped(UAuraAbilitySystemComponent* AuraAsc)
+{
+	if(AuraAsc->bStartupAbilitiesGiven)
+		if(AuraAsc->GetStatusFromAbilityTag(PassiveSpellTag) == FAuraGameplayTags::Get().Abilities_Status_Equipped)
 			Activate();
 }

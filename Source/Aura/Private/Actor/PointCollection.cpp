@@ -1,4 +1,4 @@
-// 
+//
 
 
 #include "Actor/PointCollection.h"
@@ -26,7 +26,7 @@ APointCollection::APointCollection()
 	Pt_3 = CreateDefaultSubobject<USceneComponent>("Pt_3");
 	ImmutablePts.Add(Pt_3);
 	Pt_3->SetupAttachment(GetRootComponent());
-	
+
 	Pt_4 = CreateDefaultSubobject<USceneComponent>("Pt_4");
 	ImmutablePts.Add(Pt_4);
 	Pt_4->SetupAttachment(GetRootComponent());
@@ -34,7 +34,7 @@ APointCollection::APointCollection()
 	Pt_5 = CreateDefaultSubobject<USceneComponent>("Pt_5");
 	ImmutablePts.Add(Pt_5);
 	Pt_5->SetupAttachment(GetRootComponent());
-	
+
 	Pt_6 = CreateDefaultSubobject<USceneComponent>("Pt_6");
 	ImmutablePts.Add(Pt_6);
 	Pt_6->SetupAttachment(GetRootComponent());
@@ -56,7 +56,7 @@ APointCollection::APointCollection()
 	Pt_10->SetupAttachment(GetRootComponent());
 }
 
-TArray<USceneComponent*> APointCollection::GetGroundPoints(const FVector& GroundLocation, int32 NumPoints, float YawOverride)
+TArray<USceneComponent*> APointCollection::GetGroundPoints(int32 NumPoints, float YawOverride)
 {
 	checkf(ImmutablePts.Num() >= NumPoints, TEXT("Attempted to access ImmutablePts out of bounds."));
 

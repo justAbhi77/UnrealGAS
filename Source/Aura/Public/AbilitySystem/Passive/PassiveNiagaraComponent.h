@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -10,7 +10,7 @@
 class UAuraAbilitySystemComponent;
 
 /**
- * 
+ * Niagara component that handles activation based on Passive Gameplay Tags.
  */
 UCLASS()
 class AURA_API UPassiveNiagaraComponent : public UNiagaraComponent
@@ -19,6 +19,7 @@ class AURA_API UPassiveNiagaraComponent : public UNiagaraComponent
 public:
 	UPassiveNiagaraComponent();
 
+	// The tag associated with this passive component
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag PassiveSpellTag;
 
@@ -27,5 +28,5 @@ protected:
 
 	void OnPassiveActivate(const FGameplayTag& AbilityTag, bool bActivate);
 
-	void ActivateIfEquipped(UAuraAbilitySystemComponent* AuraASC);
+	void ActivateIfEquipped(UAuraAbilitySystemComponent* AuraAsc);
 };

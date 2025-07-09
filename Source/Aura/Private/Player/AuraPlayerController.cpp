@@ -49,7 +49,7 @@ void AAuraPlayerController::BeginPlay()
 	SetControlRotation(FRotator(0,0,0));
 }
 
-void AAuraPlayerController::PlayerTick(float DeltaTime)
+void AAuraPlayerController::PlayerTick(const float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 	CursorTrace(); // Handle cursor tracing and auto-run
@@ -59,7 +59,7 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 
 void AAuraPlayerController::CursorTrace()
 {
-	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
+	if(GetAsc() && GetAsc()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
 	{
 		UnHighlightActor(LastActor);
 		UnHighlightActor(ThisActor);
@@ -167,9 +167,9 @@ void AAuraPlayerController::AutoRun()
 	}
 }
 
-void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+void AAuraPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 {
-	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	if(GetAsc() && GetAsc()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 		return;
 
 	UE_LOG(LogAura, Display, TEXT("Input Pressed [%s]"), *InputTag.ToString());
@@ -180,19 +180,19 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 			TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingNonEnemy;
 		else
 			TargetingStatus = ETargetingStatus::NotTargeting;
-		
+
 		bAutoRunning = false;
 	}
 
-	if(GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
+	if(GetAsc()) GetAsc()->AbilityInputTagPressed(InputTag);
 }
 
-void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+void AAuraPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 {
-	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
+	if(GetAsc() && GetAsc()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
 		return;
 
-	if(GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
+	if(GetAsc()) GetAsc()->AbilityInputTagReleased(InputTag);
 
 	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB)) return;
 
@@ -204,7 +204,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 			{
 				if(IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
 					IHighlightInterface::Execute_SetMoveToLocation(ThisActor, CachedDestination);
-				else if(GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+				else if(GetAsc() && !GetAsc()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 					UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 
 				// Find a path to the cached destination using the navigation system.
@@ -230,20 +230,20 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	}
 }
 
-void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+void AAuraPlayerController::AbilityInputTagHeld(const FGameplayTag InputTag)
 {
-	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHeld))
+	if(GetAsc() && GetAsc()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHeld))
 		return;
 
 	if(!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		if(GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
+		if(GetAsc()) GetAsc()->AbilityInputTagHeld(InputTag);
 		return;
 	}
 
 	if(TargetingStatus == ETargetingStatus::TargetingEnemy || bShiftKeyDown)
 	{
-		if(GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
+		if(GetAsc()) GetAsc()->AbilityInputTagHeld(InputTag);
 	}
 	else
 	{
@@ -263,7 +263,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	}
 }
 
-void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
+void AAuraPlayerController::ShowDamageNumber_Implementation(const float DamageAmount, ACharacter* TargetCharacter, const bool bBlockedHit, const bool bCriticalHit)
 {
 	if(IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
 	{
@@ -285,7 +285,7 @@ void AAuraPlayerController::ShowMagicCircle(UMaterialInterface* DecalMaterial)
 	}
 }
 
-void AAuraPlayerController::HideMagicCircle()
+void AAuraPlayerController::HideMagicCircle() const
 {
 	if(IsValid(MagicCircle))
 		MagicCircle->Destroy();
@@ -307,7 +307,7 @@ void AAuraPlayerController::SetupInputComponent()
 // ReSharper disable once CppMemberFunctionMayBeConst
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
-	if(GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	if(GetAsc() && GetAsc()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 		return;
 
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
@@ -325,7 +325,7 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	}
 }
 
-void AAuraPlayerController::UpdateMagicCircleLocation()
+void AAuraPlayerController::UpdateMagicCircleLocation() const
 {
 	if(IsValid(MagicCircle))
 		MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
@@ -354,7 +354,7 @@ void AAuraPlayerController::ScrollMoved(const FInputActionValue& InputActionValu
 	if(AuraPawn) AuraPawn->MoveSpringArm(InputAxisValue);
 }
 
-UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
+UAuraAbilitySystemComponent* AAuraPlayerController::GetAsc()
 {
 	if(!AuraAbilitySystemComponent)
 		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));

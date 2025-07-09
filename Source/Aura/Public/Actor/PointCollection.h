@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -6,6 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "PointCollection.generated.h"
 
+/**
+ * Actor that has a collection of points that can be used for various purposes, such as spawning actors or defining areas.
+ * Used by the Arcane ability for visual effects and to provide a set of points that can be referenced.
+ */
 UCLASS()
 class AURA_API APointCollection : public AActor
 {
@@ -15,7 +19,7 @@ public:
 	APointCollection();
 
 	UFUNCTION(BlueprintPure)
-	TArray<USceneComponent*> GetGroundPoints(const FVector& GroundLocation, int32 NumPoints, float YawOverride = 0.f);
+	TArray<USceneComponent*> GetGroundPoints(int32 NumPoints, float YawOverride = 0.f);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)

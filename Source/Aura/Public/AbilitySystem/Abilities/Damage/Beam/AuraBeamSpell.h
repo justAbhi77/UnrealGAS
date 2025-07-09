@@ -3,12 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Abilities/AuraDamageGameplayAbility.h"
+#include "AbilitySystem/Abilities/Damage/AuraDamageGameplayAbility.h"
 #include "AuraBeamSpell.generated.h"
 
 /**
- * Gameplay ability for a beam spell that can hit a primary target and additional targets in a chain.
- * Inherits from UAuraDamageGameplayAbility.
+ * Gameplay ability base class for all beam spells that can hit a primary target and additional targets from the primary target.
  */
 UCLASS()
 class AURA_API UAuraBeamSpell : public UAuraDamageGameplayAbility

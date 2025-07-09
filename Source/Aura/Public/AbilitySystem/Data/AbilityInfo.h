@@ -1,6 +1,5 @@
 //
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -22,17 +21,11 @@ struct FAuraAbilityInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag AbilityTag = FGameplayTag();
 
-	// Input tag associated with the ability
-	UPROPERTY(BlueprintReadOnly)
-	FGameplayTag InputTag = FGameplayTag();
-
-	UPROPERTY(BlueprintReadOnly)
-	FGameplayTag StatusTag = FGameplayTag();
-
 	// Tag used for identifying cooldown effects
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag CooldownTag = FGameplayTag();
 
+	// Which ability type this is, e.g. "Offensive" or "Passive
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag AbilityType = FGameplayTag();
 
@@ -44,11 +37,21 @@ struct FAuraAbilityInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UMaterialInterface> BackgroundMaterial = nullptr;
 
+	// At what level is this ability available to unlock
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 LevelRequirement = 1;
 
+	// The gameplay ability
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayAbility> Ability;
+
+	// Input tag associated with the ability
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag InputTag = FGameplayTag();
+
+	// Whether the ability is currently Equipped
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag StatusTag = FGameplayTag();
 };
 
 /**

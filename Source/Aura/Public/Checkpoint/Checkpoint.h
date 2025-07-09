@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -12,14 +12,14 @@
 class USphereComponent;
 
 /**
- * 
+ * Beacon like meshes that have no gameplay functionality. Pure visuals.
  */
 UCLASS()
 class AURA_API ACheckpoint : public APlayerStart, public ISaveInterface, public IHighlightInterface
 {
 	GENERATED_BODY()
 public:
-	ACheckpoint(const FObjectInitializer& ObjectInitializer);
+	explicit ACheckpoint(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintReadWrite, SaveGame)
 	bool bReached = false;
@@ -52,7 +52,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> MoveToComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly)
 	ECustomDepthHighlight CustomDepthStencilOverride = ECustomDepthHighlight::Tan;
 

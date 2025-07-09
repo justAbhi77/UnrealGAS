@@ -27,7 +27,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	GetAuraPs()->OnXPChangedDelegate.AddUObject(this, &ThisClass::OnXpChanged);
 	GetAuraPs()->OnLevelChangedDelegate.AddLambda(
-		[this](int32 NewLevel, bool bLevelUp)
+		[this](const int32 NewLevel, const bool bLevelUp)
 		{
 			OnPlayerLevelChangedDelegate.Broadcast(NewLevel, bLevelUp);
 		}
@@ -98,13 +98,13 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	}
 }
 
-void UOverlayWidgetController::OnXpChanged(int32 NewXP)
+void UOverlayWidgetController::OnXpChanged(const int32 NewXp)
 {
 	const AAuraPlayerState* ValidAuraPs = GetAuraPs();
 	const ULevelUpInfo* LevelUpInfo = ValidAuraPs->LevelUpInfo;
 	checkf(LevelUpInfo, TEXT("Unable to find LevelUpInfo. Fill out AuraPlayerState Blueprint"));
 
-	const int32 Level = LevelUpInfo->FindLevelForXP(NewXP);
+	const int32 Level = LevelUpInfo->FindLevelForXP(NewXp);
 	const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num();
 
 	if(Level <= MaxLevel && Level > 0)
@@ -112,7 +112,7 @@ void UOverlayWidgetController::OnXpChanged(int32 NewXP)
 		const int32 LevelUpRequirement = LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement;
 		const int32 PreviousLevelUpRequirement = LevelUpInfo->LevelUpInformation[Level - 1].LevelUpRequirement;
 		const int32 DeltaLevelRequirement = LevelUpRequirement - PreviousLevelUpRequirement;
-		const int32 XPForThisLevel = NewXP - PreviousLevelUpRequirement;
+		const int32 XPForThisLevel = NewXp - PreviousLevelUpRequirement;
 
 		const float XPBarPercent = static_cast<float>(XPForThisLevel) / static_cast<float>(DeltaLevelRequirement);
 		OnXPPercentChangedDelegate.Broadcast(XPBarPercent);
@@ -122,7 +122,7 @@ void UOverlayWidgetController::OnXpChanged(int32 NewXP)
 void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot) const
 {
 	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-	
+
 	FAuraAbilityInfo LastSlotInfo;
 	LastSlotInfo.StatusTag = GameplayTags.Abilities_Status_Unlocked;
 	LastSlotInfo.InputTag = PreviousSlot;

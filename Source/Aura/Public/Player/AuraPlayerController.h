@@ -1,6 +1,5 @@
 ﻿//
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -46,7 +45,7 @@ public:
 	void ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	void HideMagicCircle();
+	void HideMagicCircle() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -73,7 +72,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 
-	UAuraAbilitySystemComponent* GetASC();
+	UAuraAbilitySystemComponent* GetAsc();
 
 	// Input functions
 	void Move(const FInputActionValue& InputActionValue);
@@ -90,8 +89,12 @@ private:
 	FHitResult CursorHit;
 	void CursorTrace();
 
-	// Actor highlighting(Reference to Interfaces)
-	TObjectPtr<AActor> LastActor, ThisActor;
+	// Actor highlighting
+	UPROPERTY()
+	TObjectPtr<AActor> LastActor;
+
+	UPROPERTY()
+	TObjectPtr<AActor> ThisActor;
 
 	static void HighlightActor(AActor* InActor);
 	static void UnHighlightActor(AActor* InActor);
@@ -133,5 +136,5 @@ private:
 	UPROPERTY()
 	TObjectPtr<AMagicCircle> MagicCircle;
 
-	void UpdateMagicCircleLocation();
+	void UpdateMagicCircleLocation() const;
 };

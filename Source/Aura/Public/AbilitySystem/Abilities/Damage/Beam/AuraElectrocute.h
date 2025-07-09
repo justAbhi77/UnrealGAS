@@ -1,16 +1,16 @@
-// 
+//
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Abilities/AuraBeamSpell.h"
-#include "Electrocute.generated.h"
+#include "AuraBeamSpell.h"
+#include "AuraElectrocute.generated.h"
 
 /**
- * 
+ * Gameplay ability that electrocutes targets.
  */
 UCLASS()
-class AURA_API UElectrocute : public UAuraBeamSpell
+class AURA_API UAuraElectrocute : public UAuraBeamSpell
 {
 	GENERATED_BODY()
 public:

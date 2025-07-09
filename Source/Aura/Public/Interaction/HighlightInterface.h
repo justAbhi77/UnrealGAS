@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -13,7 +13,7 @@ class UHighlightInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for actors that can be highlighted by mouse hover.
  */
 class AURA_API IHighlightInterface
 {

@@ -34,18 +34,18 @@ struct FEffectProperties
 {
 	GENERATED_BODY()
 
-	FEffectProperties() : SourceASC(nullptr),
-	SourceAvatarActor(nullptr), SourceController(nullptr), SourceCharacter(nullptr), TargetASC(nullptr),
+	FEffectProperties() : SourceAsc(nullptr),
+	SourceAvatarActor(nullptr), SourceController(nullptr), SourceCharacter(nullptr), TargetAsc(nullptr),
 	TargetAvatarActor(nullptr), TargetController(nullptr), TargetCharacter(nullptr)
 	{}
 
 	FGameplayEffectContextHandle EffectContextHandle;
 
-	UPROPERTY() UAbilitySystemComponent* SourceASC;
+	UPROPERTY() UAbilitySystemComponent* SourceAsc;
 	UPROPERTY() AActor* SourceAvatarActor;
 	UPROPERTY() AController* SourceController;
 	UPROPERTY() ACharacter* SourceCharacter;
-	UPROPERTY() UAbilitySystemComponent* TargetASC;
+	UPROPERTY() UAbilitySystemComponent* TargetAsc;
 	UPROPERTY() AActor* TargetAvatarActor;
 	UPROPERTY() AController* TargetController;
 	UPROPERTY() ACharacter* TargetCharacter;
@@ -216,13 +216,13 @@ private:
 
 	void ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const;
 
-	void SendXpEvent(const FEffectProperties& Props);
+	static void SendXpEvent(const FEffectProperties& Props);
 
 	void HandleIncomingDamage(const FEffectProperties& Props);
 
 	void HandleIncomingXp(const FEffectProperties& Props);
 
-	void Debuff(const FEffectProperties& Props);
+	static void Debuff(const FEffectProperties& Props);
 
 	bool bTopOffHealth = false,bTopOffMana = false;
 };

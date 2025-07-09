@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -37,7 +37,7 @@ struct FCharacterClassDefaultInfo
 	FScalableFloat XpReward = FScalableFloat(); // Experience points rewarded for defeating Charater class
 };
 
-/** 
+/**
 * Data asset storing class-specific attributes, abilities, and common gameplay effects.
 */
 UCLASS()
@@ -69,6 +69,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Common Class Defaults|Damage")
 	TObjectPtr<UCurveTable> DamageCalculationCoefficients;
 
+	// Secondary attributes for the player controlled character.
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TSubclassOf<UGameplayEffect> SecondaryAttributes_Infinite;
 

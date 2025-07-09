@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -10,7 +10,7 @@
 class AAuraEnemy;
 
 /**
- * 
+ * Basic target point for spawning enemies.
  */
 UCLASS()
 class AURA_API AAuraEnemySpawnPoint : public ATargetPoint
@@ -19,7 +19,7 @@ class AURA_API AAuraEnemySpawnPoint : public ATargetPoint
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void SpawnEnemy();
+	void SpawnEnemy() const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Class")
 	TSubclassOf<AAuraEnemy> EnemyClass;

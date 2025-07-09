@@ -1,9 +1,9 @@
-// 
+//
 
 
-#include "AbilitySystem/Abilities/Electrocute.h"
+#include "AbilitySystem/Abilities/Damage/Beam/AuraElectrocute.h"
 
-FString UElectrocute::GetDescription(int32 Level)
+FString UAuraElectrocute::GetDescription(const int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
@@ -20,7 +20,7 @@ FString UElectrocute::GetDescription(int32 Level)
 			"<Small>ManaCost: </><ManaCost>%.1f</>\n"
 			// Cooldown
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
-			
+
 			"<Default>Emits a beam of lightning, "
 			"connecting with the target, repeatedly causing </>"
 
@@ -60,11 +60,11 @@ FString UElectrocute::GetDescription(int32 Level)
 			ManaCost,
 			Cooldown,
 			FMath::Min(Level, MaxNumShockTargets - 1),
-			ScaledDamage);		
+			ScaledDamage);
 	}
 }
 
-FString UElectrocute::GetNextLevelDescription(int32 Level)
+FString UAuraElectrocute::GetNextLevelDescription(const int32 Level)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
@@ -94,5 +94,5 @@ FString UElectrocute::GetNextLevelDescription(int32 Level)
 			ManaCost,
 			Cooldown,
 			FMath::Min(Level, MaxNumShockTargets - 1),
-			ScaledDamage);	
+			ScaledDamage);
 }

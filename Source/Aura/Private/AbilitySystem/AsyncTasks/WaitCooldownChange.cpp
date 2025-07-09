@@ -7,7 +7,7 @@
 UWaitCooldownChange* UWaitCooldownChange::WaitForCooldownChange(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayTag& InCooldownTag)
 {
 	UWaitCooldownChange* WaitCooldownChange = NewObject<UWaitCooldownChange>();
-	WaitCooldownChange->ASC = AbilitySystemComponent;
+	WaitCooldownChange->Asc = AbilitySystemComponent;
 	WaitCooldownChange->CooldownTag = InCooldownTag;
 
 	if(!IsValid(AbilitySystemComponent) || !InCooldownTag.IsValid())
@@ -27,22 +27,22 @@ UWaitCooldownChange* UWaitCooldownChange::WaitForCooldownChange(UAbilitySystemCo
 
 void UWaitCooldownChange::EndTask()
 {
-	if(!IsValid(ASC)) return;
+	if(!IsValid(Asc)) return;
 
-	ASC->RegisterGameplayTagEvent(CooldownTag, EGameplayTagEventType::NewOrRemoved).RemoveAll(this);
+	Asc->RegisterGameplayTagEvent(CooldownTag, EGameplayTagEventType::NewOrRemoved).RemoveAll(this);
 
 	SetReadyToDestroy();
 	MarkAsGarbage();
 }
 
-void UWaitCooldownChange::CooldownTagChanged(const FGameplayTag InCooldownTag, int32 NewCount)
+void UWaitCooldownChange::CooldownTagChanged(const FGameplayTag InCooldownTag, const int32 NewCount) const
 {
 	// Cooldown has ended
 	if(NewCount==0)
 		CooldownEnd.Broadcast(0.f);
 }
 
-void UWaitCooldownChange::OnActiveEffectAdded(UAbilitySystemComponent* TargetASC, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveEffectHandle)
+void UWaitCooldownChange::OnActiveEffectAdded(UAbilitySystemComponent* TargetAsc, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveEffectHandle) const
 {
 	FGameplayTagContainer AssetTags;
 	SpecApplied.GetAllAssetTags(AssetTags);
@@ -53,10 +53,9 @@ void UWaitCooldownChange::OnActiveEffectAdded(UAbilitySystemComponent* TargetASC
 	// Check if the applied effect includes the cooldown tag
 	if(AssetTags.HasTagExact(CooldownTag) || GrantedTags.HasTagExact(CooldownTag))
 	{
-		FGameplayEffectQuery GameplayEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(CooldownTag.GetSingleTagContainer());
-		TArray<float> TimesRemaining = ASC->GetActiveEffectsTimeRemaining(GameplayEffectQuery);
+		const FGameplayEffectQuery GameplayEffectQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(CooldownTag.GetSingleTagContainer());
 
-		if(TimesRemaining.Num()>0)
+		if(TArray<float> TimesRemaining = Asc->GetActiveEffectsTimeRemaining(GameplayEffectQuery); TimesRemaining.Num()>0)
 		{
 			// Choose the maximum remaining time among matches
 			float TimeRemaining = TimesRemaining[0];

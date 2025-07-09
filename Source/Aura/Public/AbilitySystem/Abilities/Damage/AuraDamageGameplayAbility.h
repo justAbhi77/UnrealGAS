@@ -9,7 +9,7 @@
 #include "AuraDamageGameplayAbility.generated.h"
 
 /**
- * Extends UAuraGameplayAbility to apply damage effects to targets, supporting various damage types and parameters.
+ * Applies damage effects to targets, supporting various damage types and parameters.
  */
 UCLASS()
 class AURA_API UAuraDamageGameplayAbility : public UAuraGameplayAbility

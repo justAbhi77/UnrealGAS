@@ -7,8 +7,7 @@
 #include "AuraGameplayAbility.generated.h"
 
 /*
- * Extending UGameplayAbility
- * To define an input tag for activation.
+ * Gameplay Ability with input tag for activation, Description and cost estimating functionalities.
  */
 UCLASS()
 class AURA_API UAuraGameplayAbility : public UGameplayAbility

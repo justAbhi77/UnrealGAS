@@ -5,7 +5,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Interaction/CombatInterface.h"
 
-UMMC_MaxMana::UMMC_MaxMana()
+UMmc_MaxMana::UMmc_MaxMana()
 {
 	// Define the Intelligence attribute capture
 	IntDef.AttributeToCapture = UAuraAttributeSet::GetIntelligenceAttribute();
@@ -15,7 +15,7 @@ UMMC_MaxMana::UMMC_MaxMana()
 	RelevantAttributesToCapture.Add(IntDef);
 }
 
-float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
+float UMmc_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
 {
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();

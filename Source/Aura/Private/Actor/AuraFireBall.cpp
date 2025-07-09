@@ -1,4 +1,4 @@
-// 
+//
 
 
 #include "Actor/AuraFireBall.h"
@@ -11,7 +11,7 @@
 void AAuraFireBall::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	StartOutgoingTimeline();
 }
 
@@ -21,12 +21,12 @@ void AAuraFireBall::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AA
 
 	if(HasAuthority())
 	{
-		if(UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		if(UAbilitySystemComponent* TargetAsc = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
 			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
 			DamageEffectParams.DeathImpulse = DeathImpulse;
-			
-			DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
+
+			DamageEffectParams.TargetAbilitySystemComponent = TargetAsc;
 			UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}
 	}
@@ -40,7 +40,7 @@ void AAuraFireBall::HandleImpact()
 		CueParams.Location = GetActorLocation();
 		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetOwner(), FAuraGameplayTags::Get().GameplayCue_FireBlast, CueParams);
 	}
-	
+
 	if(LoopingSoundComponent)
 	{
 		LoopingSoundComponent->Stop();

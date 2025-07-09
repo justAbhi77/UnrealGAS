@@ -1,9 +1,8 @@
-// 
+//
 
 
 #include "Actor/AuraEnemySpawnVolume.h"
 #include "Actor/AuraEnemySpawnPoint.h"
-#include "Aura/Aura.h"
 #include "Components/BoxComponent.h"
 #include "Interaction/PlayerInterface.h"
 

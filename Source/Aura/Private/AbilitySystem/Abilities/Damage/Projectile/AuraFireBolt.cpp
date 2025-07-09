@@ -1,7 +1,7 @@
 //
 
 
-#include "AbilitySystem/Abilities/AuraFireBolt.h"
+#include "AbilitySystem/Abilities/Damage/Projectile/AuraFireBolt.h"
 #include "Math/MathFwd.h"
 #include "Math/UnrealMathUtility.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"

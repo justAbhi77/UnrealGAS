@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -11,10 +11,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetWidgetSwitcherIndex, int32, Widg
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnableSelectSlotButton, bool, bEnable);
 
 /**
- * 
+ * View Model for a load slots in the MVVM pattern.
  */
 UCLASS()
-class AURA_API UMVVM_LoadSlot : public UMVVMViewModelBase
+class AURA_API UMvvm_LoadSlot : public UMVVMViewModelBase
 {
 	GENERATED_BODY()
 public:

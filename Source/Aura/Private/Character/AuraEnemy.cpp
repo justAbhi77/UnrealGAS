@@ -7,7 +7,6 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
-#include "GameFramework/GameModeBase.h"
 #include "Math/MathFwd.h"
 #include "UI/Widget/AuraUserWidget.h"
 #include "AuraGameplayTags.h"
@@ -51,8 +50,8 @@ void AAuraEnemy::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
 	// Set custom depth stencil values for highlighting
-	GetMesh()->SetCustomDepthStencilValue((int32)HighlightValue);
-	if(Weapon) Weapon->SetCustomDepthStencilValue((int32)HighlightValue);
+	GetMesh()->SetCustomDepthStencilValue(static_cast<int32>(HighlightValue));
+	if(Weapon) Weapon->SetCustomDepthStencilValue(static_cast<int32>(HighlightValue));
 
 	// Initialize ability system
 	InitAbilityActorInfo();
@@ -157,7 +156,7 @@ void AAuraEnemy::InitializeDefaultAttributes() const
 void AAuraEnemy::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	Super::StunTagChanged(CallbackTag, NewCount);
-	
+
 	if(AuraAIController && AuraAIController->GetBlackboardComponent())
 		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), bIsStunned);
 }
@@ -184,5 +183,5 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 
 void AAuraEnemy::SetMoveToLocation_Implementation(FVector& OutDestination)
 {
-	
+
 }

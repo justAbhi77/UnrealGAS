@@ -7,17 +7,17 @@
 #include "Kismet/GameplayStatics.h"
 #include "Game/AuraGameInstance.h"
 
-void UMVVM_LoadScreen::InitializeLoadSlots()
+void UMvvm_LoadScreen::InitializeLoadSlots()
 {
-	LoadSlot_0 = NewObject<UMVVM_LoadSlot>(this, LoadSlotViewModelClass);
+	LoadSlot_0 = NewObject<UMvvm_LoadSlot>(this, LoadSlotViewModelClass);
 	LoadSlot_0->SetLoadSlotName("LoadSlot_0");
 	LoadSlot_0->SlotIndex = 0;
 	LoadSlots.Add(0, LoadSlot_0);
-	LoadSlot_1 = NewObject<UMVVM_LoadSlot>(this, LoadSlotViewModelClass);
+	LoadSlot_1 = NewObject<UMvvm_LoadSlot>(this, LoadSlotViewModelClass);
 	LoadSlots.Add(1, LoadSlot_1);
 	LoadSlot_1->SlotIndex = 1;
 	LoadSlot_1->SetLoadSlotName("LoadSlot_1");
-	LoadSlot_2 = NewObject<UMVVM_LoadSlot>(this, LoadSlotViewModelClass);
+	LoadSlot_2 = NewObject<UMvvm_LoadSlot>(this, LoadSlotViewModelClass);
 	LoadSlots.Add(2, LoadSlot_2);
 	LoadSlot_2->SetLoadSlotName("LoadSlot_2");
 	LoadSlot_2->SlotIndex = 2;
@@ -25,12 +25,12 @@ void UMVVM_LoadScreen::InitializeLoadSlots()
 	SetNumLoadSlots(LoadSlots.Num());
 }
 
-UMVVM_LoadSlot* UMVVM_LoadScreen::GetLoadSlotViewModelByIndex(int32 Index) const
+UMvvm_LoadSlot* UMvvm_LoadScreen::GetLoadSlotViewModelByIndex(int32 Index) const
 {
 	return LoadSlots.FindChecked(Index);
 }
 
-void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnteredName)
+void UMvvm_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnteredName)
 {
 	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
 
@@ -56,12 +56,12 @@ void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnteredNa
 	AuraGameInstance->PlayerStartTag = AuraGameMode->DefaultPlayerStartTag;
 }
 
-void UMVVM_LoadScreen::NewGameButtonPressed(int32 Slot)
+void UMvvm_LoadScreen::NewGameButtonPressed(int32 Slot)
 {
 	LoadSlots[Slot]->SetWidgetSwitcherIndex.Broadcast(1);
 }
 
-void UMVVM_LoadScreen::SelectSlotButtonPressed(int32 Slot)
+void UMvvm_LoadScreen::SelectSlotButtonPressed(int32 Slot)
 {
 	SlotSelected.Broadcast();
 	for(const auto LoadSlot : LoadSlots)
@@ -74,7 +74,7 @@ void UMVVM_LoadScreen::SelectSlotButtonPressed(int32 Slot)
 	SelectedSlot = LoadSlots[Slot];
 }
 
-void UMVVM_LoadScreen::DeleteButtonPressed()
+void UMvvm_LoadScreen::DeleteButtonPressed()
 {
 	if(IsValid(SelectedSlot))
 	{
@@ -85,13 +85,13 @@ void UMVVM_LoadScreen::DeleteButtonPressed()
 	}
 }
 
-void UMVVM_LoadScreen::LoadData()
+void UMvvm_LoadScreen::LoadData()
 {
 	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
 
 	if(!IsValid(AuraGameMode)) return;
 
-	for(const TTuple<int32, UMVVM_LoadSlot*> LoadSlot : LoadSlots)
+	for(const TTuple<int32, UMvvm_LoadSlot*> LoadSlot : LoadSlots)
 	{
 		ULoadScreenSaveGame* SaveObject = AuraGameMode->GetSaveSlotData(LoadSlot.Value->GetLoadSlotName(), LoadSlot.Key);
 
@@ -107,7 +107,7 @@ void UMVVM_LoadScreen::LoadData()
 	}
 }
 
-void UMVVM_LoadScreen::PlayButtonPressed()
+void UMvvm_LoadScreen::PlayButtonPressed() const
 {
 	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
 	UAuraGameInstance* AuraGameInstance = Cast<UAuraGameInstance>(AuraGameMode->GetGameInstance());
@@ -119,7 +119,7 @@ void UMVVM_LoadScreen::PlayButtonPressed()
 		AuraGameMode->TravelToMap(SelectedSlot);
 }
 
-void UMVVM_LoadScreen::SetNumLoadSlots(int32 InNumLoadSlots)
+void UMvvm_LoadScreen::SetNumLoadSlots(const int32 InNumLoadSlots)
 {
 	UE_MVVM_SET_PROPERTY_VALUE(NumLoadSlots, InNumLoadSlots);
 }

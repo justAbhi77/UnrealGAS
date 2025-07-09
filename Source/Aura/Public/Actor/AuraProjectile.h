@@ -1,6 +1,5 @@
 //
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -69,7 +68,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	bool bFriendlyFire = true;
 
-	bool IsValidOverlap(AActor* OtherActor);
+	bool IsValidOverlap(const AActor* OtherActor) const;
 
 	bool bHit = false;
 };

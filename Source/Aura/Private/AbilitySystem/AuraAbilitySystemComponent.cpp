@@ -191,6 +191,15 @@ bool UAuraAbilitySystemComponent::AbilityHasSlot(const FGameplayAbilitySpec& Spe
 	return Spec.DynamicAbilityTags.HasTagExact(Slot);
 }
 
+bool UAuraAbilitySystemComponent::AbilityHasSlot(FGameplayAbilitySpec* Spec, const FGameplayTag& Slot)
+{
+	for(FGameplayTag Tag : Spec->DynamicAbilityTags)
+		if(Tag.MatchesTagExact(Slot))
+			return true;
+
+	return false;
+}
+
 bool UAuraAbilitySystemComponent::AbilityHasAnySlot(const FGameplayAbilitySpec& Spec)
 {
 	return Spec.DynamicAbilityTags.HasTag(FGameplayTag::RequestGameplayTag(FName("InputTag")));
@@ -255,7 +264,7 @@ void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FG
 		IPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(), -1);
 }
 
-void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
+void UAuraAbilitySystemComponent::UpdateAbilityStatuses(const int32 Level)
 {
 	UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
 	for(const FAuraAbilityInfo& Info : AbilityInfo->AbilityInformation)
@@ -279,7 +288,7 @@ void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGa
 	{
 		if(GetAvatarActor()->Implements<UPlayerInterface>())
 			IPlayerInterface::Execute_AddToSpellPoints(GetAvatarActor(), -1);
-		
+
 		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
 		FGameplayTag Status = GetStatusFromSpec(*AbilitySpec);
 		if(Status.MatchesTagExact(GameplayTags.Abilities_Status_Eligible))
@@ -291,7 +300,7 @@ void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGa
 		else if(Status.MatchesTagExact(GameplayTags.Abilities_Status_Equipped) || Status.MatchesTagExact(GameplayTags.Abilities_Status_Unlocked))
 			AbilitySpec->Level += 1;
 		// if the ability is active already the change in level will be reflected the next time ability is activated
-		// if we want to change level immediateely we have to remove the ability and give it again
+		// if we want to change level immediately we have to remove the ability and give it again
 
 		ClientUpdateAbilityStatus(AbilityTag, Status, AbilitySpec->Level);
 		MarkAbilitySpecDirty(*AbilitySpec);
@@ -306,15 +315,13 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 		const FGameplayTag& PrevSlot = GetInputTagFromSpec(*AbilitySpec);
 		const FGameplayTag& Status = GetStatusFromSpec(*AbilitySpec);
 
-		const bool bStatusValid = Status == GameplayTags.Abilities_Status_Equipped || Status == GameplayTags.Abilities_Status_Unlocked;
-		if(bStatusValid)
+		if(Status == GameplayTags.Abilities_Status_Equipped || Status == GameplayTags.Abilities_Status_Unlocked)
 		{
 			// Handle activation/deactivation for passive abilities
 
 			if(!SlotIsEmpty(Slot)) // There is an ability in this slot already. Deactivate and clear its slot.
 			{
-				FGameplayAbilitySpec* SpecWithSlot = GetSpecWithSlot(Slot);
-				if(SpecWithSlot)
+				if(FGameplayAbilitySpec* SpecWithSlot = GetSpecWithSlot(Slot))
 				{
 					// is that ability the same as this ability? If so, we can return early.
 					if(AbilityTag.MatchesTagExact(GetAbilityTagFromSpec(*SpecWithSlot)))
@@ -366,7 +373,7 @@ bool UAuraAbilitySystemComponent::GetDescriptionsByAbilityTag(const FGameplayTag
 			return true;
 		}
 	const UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
-	
+
 	if(!AbilityTag.IsValid() || AbilityTag.MatchesTagExact(FAuraGameplayTags::Get().Abilities_None))
 		OutDescription = FString();
 	else
@@ -388,15 +395,6 @@ void UAuraAbilitySystemComponent::ClearAbilitiesOfSlot(const FGameplayTag& Slot)
 	for(FGameplayAbilitySpec& Spec : GetActivatableAbilities())
 		if(AbilityHasSlot(&Spec, Slot))
 			ClearSlot(&Spec);
-}
-
-bool UAuraAbilitySystemComponent::AbilityHasSlot(FGameplayAbilitySpec* Spec, const FGameplayTag& Slot)
-{
-	for(FGameplayTag Tag : Spec->DynamicAbilityTags)
-		if(Tag.MatchesTagExact(Slot))
-			return true;
-
-	return false;
 }
 
 void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()

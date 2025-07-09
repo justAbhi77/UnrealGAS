@@ -1,6 +1,5 @@
 ﻿//
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -27,33 +26,33 @@ class AURA_API AAuraHUD : public AHUD
 public:
 	/**
 	 * Retrieves or creates the Overlay Widget Controller.
-	 * @param WCParams - Parameters required to initialize the controller.
+	 * @param WcParams - Parameters required to initialize the controller.
 	 * @return A pointer to the Overlay Widget Controller.
 	 */
-	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
+	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WcParams);
 
 	/**
 	 * Retrieves or creates the Attribute Menu Widget Controller.
-	 * @param WCParams - Parameters required to initialize the controller.
+	 * @param WcParams - Parameters required to initialize the controller.
 	 * @return A pointer to the Attribute Menu Widget Controller.
 	 */
-	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WcParams);
 
 	/**
 	 * Retrieves or creates the Spell Menu Widget Controller.
-	 * @param WCParams - Parameters required to initialize the controller.
+	 * @param WcParams - Parameters required to initialize the controller.
 	 * @return A pointer to the Spell Menu Widget Controller.
 	 */
-	USpellMenuWidgetController* GetSpellMenuWidgetController(const FWidgetControllerParams& WCParams);
+	USpellMenuWidgetController* GetSpellMenuWidgetController(const FWidgetControllerParams& WcParams);
 
 	/**
 	 * Initializes the Overlay Widget, sets its controller, and adds it to the viewport.
 	 * @param PC - The player controller.
 	 * @param PS - The player state.
-	 * @param ASC - The ability system component.
-	 * @param AS - The attribute set.
+	 * @param Asc - The ability system component.
+	 * @param As - The attribute set.
 	 */
-	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
+	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* Asc, UAttributeSet* As);
 
 private:
 	// The class to use for the Overlay Widget.

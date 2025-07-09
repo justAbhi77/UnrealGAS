@@ -85,7 +85,7 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
 	{
 		if(Ar.IsLoading())
 			if(!DamageType.IsValid())
-				DamageType = TSharedPtr<FGameplayTag>(new FGameplayTag());
+				DamageType = MakeShared<FGameplayTag>();
 		DamageType->NetSerialize(Ar, Map, bOutSuccess);
 	}
 	if(RepBits & (1 << 14)) DeathImpulse.NetSerialize(Ar, Map, bOutSuccess);
@@ -93,7 +93,7 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
 	if(RepBits & (1 << 16))
 	{
 		Ar << bIsRadialDamage;
-		
+
 		if(RepBits & (1 << 17)) Ar << RadialDamageInnerRadius;
 		if(RepBits & (1 << 18)) Ar << RadialDamageOuterRadius;
 		if(RepBits & (1 << 19)) RadialDamageOrigin.NetSerialize(Ar, Map, bOutSuccess);

@@ -1,6 +1,5 @@
 ﻿//
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -36,7 +35,7 @@ public:
 	virtual void HighlightActor_Implementation() override;
 	virtual void UnHighlightActor_Implementation() override;
 	virtual void SetMoveToLocation_Implementation(FVector& OutDestination) override;
-	
+
 	// Enemy Interface
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override{ CombatTarget = InCombatTarget; }
 	virtual AActor* GetCombatTarget_Implementation() const override { return CombatTarget; }
@@ -62,7 +61,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
 	TObjectPtr<AActor> CombatTarget;
 
-	void SetLevel(int32 InLevel) { Level = InLevel; }
+	void SetLevel(const int32 InLevel) { Level = InLevel; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;

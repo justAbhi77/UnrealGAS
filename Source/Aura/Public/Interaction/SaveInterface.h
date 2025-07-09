@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -13,7 +13,7 @@ class USaveInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for actors that can save and load their state.
  */
 class AURA_API ISaveInterface
 {

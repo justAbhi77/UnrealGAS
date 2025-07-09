@@ -1,4 +1,4 @@
-// 
+//
 
 
 #include "Checkpoint/Checkpoint.h"
@@ -14,13 +14,13 @@ ACheckpoint::ACheckpoint(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = false;
-	
+
 	CheckpointMesh = CreateDefaultSubobject<UStaticMeshComponent>("CheckpointMesh");
 	CheckpointMesh->SetupAttachment(GetRootComponent());
 	CheckpointMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CheckpointMesh->SetCollisionResponseToAllChannels(ECR_Block);
 
-	CheckpointMesh->SetCustomDepthStencilValue((int32)CustomDepthStencilOverride);
+	CheckpointMesh->SetCustomDepthStencilValue(static_cast<int32>(CustomDepthStencilOverride));
 	CheckpointMesh->MarkRenderStateDirty();
 
 	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
@@ -45,13 +45,13 @@ void ACheckpoint::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	{
 		bReached = true;
 
-		if(AAuraGameModeBase* AuraGM = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
+		if(const AAuraGameModeBase* AuraGm = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
 		{
 			const UWorld* World = GetWorld();
 			FString MapName = World->GetMapName();
 			MapName.RemoveFromStart(World->StreamingLevelsPrefix);
-			
-			AuraGM->SaveWorldState(GetWorld(), MapName);
+
+			AuraGm->SaveWorldState(GetWorld(), MapName);
 		}
 
 		IPlayerInterface::Execute_SaveProgress(OtherActor, PlayerStartTag);
@@ -63,7 +63,7 @@ void ACheckpoint::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CheckpointMesh->SetCustomDepthStencilValue((int32)CustomDepthStencilOverride);
+	CheckpointMesh->SetCustomDepthStencilValue(static_cast<int32>(CustomDepthStencilOverride));
 	CheckpointMesh->MarkRenderStateDirty();
 
 	if(bBindOverlapCallback)

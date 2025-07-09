@@ -1,6 +1,5 @@
 //
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -40,14 +39,14 @@ public:
 protected:
 	// Owning ability system component
 	UPROPERTY()
-	TObjectPtr<UAbilitySystemComponent> ASC;
+	TObjectPtr<UAbilitySystemComponent> Asc;
 
 	// Tag to track cooldown status
 	FGameplayTag CooldownTag;
 
 	// Called when the cooldown tag is newly added or completely removed
-	void CooldownTagChanged(const FGameplayTag InCooldownTag, int32 NewCount);
+	void CooldownTagChanged(const FGameplayTag InCooldownTag, int32 NewCount) const;
 
 	// Called when a new gameplay effect is added to the ASC
-	void OnActiveEffectAdded(UAbilitySystemComponent* TargetASC, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveEffectHandle);
+	void OnActiveEffectAdded(UAbilitySystemComponent* TargetAsc, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveEffectHandle) const;
 };

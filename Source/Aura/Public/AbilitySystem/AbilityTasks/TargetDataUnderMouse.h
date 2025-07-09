@@ -1,4 +1,4 @@
-// 
+//
 
 #pragma once
 
@@ -19,8 +19,7 @@ class AURA_API UTargetDataUnderMouse : public UAbilityTask
 
 public:
 	// Creates a new instance of the ability task for retrieving target data under the mouse cursor.
-	UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta=(DisplayName="TargetDataUnderMouse",
-		HidePin="OwningAbility", DefaultToSelf="OwningAbility", BlueprintInternalUseOnly="true"))
+	UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta=(DisplayName="TargetDataUnderMouse", HidePin="OwningAbility", DefaultToSelf="OwningAbility", BlueprintInternalUseOnly="true"))
 	static UTargetDataUnderMouse* CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility);
 
 	// Delegate to broadcast valid target data when obtained.
