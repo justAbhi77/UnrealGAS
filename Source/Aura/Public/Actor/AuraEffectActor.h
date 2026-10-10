@@ -12,7 +12,7 @@ class UGameplayEffect;
 
 // Defines when an effect should be applied
 UENUM(BlueprintType)
-enum class EEffectApplicationPolicy
+enum class EEffectApplicationPolicy : uint8
 {
 	ApplyOnOverlap, // Apply when overlapping begins
 	ApplyOnEndOverlap, // Apply when overlapping ends
@@ -21,7 +21,7 @@ enum class EEffectApplicationPolicy
 
 // Defines when an effect should be removed
 UENUM(BlueprintType)
-enum class EEffectRemovalPolicy
+enum class EEffectRemovalPolicy : uint8
 {
 	RemoveOnEndOverlap, // Remove when overlap ends
 	DoNotRemove // Never remove

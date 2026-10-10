@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{C0D61CC3-4AAF-ABD9-14A8-A6A92478DD26}",
+	"EngineAssociation": "5.6",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -23,7 +23,7 @@
 	"Plugins": [
 		{
 			"Name": "NodeGraphAssistant",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/d9baaaeadeaf41dcb52b3f6e134e9514"
 		},
 		{
@@ -48,6 +48,11 @@
 		{
 			"Name": "ModelViewViewModel",
 			"Enabled": true
+		},
+		{
+			"Name": "ZEditorAddons",
+			"Enabled": false,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/698ab8fefade462f9db0b21591daf8f5"
 		}
 	]
 }
